@@ -52,7 +52,7 @@ def face_detect(image_bytes):
         print('Face(s) exist here.')
         return True
 
-
+#checks if image contains faces...
 def handle(req):
 
     input = json.loads(req)
