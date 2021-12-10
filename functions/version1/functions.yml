@@ -1,0 +1,15 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  framer:
+    lang: python3-flask-debian
+    handler: ./framer
+    image: dimgiagos/framer:latest
+
+  facedetector:
+    lang: python3-flask-debian
+    handler: ./facedetector
+    image: dimgiagos/facedetector:latest
+

@@ -1,2 +1,2 @@
 # Serverless-app-versions
-Core Master Thesis repo
+This is the main repository for my Master Thesis.
