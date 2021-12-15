@@ -13,3 +13,13 @@ functions:
     handler: ./facedetector
     image: dimgiagos/facedetector:latest
 
+  faceanalyzer:
+    lang: python3-flask-debian
+    handler: ./faceanalyzer
+    image: dimgiagos/faceanalyzer:latest
+
+  mobilenet:
+    lang: python3-flask-debian
+    handler: ./mobilenet
+    image: dimgiagos/mobilenet:latest
+
