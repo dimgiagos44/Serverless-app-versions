@@ -48,7 +48,9 @@ def handle(req):
     results2 = {
         "first": results[0][1],
         "second": results[1][1],
-        "third": results[2][1]
+        "third": results[2][1],
+        "bucket": input_bucket,
+        "key": key
     }
 
     return json.dumps(results2)
