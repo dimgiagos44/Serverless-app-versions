@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	faasflow "github.com/faasflow/lib/openfaas"
 	"log"
-	"strconv"
 )
 
 // Define provide definition of the workflow
@@ -38,12 +37,12 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 			}
 			var data2 FramerResponse
 			json.Unmarshal(data, &data2)
-			res := make(map[string][]byte)
+			results := make(map[string][]byte)
 			for i := 0; i < len(data2.FrameNames); i++ {
 				str := `{"input-bucket": "image-output", "key": "` + data2.FrameNames[i] + `"}`
-				res[strconv.Itoa(i)] = []byte(str)
+				results[data2.FrameNames[i]] = []byte(str)
 			}
-			return res
+			return results
 		},
 		faasflow.Aggregator(func(results map[string][]byte) ([]byte, error) {
 			//aggregate all dynamic branches results
