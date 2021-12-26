@@ -65,7 +65,8 @@ def handle(req):
     faceExists = face_detect(image_bytes)
 
     result = {
-        'faceExists': faceExists
+        'faceExists': faceExists,
+        'key': key
     }
 
     return json.dumps(result)
