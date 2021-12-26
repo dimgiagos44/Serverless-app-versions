@@ -23,3 +23,18 @@ functions:
     handler: ./mobilenet
     image: dimgiagos/mobilenet:latest
 
+  version1:
+    lang: faas-flow
+    handler: ./version1
+    image: dimgiagos/version1:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+    labels:
+      faas-flow: 1
+    annotations:
+      faas-flow-desc: "version1 instance"
+    environment_file:
+      - conf.yml
+    secrets:
+      - s3-secret-key
+      - s3-access-key

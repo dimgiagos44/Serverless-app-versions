@@ -1,0 +1,10 @@
+environment:
+  gateway: "gateway.openfaas:8080"
+  enable_tracing: true
+  trace_server: "jaeger-agent.faasflow:5775"
+  write_debug: true
+  enable_hmac: true
+  consul_url: "consul.faasflow:8500"
+  consul_dc: "dc1"
+  s3_url: "minio.faasflow:9000"
+  s3_tls: false

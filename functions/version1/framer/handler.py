@@ -44,7 +44,7 @@ def handle(req):
 
     input = json.loads(req)
     #input_bucket = input['input-bucket']
-    output_bucket = input['output-bucket']
+    output_bucket = input['output_bucket']
     url = input['url']
     seconds = input['seconds']
     url = url.split('\n')[0] # e.g key = sample2.mp4
@@ -71,10 +71,10 @@ def handle(req):
     
     vidcap.release()
     result = {
-            'output-bucket': output_bucket,
-            'frame-names': key_names,
-            'frame-number': frame_num,
-            'request-status': successOpen
+            'output_bucket': output_bucket,
+            'frame_names': key_names,
+            'frame_number': frame_num,
+            'request_status': successOpen
     }
 
     return json.dumps(result)
