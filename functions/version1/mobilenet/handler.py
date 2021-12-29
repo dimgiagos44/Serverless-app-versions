@@ -45,10 +45,9 @@ def handle(req):
 
     results = decode_predictions(predictions, top=3)[0]
     print(results)
+    predictions2 = [str(results[0][1]), str(results[1][1]), str(results[2][1])]
     results2 = {
-        "first": results[0][1],
-        "second": results[1][1],
-        "third": results[2][1],
+        "predictions": predictions2,
         "bucket": input_bucket,
         "key": key
     }

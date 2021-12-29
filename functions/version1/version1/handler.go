@@ -5,23 +5,14 @@ import (
 	"encoding/json"
 	faasflow "github.com/faasflow/lib/openfaas"
 	"log"
+	"strconv"
 )
 
 // Define provide definition of the workflow
 func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
-	/*dag := flow.Dag()
-	dag.Node("start-node").Apply("framer")
-	dag.Node("after-start-node").Modify(func(data []byte) ([]byte, error) {
-		str := string(data) + " hello!"
-		log.Print(str)
-		return []byte(str), nil
-	})
-	dag.Edge("start-node", "after-start-node")
-	return nil*/
 	dag := flow.Dag()
 	dag.Node("start-node").Apply("framer").Modify(func(data []byte) ([]byte, error) {
-		str := string(data)
-		log.Print("Start-node: ", str)
+		log.Print("Framer Result: ", string(data))
 		return data, nil
 	})
 	foreachDag := dag.ForEachBranch(
@@ -61,24 +52,23 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 				responses = append(responses, resp)
 			}
 			results2.Results = responses
-			results3, _ := json.Marshal(results2)
-			return results3, nil
+			results2Byte, _ := json.Marshal(results2)
+			return results2Byte, nil
 		}),
 	)
 	foreachDag.Node("foreach-node1").Apply("facedetector").Modify(func(data []byte) ([]byte, error) {
-		log.Print("Result from facedetector: ", string(data))
+		//log.Print("Result from facedetector: ", string(data))
 		return data, nil
 	})
 	dag.Node("second-node").Modify(func(data []byte) ([]byte, error) {
-		log.Print("Invoking second-node")
-		log.Print(string(data))
+		log.Print("Facedetector results (Aggregated): ", string(data))
 		return data, nil
 	})
 	foreachDag2 := dag.ForEachBranch(
 		"F2",
 		func(data []byte) map[string][]byte {
 			//for each returned key in the hashmap a new branch will be executed
-			//this function executes in the runtime of foreach F
+			//this function executes in the runtime of foreach F2
 			type FaceDetectorResponse struct {
 				FaceExists bool   `json:"faceExists"`
 				Key        string `json:"key"`
@@ -90,26 +80,88 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 			json.Unmarshal(data, &data2)
 			results := make(map[string][]byte)
 			for _, item := range data2.Results {
-				str := `{"input-bucket": "image-output", "key": "` + item.Key + `"}`
+				str := `{"input-bucket": "image-output", "key": "` + item.Key + `", "faceExists": "` + strconv.FormatBool(item.FaceExists) + `"}`
 				results[item.Key] = []byte(str)
 			}
 			return results
 		},
 		faasflow.Aggregator(func(results map[string][]byte) ([]byte, error) {
 			//aggregate all dynamic branches results
-			result := ""
-			for option, data := range results {
-				result = result + " " + option + "=" + string(data)
+			type Output struct {
+				Preds  []string `json:"predictions"`
+				Bucket string   `json:"bucket"`
+				KeyKey string   `json:"key"`
 			}
-			return []byte(result), nil
+			type OutputWrapper struct {
+				Data []Output
+			}
+			var results2 []OutputWrapper
+			for _, data := range results {
+				var output OutputWrapper
+				json.Unmarshal(data, &output)
+				results2 = append(results2, output)
+			}
+			results2Byte, _ := json.Marshal(results2)
+			log.Print("Aggregated results after conditionals: ", string(results2Byte))
+			return results2Byte, nil
 		}),
 	)
-	foreachDag2.Node("foreach-node2").Apply("mobilenet").Modify(func(data []byte) ([]byte, error) {
-		log.Print("foreach-node2 = ", string(data))
+	conditionalDags := foreachDag2.ConditionalBranch(
+		"C",
+		[]string{"true", "false"}, //possible conditions
+		func(response []byte) []string {
+			//function that determine the status
+			type CondInput struct {
+				InputBucket string `json:"input-bucket"`
+				Key         string `json:"key"`
+				FaceExists  string `json:"faceExists"`
+			}
+			var condInput CondInput
+			json.Unmarshal(response, &condInput)
+			return []string{condInput.FaceExists}
+		},
+		faasflow.Aggregator(func(results map[string][]byte) ([]byte, error) {
+			// results can be aggregated accross the branches
+			type Output struct {
+				Preds  []string `json:"predictions"`
+				Bucket string   `json:"bucket"`
+				KeyKey string   `json:"key"`
+			}
+			type OutputWrapper struct {
+				Data []Output
+			}
+			var results2 OutputWrapper
+			for _, data := range results {
+				var output Output
+				json.Unmarshal(data, &output)
+				results2.Data = append(results2.Data, output)
+			}
+			results2Byte, _ := json.Marshal(results2)
+			log.Print("InferenceResult = ", string(results2Byte))
+			return results2Byte, nil
+		}),
+	)
+	conditionalDags["true"].Node("true-node").Apply("faceanalyzer").Modify(func(data []byte) ([]byte, error) {
+		log.Print("trueFaceanalyzerNode: ", string(data))
 		return data, nil
 	})
-	dag.Node("final-node").Modify(func(data []byte) ([]byte, error) {
-		log.Print("FINAL DATA = ", string(data))
+	conditionalDags["false"].Node("false-node").Apply("mobilenet").Modify(func(data []byte) ([]byte, error) {
+		log.Print("falseMobilenetNode: ", string(data))
+		return data, nil
+	})
+	foreachDag2.Node("foreach-node2").Modify(func(data []byte) ([]byte, error) {
+		return data, nil
+	})
+	foreachDag2.Edge("foreach-node2", "C")
+	dag.Node("final-node", faasflow.Aggregator(func(results map[string][]byte) ([]byte, error) {
+		result := ""
+		for _, data := range results {
+			result = result + string(data)
+		}
+		return []byte(result), nil
+	})).Modify(func(data []byte) ([]byte, error) {
+		log.Print("Invoking Final Node")
+		log.Print("End data: ", string(data))
 		return data, nil
 	})
 	dag.Edge("start-node", "F")

@@ -68,7 +68,9 @@ def handle(req):
     image_bytes = download_stream(input_bucket, key)
     preds = process(image_bytes)
     result = {
-        'predictions': preds
+        'predictions': preds,
+        'bucket': input_bucket,
+        'key': key
     }
 
     return json.dumps(result)
