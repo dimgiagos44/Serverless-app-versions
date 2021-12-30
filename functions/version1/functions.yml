@@ -39,9 +39,7 @@ functions:
       - s3-secret-key
       - s3-access-key
   outputer:
-    lang: python3-flask-debian
+    lang: python3
     handler: ./outputer
     image: dimgiagos/outputer:latest
-    environment:
-      combine_output: false
 
