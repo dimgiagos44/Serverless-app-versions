@@ -1,0 +1,33 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  framer2:
+    lang: python3-flask-debian
+    handler: ./framer2
+    image: dimgiagos/framer:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+
+  inference:
+    lang: python3-flask-debian
+    handler: ./inference
+    image: dimgiagos/inference:latest
+    constrains:
+    - "kubernetes.io/hostname=gworker-01"
+
+  version2:
+    lang: faas-flow
+    handler: ./version2
+    image: dimgiagos/version2:latest
+    labels:
+      faas-flow: 1
+    annotations:
+      faas-flow-desc: "version2 instance"
+    environment_file:
+      - conf.yml
+    secrets:
+      - s3-secret-key
+      - s3-access-key
+
