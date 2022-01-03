@@ -34,7 +34,7 @@ case $number in
             for ((i=0;i<${times};i++))
             do 
                 curl -X POST http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
-                sleep 2
+                sleep 4
             done
             ;;
 
@@ -47,7 +47,7 @@ case $number in
             for ((i=0;i<${times};i++))
             do 
                 curl -X POST http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
-                sleep 2
+                sleep 4
             done
             ;;
 
@@ -60,7 +60,7 @@ case $number in
             for ((i=0;i<${times};i++))
             do 
                 curl -X POST http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
-                sleep 2
+                sleep 4
             done
             ;;
 
