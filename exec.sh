@@ -1,0 +1,99 @@
+#!/bin/bash
+HELP="Command line script for executing the available workflow versions.
+
+./exec.sh <number> <times> <eraser1> <eraser2>
+
+Options:
+    <number>    Number of version to be executed
+    <times>     How many times the workflow is gonna be executed
+    <eraser1>   Delete frames that were just created - yes or no
+    <eraser2>   Delete results from current execution - yes or no
+    
+    e.g         ./exec.sh version1 10 yes yes
+    e.g         ./exec.sh 1 10 no no
+    e.g         ./exec.sh version2 15 yes no"
+
+BAD_USAGE="./exec.sh: Incorrect usage.
+Try './exec.sh -h' for further information."
+    
+echo "======================"
+echo "==Workflow execution=="
+echo "======================"
+
+start=$(date +'%s')
+number=$1
+times=$2
+
+case $number in
+            version1|1)
+
+            echo 
+            echo "Executing version1 ..."
+            echo 
+
+            for ((i=0;i<${times};i++))
+            do 
+                curl -X POST http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
+                sleep 2
+            done
+            ;;
+
+            version2|2)
+
+            echo 
+            echo "Executing version2 ..."
+            echo 
+
+            for ((i=0;i<${times};i++))
+            do 
+                curl -X POST http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
+                sleep 2
+            done
+            ;;
+
+            version3|3)
+
+            echo 
+            echo "Executing version3 ..."
+            echo 
+
+            for ((i=0;i<${times};i++))
+            do 
+                curl -X POST http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
+                sleep 2
+            done
+            ;;
+
+	        --help|-h)
+            echo "$HELP"
+            exit 0
+            ;;
+
+            *)
+		    echo "$BAD_USAGE"
+		    exit -1
+		    ;;
+esac
+
+echo "It took $(($(date +'%s') - $start)) seconds!"
+
+if [ $3 == 'yes' ]
+then
+    echo "Deleting the frames ..."
+    source ../test/virtualenv/bin/activate
+    python3 ../test/eraser.py 5
+else
+    echo "Saving the frames ..."
+fi 
+
+if [ $4 == 'yes' ]
+then
+    echo "Deleting the results ..."
+    source ../test/virtualenv/bin/activate
+    python3 ../test/eraser2.py 5
+else
+    echo "Saving the results ..."
+fi 
+
+
+
