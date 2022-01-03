@@ -1,0 +1,25 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  biginference:
+    lang: python3-flask-debian
+    handler: ./biginference
+    image: dimgiagos/biginference:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+  version3:
+    lang: faas-flow
+    handler: ./version3
+    image: dimgiagos/version3:latest
+    labels:
+      faas-flow: 1
+    annotations:
+      faas-flow-desc: "version3 instance"
+    environment_file:
+      - conf.yml
+    secrets:
+      - s3-secret-key
+      - s3-access-key
+
