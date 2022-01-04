@@ -26,7 +26,7 @@ then
     exit 0
 fi
 
-if [ $3 != 'yes' ] || [ $3 != 'no' ] || [ $4 != 'yes' ] || [ $4 != 'no' ]
+if [ $3 != 'yes' ] && [ $3 != 'no' ] && [ $4 != 'yes' ] && [ $4 != 'no' ]
 then 
     echo "$BAD_USAGE"
 	exit -1
