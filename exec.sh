@@ -17,7 +17,7 @@ BAD_USAGE="./exec.sh: Incorrect usage.
 Try './exec.sh -h' for further information."
     
 echo "======================"
-echo "==Workflow execution=="
+echo "==Workflow Execution=="
 echo "======================"
 
 start=$(date +'%s')
@@ -28,7 +28,7 @@ case $number in
             version1|1)
 
             echo 
-            echo "Executing version1 ..."
+            echo -e "\u2699 Executing version1 ..."
             echo 
 
             for ((i=0;i<${times};i++))
@@ -41,20 +41,20 @@ case $number in
             version2|2)
 
             echo 
-            echo "Executing version2 ..."
+            echo -e "\u2699 Executing version2 ..."
             echo 
 
             for ((i=0;i<${times};i++))
             do 
                 curl -X POST http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
-                sleep 4
+                sleep 7
             done
             ;;
 
             version3|3)
 
             echo 
-            echo "Executing version3 ..."
+            echo -e "\u2699 Executing version3 ..."
             echo 
 
             for ((i=0;i<${times};i++))
@@ -75,24 +75,25 @@ case $number in
 		    ;;
 esac
 
-echo "It took $(($(date +'%s') - $start)) seconds!"
+echo -e "\u231B It took $(($(date +'%s') - $start)) seconds!"
+echo 
 
 if [ $3 == 'yes' ]
 then
-    echo "Deleting the frames ..."
+    echo -e "\u2716 Deleting the frames ..."
     source ../test/virtualenv/bin/activate
-    python3 ../test/eraser.py 5
+    python3 ../test/eraser.py 10
 else
-    echo "Saving the frames ..."
+    echo -e "\u270F Saving the frames ..."
 fi 
 
 if [ $4 == 'yes' ]
 then
-    echo "Deleting the results ..."
+    echo -e "\u2716 Deleting the results ..."
     source ../test/virtualenv/bin/activate
-    python3 ../test/eraser2.py 5
+    python3 ../test/eraser2.py 10
 else
-    echo "Saving the results ..."
+    echo -e "\u270F Saving the results ..."
 fi 
 
 
