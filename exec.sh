@@ -14,11 +14,23 @@ Options:
     e.g         ./exec.sh version2 15 yes no"
 
 BAD_USAGE="./exec.sh: Incorrect usage.
-Try './exec.sh -h' for further information."
+Try './exec.sh -h' or './exec.sh --help' for further information."
     
 echo "============================"
 echo "=== ML Workflow Execution =="
 echo "============================"
+
+if [ $1 == '-h' ] || [ $1 == '--help' ]
+then 
+    echo "$HELP"
+    exit 0
+fi
+
+if [ $3 != 'yes' ] || [ $3 != 'no' ] || [ $4 != 'yes' ] || [ $4 != 'no' ]
+then 
+    echo "$BAD_USAGE"
+	exit -1
+fi
 
 start=$(date +'%s')
 number=$1
@@ -96,8 +108,12 @@ then
     echo -e "\U1F6AE Deleting the frames ..."
     source ../test/virtualenv/bin/activate
     python3 ../test/eraser.py 10
-else
+elif [ $3 == 'no' ]
+then
     echo -e "\u270D  Saving the frames ..."
+else
+    echo "$BAD_USAGE"
+	exit -1
 fi 
 
 if [ $4 == 'yes' ]
@@ -105,8 +121,12 @@ then
     echo -e "\U1F6AE Deleting the results ..."
     source ../test/virtualenv/bin/activate
     python3 ../test/eraser2.py 10
-else
+elif [ $4 == 'no' ]
+then
     echo -e "\u270D  Saving the results ..."
+else 
+    echo "$BAD_USAGE"
+	exit -1
 fi 
 
 
