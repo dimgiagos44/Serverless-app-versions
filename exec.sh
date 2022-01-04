@@ -80,20 +80,20 @@ echo
 
 if [ $3 == 'yes' ]
 then
-    echo -e "\u2716 Deleting the frames ..."
+    echo -e "\U1F6AE Deleting the frames ..."
     source ../test/virtualenv/bin/activate
     python3 ../test/eraser.py 10
 else
-    echo -e "\u270F Saving the frames ..."
+    echo -e "\u270D  Saving the frames ..."
 fi 
 
 if [ $4 == 'yes' ]
 then
-    echo -e "\u2716 Deleting the results ..."
+    echo -e "\U1F6AE Deleting the results ..."
     source ../test/virtualenv/bin/activate
     python3 ../test/eraser2.py 10
 else
-    echo -e "\u270F Saving the results ..."
+    echo -e "\u270D  Saving the results ..."
 fi 
 
 
