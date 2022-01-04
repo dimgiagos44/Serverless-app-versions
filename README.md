@@ -1,8 +1,16 @@
 # Serverless-app-versions
 
-Main repository for Master thesis.
+Main repository for Master thesis on serverless.
 
 ## Description
-* In [functions](https://github.com/dimgiagos44/Serverless-app-versions/tree/main/functions) there exist 4 versions of the same ML Workflow.
-* Each version consists of functions of different granularity.
-* Version1 is the most fine-grained, while Version4 is the most coarse-grained of the versions.
+* In [functions](https://github.com/dimgiagos44/Serverless-app-versions/tree/main/functions) there exist 4 versions of the same ML Workflow
+* Each version consists of functions of different granularity
+* Version1 is the most fine-grained, while Version4 is the most coarse-grained of the versions
+* After deploying all the functions, by using the [exec script](https://github.com/dimgiagos44/Serverless-app-versions/blob/main/exec.sh)
+we can run the desired instance on our local cluster
+
+
+## Example Usage
+
+
+![Screenshot from 2022-01-04 18-59-44](https://user-images.githubusercontent.com/57920951/148097386-d7322715-d7a3-4b7d-a01c-eb091a7e81f1.png)
