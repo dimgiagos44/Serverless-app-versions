@@ -1,0 +1,27 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  monolith:
+    lang: python3-flask-debian
+    handler: ./monolith
+    image: dimgiagos/monolith:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-03"
+
+  version4:
+    lang: faas-flow
+    handler: ./version4
+    image: dimgiagos/version4:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-03"
+    labels:
+      faas-flow: 1
+    annotations:
+      faas-flow-desc: "version4 instance"
+    environment_file:
+      - conf.yml
+    secrets:
+      - s3-secret-key
+      - s3-access-key

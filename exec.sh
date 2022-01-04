@@ -16,9 +16,9 @@ Options:
 BAD_USAGE="./exec.sh: Incorrect usage.
 Try './exec.sh -h' for further information."
     
-echo "======================"
-echo "==Workflow Execution=="
-echo "======================"
+echo "============================"
+echo "=== ML Workflow Execution =="
+echo "============================"
 
 start=$(date +'%s')
 number=$1
@@ -60,6 +60,19 @@ case $number in
             for ((i=0;i<${times};i++))
             do 
                 curl -X POST http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
+                sleep 4
+            done
+            ;;
+
+            version4|4)
+
+            echo 
+            echo -e "\u2699 Executing version4 ..."
+            echo 
+
+            for ((i=0;i<${times};i++))
+            do 
+                curl -X POST http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
                 sleep 4
             done
             ;;

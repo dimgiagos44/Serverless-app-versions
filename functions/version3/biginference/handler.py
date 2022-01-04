@@ -105,7 +105,6 @@ def handle(req):
     faceExists = face_detect(image_bytes)
 
     if faceExists == 'true':
-        image_bytes = download_stream(input_bucket, key)
         preds = process(image_bytes)
         result = {
             'predictions': preds,
@@ -115,8 +114,7 @@ def handle(req):
         }
         return json.dumps(result)
     else:
-        img = download_stream(input_bucket, key)
-        img = Image.open(io.BytesIO(img))
+        img = Image.open(io.BytesIO(image_bytes))
         img_resized = img.resize((224, 224))
         predictions = classify(img_resized)
 
