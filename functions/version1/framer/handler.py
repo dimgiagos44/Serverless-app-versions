@@ -47,6 +47,8 @@ def handle(req):
     output_bucket = input['output_bucket']
     url = input['url']
     seconds = input['seconds']
+    lower_limit = input['lower_limit'] #from here (seconds)
+    upper_limit = input['upper_limit'] #until here (seconds)
     url = url.split('\n')[0] # e.g key = sample2.mp4
 
     vidcap = cv2.VideoCapture(url)
@@ -55,12 +57,27 @@ def handle(req):
     #seconds = 20
     frame_num = 0
     fps = vidcap.get(cv2.CAP_PROP_FPS)
+    
+    if upper_limit == 'full':
+        frame_count = vidcap.get(cv2.CAP_PROP_FRAME_COUNT) 
+        duration = frame_count/fps
+        duration = math.floor(duration)
+        upper_limit = duration
+
+    lower_limit_frames = fps * lower_limit
+    upper_limit_frames = fps * upper_limit
     multiplier = fps * seconds
     key_names = []
     
     while(success):
         frameId = int(round(vidcap.get(1)))
         success, image = vidcap.read()
+
+        if frameId < lower_limit_frames:
+                continue
+
+        if frameId > upper_limit_frames:
+                break
 
         if frameId % multiplier == 0:
                 image_file = process(image)

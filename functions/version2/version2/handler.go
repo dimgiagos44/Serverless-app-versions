@@ -37,7 +37,7 @@ type OutputWrapper struct {
 // Define provide definition of the workflow
 func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	dag := flow.Dag()
-	dag.Node("start-node").Apply("framer2").Modify(func(data []byte) ([]byte, error) {
+	dag.Node("start-node").Apply("framer").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Framer2 Result: ", string(data))
 		return data, nil
 	})

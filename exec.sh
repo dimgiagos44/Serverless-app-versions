@@ -35,6 +35,7 @@ fi
 start=$(date +'%s')
 number=$1
 times=$2
+URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4"
 
 case $number in
             version1|1)
@@ -45,7 +46,7 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl -X POST http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
+                curl -X POST http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL1"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 sleep 4
             done
             ;;
@@ -58,8 +59,8 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl -X POST http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
-                sleep 7
+                curl -X POST http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL1"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                sleep 7.2
             done
             ;;
 
@@ -71,7 +72,7 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl -X POST http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
+                curl -X POST http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL1"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 sleep 4
             done
             ;;
@@ -84,7 +85,7 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl -X POST http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4", "seconds": 15}'
+                curl -X POST http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL1"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 sleep 4
             done
             ;;
