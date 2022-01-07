@@ -1,17 +1,18 @@
 #!/bin/bash
 HELP="Command line script for executing the available workflow versions.
 
-./exec.sh <number> <times> <eraser1> <eraser2>
+./exec.sh <number> <url> <times> <eraser1> <eraser2>
 
 Options:
     <number>    Number of version to be executed
+    <url>       input video selection - url1 or url2 or url3
     <times>     How many times the workflow is gonna be executed
     <eraser1>   Delete frames that were just created - yes or no
     <eraser2>   Delete results from current execution - yes or no
     
-    e.g         ./exec.sh version1 10 yes yes
-    e.g         ./exec.sh 1 10 no no
-    e.g         ./exec.sh version2 15 yes no"
+    e.g         ./exec.sh version1 url1 10 yes yes
+    e.g         ./exec.sh 1 url2 10 no no
+    e.g         ./exec.sh version2 url1 15 yes no"
 
 BAD_USAGE="./exec.sh: Incorrect usage.
 Try './exec.sh -h' or './exec.sh --help' for further information."
@@ -26,7 +27,7 @@ then
     exit 0
 fi
 
-if [ $3 != 'yes' ] && [ $3 != 'no' ] && [ $4 != 'yes' ] && [ $4 != 'no' ]
+if [ $4 != 'yes' ] && [ $4 != 'no' ] && [ $5 != 'yes' ] && [ $5 != 'no' ]
 then 
     echo "$BAD_USAGE"
 	exit -1
@@ -34,8 +35,35 @@ fi
 
 start=$(date +'%s')
 number=$1
-times=$2
-URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4"
+times=$3
+URL=$2
+
+
+URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4" #duration 2m 15s
+URL2="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/bottle-detection.mp4" #duration 40s
+URL3="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/head-pose-face-detection-male.mp4" #duration 2m 14s
+
+
+case $2 in 
+        url1|1)
+
+        URL=${URL1}
+        ;;
+
+        url2|2)
+
+        URL=${URL2}
+        ;;
+
+        url3|3)
+        URL=${URL3}
+        ;;
+
+        *)
+		echo "$BAD_USAGE"
+		exit -1
+		;;
+esac
 
 case $number in
             version1|1)
@@ -46,7 +74,7 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl -X POST http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL1"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                curl -X POST http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 sleep 4
             done
             ;;
@@ -59,8 +87,8 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl -X POST http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL1"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 7.2
+                curl -X POST http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                sleep 7
             done
             ;;
 
@@ -72,8 +100,8 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl -X POST http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL1"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 4
+                curl -X POST http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                sleep 2.8
             done
             ;;
 
@@ -85,8 +113,8 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl -X POST http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL1"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 4
+                curl -X POST http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                #sleep 0.5
             done
             ;;
 
@@ -104,12 +132,12 @@ esac
 echo -e "\u231B It took $(($(date +'%s') - $start)) seconds!"
 echo 
 
-if [ $3 == 'yes' ]
+if [ $4 == 'yes' ]
 then
     echo -e "\U1F6AE Deleting the frames ..."
     source ../test/virtualenv/bin/activate
     python3 ../test/eraser.py 10
-elif [ $3 == 'no' ]
+elif [ $4 == 'no' ]
 then
     echo -e "\u270D  Saving the frames ..."
 else
@@ -117,12 +145,12 @@ else
 	exit -1
 fi 
 
-if [ $4 == 'yes' ]
+if [ $5 == 'yes' ]
 then
     echo -e "\U1F6AE Deleting the results ..."
     source ../test/virtualenv/bin/activate
     python3 ../test/eraser2.py 10
-elif [ $4 == 'no' ]
+elif [ $5 == 'no' ]
 then
     echo -e "\u270D  Saving the results ..."
 else 
