@@ -1,7 +1,7 @@
 #!/bin/bash
 HELP="Command line script for executing the available workflow versions.
 
-./exec.sh <version> <url> <times> <eraser1> <eraser2> <result>
+./exec.sh <version> <url> <times> <eraser1> <eraser2> (<result>)
 
 Options:
     <version>   Version to be executed
@@ -139,11 +139,11 @@ then
     then 
         echo "No result displayed."
         echo 
-    else 
-        echo "Result of execution: "
-        python3 ./scripts/reader.py 1
-        echo
     fi
+else 
+    echo "Result of execution: "
+    python3 ./scripts/reader.py 1
+    echo
 fi
 
 if [ $4 == 'yes' ]
