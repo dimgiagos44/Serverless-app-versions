@@ -1,17 +1,18 @@
 #!/bin/bash
 HELP="Command line script for executing the available workflow versions.
 
-./exec.sh <number> <url> <times> <eraser1> <eraser2>
+./exec.sh <version> <url> <times> <eraser1> <eraser2> <result>
 
 Options:
-    <number>    Number of version to be executed
-    <url>       input video selection - url1 or url2 or url3
+    <version>   Version to be executed
+    <url>       Input video selection - url1 or url2 or url3
     <times>     How many times the workflow is gonna be executed
     <eraser1>   Delete frames that were just created - yes or no
     <eraser2>   Delete results from current execution - yes or no
+    <result>    If given --no-result, then no result will be displayed. If not, result will appear
     
     e.g         ./exec.sh version1 url1 10 yes yes
-    e.g         ./exec.sh 1 url2 10 no no
+    e.g         ./exec.sh 1 url2 10 no no --no-result
     e.g         ./exec.sh version2 url1 15 yes no"
 
 BAD_USAGE="./exec.sh: Incorrect usage.
@@ -132,9 +133,18 @@ esac
 echo -e "\u231B It took $(($(date +'%s') - $start)) seconds!"
 echo 
 
-echo "Result of execution: "
-python3 ./scripts/reader.py 1
-echo
+if [ $# == 6 ]
+then
+    if [ $6 == '--no-result' ]
+    then 
+        echo "No result displayed."
+        echo 
+    else 
+        echo "Result of execution: "
+        python3 ./scripts/reader.py 1
+        echo
+    fi
+fi
 
 if [ $4 == 'yes' ]
 then
