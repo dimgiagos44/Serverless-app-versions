@@ -69,7 +69,7 @@ case $number in
             version1|1)
 
             echo 
-            echo -e "\u2699 Executing version1 ..."
+            echo -e "\u2699  Executing version1 ..."
             echo 
 
             for ((i=0;i<${times};i++))
@@ -82,7 +82,7 @@ case $number in
             version2|2)
 
             echo 
-            echo -e "\u2699 Executing version2 ..."
+            echo -e "\u2699  Executing version2 ..."
             echo 
 
             for ((i=0;i<${times};i++))
@@ -95,7 +95,7 @@ case $number in
             version3|3)
 
             echo 
-            echo -e "\u2699 Executing version3 ..."
+            echo -e "\u2699  Executing version3 ..."
             echo 
 
             for ((i=0;i<${times};i++))
@@ -108,7 +108,7 @@ case $number in
             version4|4)
 
             echo 
-            echo -e "\u2699 Executing version4 ..."
+            echo -e "\u2699  Executing version4 ..."
             echo 
 
             for ((i=0;i<${times};i++))
@@ -132,11 +132,14 @@ esac
 echo -e "\u231B It took $(($(date +'%s') - $start)) seconds!"
 echo 
 
+echo "Result of execution: "
+python3 ./scripts/reader.py 1
+echo
+
 if [ $4 == 'yes' ]
 then
     echo -e "\U1F6AE Deleting the frames ..."
-    source ../test/virtualenv/bin/activate
-    python3 ../test/eraser.py 10
+    python3 ./scripts/eraser.py 10
 elif [ $4 == 'no' ]
 then
     echo -e "\u270D  Saving the frames ..."
@@ -148,8 +151,7 @@ fi
 if [ $5 == 'yes' ]
 then
     echo -e "\U1F6AE Deleting the results ..."
-    source ../test/virtualenv/bin/activate
-    python3 ../test/eraser2.py 10
+    python3 ./scripts/eraser2.py 10
 elif [ $5 == 'no' ]
 then
     echo -e "\u270D  Saving the results ..."
