@@ -89,7 +89,7 @@ case $number in
             for ((i=0;i<${times};i++))
             do 
                 curl -X POST http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 6.5
+                sleep 6.6
             done
             ;;
 
@@ -115,7 +115,7 @@ case $number in
             for ((i=0;i<${times};i++))
             do 
                 curl -X POST http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 0.5
+                sleep 0.9
             done
             ;;
 
