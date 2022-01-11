@@ -15,7 +15,7 @@ functions:
     handler: ./inference
     image: dimgiagos/inference:latest
     constrains:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-02"
 
   version2:
     lang: faas-flow

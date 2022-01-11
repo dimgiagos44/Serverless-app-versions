@@ -166,7 +166,7 @@ def handle(req):
         image_bytes = download_stream(input_bucket, key)
         faceExists = face_detect(image_bytes)
 
-        if faceExists == 'true':
+        if faceExists == True:
             preds = process(image_bytes)
             temp = {
                 'predictions': preds,

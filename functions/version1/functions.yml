@@ -14,7 +14,9 @@ functions:
     lang: python3-flask-debian
     handler: ./facedetector
     image: dimgiagos/facedetector:latest
-
+    constraints:
+    - "kubernetes.io/hostname=gworker-03"
+    
   faceanalyzer:
     lang: python3-flask-debian
     handler: ./faceanalyzer
