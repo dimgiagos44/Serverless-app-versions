@@ -73,10 +73,10 @@ case $number in
             echo -e "\u2699  Executing version1 ..."
             echo 
 
-            for ((i=0;i<${times};i++))
+            for ((i=0;i<${times};i++));
             do 
-                curl -X POST http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 4
+                curl http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                sleep 4.3
             done
             ;;
 
@@ -86,10 +86,10 @@ case $number in
             echo -e "\u2699  Executing version2 ..."
             echo 
 
-            for ((i=0;i<${times};i++))
+            for ((i=0;i<${times};i++));
             do 
-                curl -X POST http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 6.6
+                curl http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                sleep 6.9
             done
             ;;
 
@@ -99,10 +99,10 @@ case $number in
             echo -e "\u2699  Executing version3 ..."
             echo 
 
-            for ((i=0;i<${times};i++))
+            for ((i=0;i<${times};i++));
             do 
-                curl -X POST http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 5.6
+                curl http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                sleep 5.4
             done
             ;;
 
@@ -114,8 +114,8 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl -X POST http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 0.9
+                curl http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                sleep 0.4
             done
             ;;
 

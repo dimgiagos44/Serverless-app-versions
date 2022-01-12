@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	faasflow "github.com/faasflow/lib/openfaas"
 	"log"
+	"time"
 )
 
 type FramerResponse struct {
@@ -28,6 +29,7 @@ type OutputWrapper struct {
 // Define provide definition of the workflow
 func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	dag := flow.Dag()
+	start := time.Now()
 	dag.Node("start-node").Apply("framer").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Framer Result: ", string(data))
 		return data, nil
@@ -69,7 +71,11 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 		log.Println("Invoking Final Node")
 		log.Println("End data: ", string(data))
 		return data, nil
-	}).Apply("outputer")
+	}).Apply("outputer").Modify(func(data []byte) ([]byte, error) {
+		elapsed := time.Since(start)
+		log.Println("Version3 took: ", elapsed)
+		return data, nil
+	})
 	dag.Edge("start-node", "F")
 	dag.Edge("F", "final-node")
 	return

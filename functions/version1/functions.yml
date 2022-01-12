@@ -32,7 +32,7 @@ functions:
     handler: ./version1
     image: dimgiagos/version1:latest
     constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-03"
     labels:
       faas-flow: 1
     annotations:

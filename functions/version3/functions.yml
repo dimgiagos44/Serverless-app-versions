@@ -13,6 +13,8 @@ functions:
     lang: faas-flow
     handler: ./version3
     image: dimgiagos/version3:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-03"
     labels:
       faas-flow: 1
     annotations:
