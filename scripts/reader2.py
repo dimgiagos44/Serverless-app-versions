@@ -15,15 +15,21 @@ client = Minio(
 objects = client.list_objects('mybucket')
 #minutes period to be deleted
 minutes = int(sys.argv[1])
+total = int(sys.argv[2])
+count = 0
+sum = 0.0
 for object in objects:
         if (datetime.now(object._last_modified.tzinfo) - timedelta(minutes=minutes) < object._last_modified):
+                count += 1
                 response = client.get_object('mybucket', object._object_name)
                 dataBytes = response.data
                 dataStr = dataBytes.decode("utf-8")
-                dataStr1 = dataStr.split('TotalTime')[0]
-                dataFinal = dataStr1.encode("utf-8")
-                values = json.loads(dataFinal)
-                print(values)
-                response.close()
-                response.release_conn()
-                break
+                dataStr1 = dataStr.split('=')[1]
+                dataStr1 = dataStr1.split('e')[0]
+                sum += float(dataStr1)
+                if (count == total):
+                    sum = sum * 100
+                    print(sum / float(total), 'ms')
+                    break
+
+                

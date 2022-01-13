@@ -102,7 +102,7 @@ case $number in
             for ((i=0;i<${times};i++));
             do 
                 curl http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 5.4
+                sleep 5.8
             done
             ;;
 
@@ -115,7 +115,7 @@ case $number in
             for ((i=0;i<${times};i++))
             do 
                 curl http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 0.4
+                sleep 1
             done
             ;;
 
@@ -130,7 +130,8 @@ case $number in
 		    ;;
 esac
 
-echo -e "\u231B It took $(($(date +'%s') - $start)) seconds!"
+echo -e "\u231B Average time of instance execution: $(python3 ./scripts/reader2.py 4 ${times})"
+
 echo 
 
 if [ $# == 6 ]
@@ -169,6 +170,10 @@ else
     echo "$BAD_USAGE"
 	exit -1
 fi 
+
+
+echo -e "\u2705 Script took $(($(date +'%s') - $start)) seconds to complete!"
+echo 
 
 
 

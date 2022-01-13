@@ -151,14 +151,18 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 		for _, data := range results {
 			result = result + string(data)
 		}
+		elapsed := time.Since(start)
+		elapsedFloat := float64(elapsed)
+		elapsedStr := strconv.FormatFloat(elapsedFloat, 'g', -1, 64)
+		result = result + " TotalTime=" + elapsedStr
 		return []byte(result), nil
 	})).Modify(func(data []byte) ([]byte, error) {
 		log.Println("Invoking Final Node")
 		log.Println("End data: ", string(data))
 		return data, nil
 	}).Apply("outputer").Modify(func(data []byte) ([]byte, error) {
-		elapsed := time.Since(start)
-		log.Println("Version1 took: ", elapsed)
+		elapsed2 := time.Since(start)
+		log.Println("Version1 took: ", elapsed2)
 		return data, nil
 	})
 	dag.Edge("start-node", "F")
