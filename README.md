@@ -20,5 +20,8 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 ## Example Usage
 
-![Screenshot from 2022-01-11 18-33-02](https://user-images.githubusercontent.com/57920951/148984844-049a0b32-b466-4983-8504-f391d4cebc09.png)
 
+![Screenshot from 2022-01-13 13-14-20](https://user-images.githubusercontent.com/57920951/149320485-38ebd59e-475a-4259-9e4d-0f4f9a7c0fcf.png)
+
+
+![Screenshot from 2022-01-13 13-14-39](https://user-images.githubusercontent.com/57920951/149320504-0baca03a-f1ee-4b2f-b84a-c61522bc51a7.png)
