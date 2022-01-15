@@ -14,8 +14,18 @@ functions:
     lang: python3-flask-debian
     handler: ./inference
     image: dimgiagos/inference:latest
+    build_args:
+      ADDITIONAL_PACKAGE: libgl1-mesa-glx
+      ADDITIONAL_PACKAGE: libgtk2.0-dev
     constrains:
     - "kubernetes.io/hostname=gworker-02"
+    environment:
+      - name: exec_timeout
+        value: 1m
+      - name: read_timeout
+        value: 1m
+      - name: write_timeout
+        value: 1m
 
   version2:
     lang: faas-flow

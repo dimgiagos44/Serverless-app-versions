@@ -7,6 +7,9 @@ functions:
     lang: python3-flask-debian
     handler: ./monolith
     image: dimgiagos/monolith:latest
+    build_args:
+      ADDITIONAL_PACKAGE: libgl1-mesa-glx
+      ADDITIONAL_PACKAGE: libgtk2.0-dev
     constraints:
     - "kubernetes.io/hostname=gworker-02"
     environment:
