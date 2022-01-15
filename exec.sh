@@ -1,7 +1,7 @@
 #!/bin/bash
 HELP="Command line script for executing the available workflow versions.
 
-./exec.sh <version> <url> <times> <eraser1> <eraser2> (<result>)
+./exec.sh <version> <url> --times=<times> <eraser1> <eraser2> --sleep=<sleep>s (<result>)
 
 Options:
     <version>   Version to be executed
@@ -9,11 +9,12 @@ Options:
     <times>     How many times the workflow is gonna be executed
     <eraser1>   Delete frames that were just created - yes or no
     <eraser2>   Delete results from current execution - yes or no
+    <sleep>     sleep duration between invocations - e.g 10 => 10 seconds
     <result>    If given --no-result, then no result will be displayed. If not, result will appear
     
-    e.g         ./exec.sh version1 url1 10 yes yes
-    e.g         ./exec.sh 1 url2 10 no no --no-result
-    e.g         ./exec.sh version2 url1 15 yes no"
+    e.g         ./exec.sh version1 url1 --times=10 yes yes --sleep=10s
+    e.g         ./exec.sh 1 url2 --times=10 no no --sleep=10s --no-result
+    e.g         ./exec.sh version2 url1 --times=15 yes no --sleep=15s"
 
 BAD_USAGE="./exec.sh: Incorrect usage.
 Try './exec.sh -h' or './exec.sh --help' for further information."
@@ -36,14 +37,23 @@ fi
 
 start=$(date +'%s')
 number=$1
+
 times=$3
+arrTimes=(${times//=/ })
+times=${arrTimes[1]}
+
 URL=$2
+
+sleep=$6
+arrSleep=(${sleep//=/ })
+arrSleep2=(${arrSleep[1]//s/ })
+sleep=${arrSleep2[0]}
 
 
 URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4" #duration 2m 15s
 URL2="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/bottle-detection.mp4" #duration 40s
 URL3="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/head-pose-face-detection-male.mp4" #duration 2m 14s
-
+URL4="https://im2.ezgif.com/tmp/ezgif-2-725e117b46.mp4"
 
 case $2 in 
         url1|1)
@@ -58,6 +68,10 @@ case $2 in
 
         url3|3)
         URL=${URL3}
+        ;;
+
+        url4|4)
+        URL=${URL4}
         ;;
 
         *)
@@ -76,7 +90,8 @@ case $number in
             for ((i=0;i<${times};i++));
             do 
                 curl http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 4.3
+                #sleep 4.5
+                sleep ${sleep}
             done
             ;;
 
@@ -89,7 +104,8 @@ case $number in
             for ((i=0;i<${times};i++));
             do 
                 curl http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 6.9
+                #sleep 7.2
+                sleep ${sleep}
             done
             ;;
 
@@ -102,7 +118,8 @@ case $number in
             for ((i=0;i<${times};i++));
             do 
                 curl http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 5.8
+                #sleep 5.8
+                sleep ${sleep}
             done
             ;;
 
@@ -115,7 +132,8 @@ case $number in
             for ((i=0;i<${times};i++))
             do 
                 curl http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                sleep 1
+                #sleep 1
+                sleep ${sleep}
             done
             ;;
 
@@ -134,9 +152,9 @@ echo -e "\u231B Average time of instance execution: $(python3 ./scripts/reader2.
 
 echo 
 
-if [ $# == 6 ]
+if [ $# == 7 ]
 then
-    if [ $6 == '--no-result' ]
+    if [ $7 == '--no-result' ]
     then 
         echo "No result displayed."
         echo 

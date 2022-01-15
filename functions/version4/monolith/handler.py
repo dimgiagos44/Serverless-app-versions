@@ -141,6 +141,9 @@ def handle(req):
         frameId = int(round(vidcap.get(1)))
         success, image = vidcap.read()
 
+        if success == False:
+            break
+
         if frameId < lower_limit_frames:
                 continue
 

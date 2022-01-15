@@ -8,7 +8,9 @@ functions:
     handler: ./monolith
     image: dimgiagos/monolith:latest
     constraints:
-    - "kubernetes.io/hostname=gworker-03"
+    - "kubernetes.io/hostname=gworker-02"
+    environment:
+      exec_timeout: 1m
 
   version4:
     lang: faas-flow
