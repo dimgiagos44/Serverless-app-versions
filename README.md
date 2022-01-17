@@ -22,13 +22,8 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 * Url4's duration = 215 seconds with total 13 frames created & processed (1 per 15 seconds)
 * Url5's duration = 260 seconds with total 17 frames created & processed (1 per 15 seconds)
 
-
-![Screenshot from 2022-01-17 11-37-48](https://user-images.githubusercontent.com/57920951/149744989-457650eb-79db-48f6-88b8-2b3742577b4f.png)
-
-
-
-
-
+![Screenshot from 2022-01-17 12-01-36](https://user-images.githubusercontent.com/57920951/149748857-ba70a7fa-cb70-41b0-b722-875a07e30ae3.png)
+(Executions took place on 17 Januray 2022)
 
 ## Example Usage
 
