@@ -54,7 +54,7 @@ URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-fac
 URL2="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/bottle-detection.mp4" #duration 40s
 URL3="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/head-pose-face-detection-male.mp4" #duration 2m 14s
 URL4="https://im2.ezgif.com/tmp/ezgif-2-ca10570f33.mp4"
-URL5="https://im3.ezgif.com/tmp/ezgif-3-aff887a33d.mp4"
+URL5="https://im2.ezgif.com/tmp/ezgif-2-e332236379.mp4"
 
 case $2 in 
         url1|1)

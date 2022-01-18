@@ -14,6 +14,8 @@ functions:
     - "kubernetes.io/hostname=gworker-02"
     environment:
       exec_timeout: 1m
+      read_timeout: 1m
+      write_timeout: 1m
 
   version4:
     lang: faas-flow
