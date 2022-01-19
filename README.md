@@ -27,9 +27,22 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 (Executions took place on 17 Januray 2022)
 
-### Average results from 4 executions
+### Average results from 3 executions with placement config1
 
-![Screenshot from 2022-01-19 11-07-09](https://user-images.githubusercontent.com/57920951/150099964-1a678f9d-4758-480c-9b28-c9f77a38cf26.png)
+![config1_avg_times](https://user-images.githubusercontent.com/57920951/150173565-6316c9f3-ba77-48a5-b7b8-86aac683d2bd.png)
+
+#### config1
+
+![Screenshot from 2022-01-19 18-19-54](https://user-images.githubusercontent.com/57920951/150173762-df3fed45-af57-4b42-ae7e-8a4f12027855.png)
+
+
+
+### Average results from 3 executions with placement config2
+
+![config2](https://user-images.githubusercontent.com/57920951/150173690-37feedd3-6023-4300-813d-2cd5ec8ae0b0.png)
+
+
+
 
 
 ## Example Usage
