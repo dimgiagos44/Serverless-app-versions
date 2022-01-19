@@ -11,7 +11,7 @@ functions:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
       ADDITIONAL_PACKAGE: libgtk2.0-dev
     constraints:
-    - "kubernetes.io/hostname=gworker-02"
+    - "kubernetes.io/hostname=gworker-03"
     environment:
       exec_timeout: 1m
       read_timeout: 1m
