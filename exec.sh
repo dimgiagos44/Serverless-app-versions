@@ -53,8 +53,8 @@ sleep=${arrSleep2[0]}
 URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4" #duration 2m 15s
 URL2="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/bottle-detection.mp4" #duration 40s
 URL3="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/head-pose-face-detection-male.mp4" #duration 2m 14s
-URL4="https://im2.ezgif.com/tmp/ezgif-2-ca10570f33.mp4"
-URL5="https://im2.ezgif.com/tmp/ezgif-2-e332236379.mp4"
+URL4="https://im5.ezgif.com/tmp/ezgif-5-e7445aab4a.mp4"
+URL5="https://im5.ezgif.com/tmp/ezgif-5-18d3229eeb.mp4"
 
 case $2 in 
         url1|1)
