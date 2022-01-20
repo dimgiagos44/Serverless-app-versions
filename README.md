@@ -22,9 +22,6 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 * Url4's duration = 280 seconds with total 18 frames created & processed (1 per 15 seconds)
 * Url5's duration = 500 seconds with total 26 frames created & processed (1 per 15 seconds)
 
-![Screenshot from 2022-01-19 18-19-54](https://user-images.githubusercontent.com/57920951/150173762-df3fed45-af57-4b42-ae7e-8a4f12027855.png)
-
-
 ### Average results from 3 executions with placement config2
 
 ![config2_avg_times_correct](https://user-images.githubusercontent.com/57920951/150394887-3a1671ee-3b2f-4cff-99b8-740d7c56ca58.png)
@@ -32,8 +29,14 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 * with config2:
 All functions placed in the same node.
 
+### Configs:
+* config1: 
+
+![Screenshot from 2022-01-19 18-19-54](https://user-images.githubusercontent.com/57920951/150173762-df3fed45-af57-4b42-ae7e-8a4f12027855.png)
+
+* config2: 
+all functions placed on the same clusterNode
+
 ## Example Usage
 
 ![Screenshot from 2022-01-15 20-41-39](https://user-images.githubusercontent.com/57920951/149634004-1356f129-a036-4c0b-857b-aa24e710a2ba.png)
-
-
