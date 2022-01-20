@@ -26,9 +26,6 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 ![config2_avg_times_correct](https://user-images.githubusercontent.com/57920951/150394887-3a1671ee-3b2f-4cff-99b8-740d7c56ca58.png)
 
-* with config2:
-All functions placed in the same node.
-
 ### Configs:
 * config1: 
 
