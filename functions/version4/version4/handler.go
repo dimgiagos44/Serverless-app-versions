@@ -13,7 +13,11 @@ import (
 func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	dag := flow.Dag()
 	start := time.Now()
-	dag.Node("start-node").Apply("monolith").Modify(func(data []byte) ([]byte, error) {
+	dag.Node("start-node").Modify(func(data []byte) ([]byte, error) {
+		time1 := time.Now()
+		log.Println("Before monolith: ", string(time1.Format("15:04:05.000000000")))
+		return data, nil
+	}).Apply("monolith").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Monolith result: ", string(data))
 		return data, nil
 	})
@@ -24,6 +28,8 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 		elapsedFloat := float64(elapsed)
 		elapsedStr := strconv.FormatFloat(elapsedFloat, 'g', -1, 64)
 		result = result + " TotalTime=" + elapsedStr
+		time2 := time.Now()
+		log.Println("After monolith: ", string(time2.Format("15:04:05.000000000")))
 		log.Println("End data: ", result)
 		return []byte(result), nil
 	}).Apply("outputer").Modify(func(data []byte) ([]byte, error) {

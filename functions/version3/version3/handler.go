@@ -31,8 +31,14 @@ type OutputWrapper struct {
 func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	dag := flow.Dag()
 	start := time.Now()
-	dag.Node("start-node").Apply("framer").Modify(func(data []byte) ([]byte, error) {
+	dag.Node("start-node").Modify(func(data []byte) ([]byte, error) {
+		time1 := time.Now()
+		log.Println("Before Framer: ", string(time1.Format("15:04:05.000000000")))
+		return data, nil
+	}).Apply("framer").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Framer Result: ", string(data))
+		time2 := time.Now()
+		log.Println("After Framer: ", string(time2.Format("15:04:05.000000000")))
 		return data, nil
 	})
 	foreachDag := dag.ForEachBranch(
@@ -71,6 +77,8 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 		elapsedFloat := float64(elapsed)
 		elapsedStr := strconv.FormatFloat(elapsedFloat, 'g', -1, 64)
 		result = result + " TotalTime=" + elapsedStr
+		time3 := time.Now()
+		log.Println("After biginference: ", string(time3.Format("15:04:05.000000000")))
 		return []byte(result), nil
 	})).Modify(func(data []byte) ([]byte, error) {
 		log.Println("Invoking Final Node")
