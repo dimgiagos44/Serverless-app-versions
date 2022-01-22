@@ -54,7 +54,7 @@ URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-fac
 #URL1="https://im2.ezgif.com/tmp/ezgif-2-15cfa4b5f7.mp4"
 URL2="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/bottle-detection.mp4" #duration 40s
 URL3="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/head-pose-face-detection-male.mp4" #duration 2m 14s
-URL4="https://im2.ezgif.com/tmp/ezgif-2-49940ae593.mp4"
+URL4="https://im2.ezgif.com/tmp/ezgif-2-d17701bdc4.mp4"
 URL5="https://im2.ezgif.com/tmp/ezgif-2-1087e7bdca.mp4"
 
 case $2 in 
@@ -155,7 +155,6 @@ case $number in
 esac
 
 echo -e "\u231B Average time of instance execution: $(python3 ./scripts/reader2.py 6 ${times})"
-
 echo 
 
 if [ $# == 7 ]

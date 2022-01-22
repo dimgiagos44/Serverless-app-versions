@@ -46,13 +46,17 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	dag := flow.Dag()
 	start := time.Now()
 	dag.Node("start-node").Modify(func(data []byte) ([]byte, error) {
-		time1 := time.Now()
-		log.Println("Before Framer: ", string(time1.Format("15:04:05.000000000")))
+		//time1 := time.Now()
+		//log.Println("Before Framer: ", string(time1.Format("15:04:05.000000000")))
+		time1 := time.Since(start)
+		log.Println("Before framer: ", time1)
 		return data, nil
 	}).Apply("framer").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Framer Result: ", string(data))
-		time2 := time.Now()
-		log.Println("After Framer: ", string(time2.Format("15:04:05.000000000")))
+		//time2 := time.Now()
+		//log.Println("After Framer: ", string(time2.Format("15:04:05.000000000")))
+		time2 := time.Since(start)
+		log.Println("After framer: ", time2)
 		return data, nil
 	})
 	foreachDag := dag.ForEachBranch(
@@ -89,8 +93,10 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	})
 	dag.Node("second-node").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Facedetector results (Aggregated): ", string(data))
-		time3 := time.Now()
-		log.Println("After facedetector: ", string(time3.Format("15:04:05.000000000")))
+		//time3 := time.Now()
+		//log.Println("After facedetector: ", string(time3.Format("15:04:05.000000000")))
+		time3 := time.Since(start)
+		log.Println("After facedetector: ", time3)
 		return data, nil
 	})
 	foreachDag2 := dag.ForEachBranch(
@@ -163,8 +169,10 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 		elapsedFloat := float64(elapsed)
 		elapsedStr := strconv.FormatFloat(elapsedFloat, 'g', -1, 64)
 		result = result + " TotalTime=" + elapsedStr
-		time4 := time.Now()
-		log.Println("After mobilenet-faceanalyzer: ", string(time4.Format("15:04:05.000000000")))
+		//time4 := time.Now()
+		//log.Println("After mobilenet-faceanalyzer: ", string(time4.Format("15:04:05.000000000")))
+		time4 := time.Since(start)
+		log.Println("After mobilenet-faceanalyzer: ", time4)
 		return []byte(result), nil
 	})).Modify(func(data []byte) ([]byte, error) {
 		log.Println("Invoking Final Node")
