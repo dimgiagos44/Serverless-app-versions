@@ -54,7 +54,7 @@ URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-fac
 #URL1="https://im2.ezgif.com/tmp/ezgif-2-15cfa4b5f7.mp4"
 URL2="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/bottle-detection.mp4" #duration 40s
 URL3="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/head-pose-face-detection-male.mp4" #duration 2m 14s
-URL4="https://im2.ezgif.com/tmp/ezgif-2-d17701bdc4.mp4"
+URL4="https://im3.ezgif.com/tmp/ezgif-3-f0dedbb69f.mp4"
 URL5="https://im2.ezgif.com/tmp/ezgif-2-1087e7bdca.mp4"
 
 case $2 in 
@@ -95,7 +95,7 @@ case $number in
 
             for ((i=0;i<${times};i++));
             do 
-                curl http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                curl http://localhost:8080/async-function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 #sleep 4.5
                 sleep ${sleep}
             done
@@ -109,7 +109,7 @@ case $number in
 
             for ((i=0;i<${times};i++));
             do 
-                curl http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                curl http://localhost:8080/async-function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 #sleep 7.2
                 sleep ${sleep}
             done
@@ -123,7 +123,7 @@ case $number in
 
             for ((i=0;i<${times};i++));
             do 
-                curl http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                curl http://localhost:8080/async-function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 #sleep 5.8
                 sleep ${sleep}
             done
@@ -137,7 +137,7 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+                curl http://localhost:8080/async-function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 #sleep 1
                 sleep ${sleep}
             done
