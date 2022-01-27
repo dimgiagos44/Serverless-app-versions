@@ -11,7 +11,7 @@ functions:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
       ADDITIONAL_PACKAGE: libgtk2.0-dev
     constraints:
-    - "kubernetes.io/hostname=gworker-03"
+    - "kubernetes.io/hostname=gworker-01"
     environment:
       exec_timeout: 1m
       read_timeout: 1m
@@ -22,7 +22,7 @@ functions:
     handler: ./version4
     image: dimgiagos/version4:latest
     constraints:
-    - "kubernetes.io/hostname=gworker-03"
+    - "kubernetes.io/hostname=gworker-01"
     labels:
       faas-flow: 1
     annotations:
@@ -32,3 +32,19 @@ functions:
     secrets:
       - s3-secret-key
       - s3-access-key
+  version4b:
+    lang: faas-flow-version4b
+    handler: ./version4b
+    image: dimgiagos/version4b:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+    labels:
+      faas-flow: 1
+    annotations:
+      faas-flow-desc: "version4 instance"
+    environment_file:
+      - conf.yml
+    secrets:
+      - s3-secret-key
+      - s3-access-key
+

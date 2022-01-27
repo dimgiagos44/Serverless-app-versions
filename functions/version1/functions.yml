@@ -10,7 +10,7 @@ functions:
     build_args:
       ADDITIONAL_PACKAGE: libgtk2.0-dev
     constraints:
-    - "kubernetes.io/hostname=gworker-03"
+    - "kubernetes.io/hostname=gworker-01"
     environment:
       exec_timeout: 1m
       read_timeout: 1m
@@ -22,7 +22,7 @@ functions:
     build_args:
       ADDITIONAL_PACKAGE: libgtk2.0-dev
     constraints:
-    - "kubernetes.io/hostname=gworker-03"
+    - "kubernetes.io/hostname=gworker-01"
     environment:
       exec_timeout: 1m
       read_timeout: 1m
@@ -33,7 +33,7 @@ functions:
     handler: ./faceanalyzer
     image: dimgiagos/faceanalyzer:latest
     constraints:
-    - "kubernetes.io/hostname=gworker-03"
+    - "kubernetes.io/hostname=gworker-01"
     build_args:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
       ADDITIONAL_PACKAGE: libgtk2.0-dev
@@ -47,7 +47,7 @@ functions:
     handler: ./mobilenet
     image: dimgiagos/mobilenet:latest
     constraints:
-    - "kubernetes.io/hostname=gworker-03"
+    - "kubernetes.io/hostname=gworker-01"
     build_args:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
     environment:
@@ -60,7 +60,7 @@ functions:
     handler: ./version1
     image: dimgiagos/version1:latest
     constraints:
-    - "kubernetes.io/hostname=gworker-03"
+    - "kubernetes.io/hostname=gworker-01"
     labels:
       faas-flow: 1
     annotations:
@@ -74,4 +74,23 @@ functions:
     lang: python3
     handler: ./outputer
     image: dimgiagos/outputer:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+
+  version1b:
+    lang: faas-flow-version1
+    handler: ./version1b
+    image: dimgiagos/version1b:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+    labels:
+      faas-flow: 1
+    annotations:
+      faas-flow-desc: "version1b instance"
+    environment_file:
+      - conf.yml
+    secrets:
+      - s3-secret-key
+      - s3-access-key
+
 
