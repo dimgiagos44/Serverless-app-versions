@@ -100,7 +100,7 @@ case $number in
 
             for ((i=0;i<${times};i++));
             do 
-                curl http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 10, "lower_limit": 0, "upper_limit": "full"}'
+                curl http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 #sleep 4.5
                 sleep ${sleep}
             done
@@ -114,7 +114,7 @@ case $number in
 
             for ((i=0;i<${times};i++));
             do 
-                curl http://localhost:8080/function/version1b -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 10, "lower_limit": 0, "upper_limit": "full"}'
+                curl http://localhost:8080/function/version1b -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 #sleep 4.5
                 sleep ${sleep}
             done
@@ -128,7 +128,7 @@ case $number in
 
             for ((i=0;i<${times};i++));
             do 
-                curl http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 10, "lower_limit": 0, "upper_limit": "full"}'
+                curl http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 #sleep 7.2
                 sleep ${sleep}
             done
@@ -142,7 +142,7 @@ case $number in
 
             for ((i=0;i<${times};i++));
             do 
-                curl http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 10, "lower_limit": 0, "upper_limit": "full"}'
+                curl http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 #sleep 5.8
                 sleep ${sleep}
             done
@@ -156,7 +156,7 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 10, "lower_limit": 0, "upper_limit": "full"}'
+                curl http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 #sleep 1
                 sleep ${sleep}
             done
@@ -170,7 +170,7 @@ case $number in
 
             for ((i=0;i<${times};i++))
             do 
-                curl http://localhost:8080/function/version4b -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 10, "lower_limit": 0, "upper_limit": "full"}'
+                curl http://localhost:8080/function/version4b -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
                 #sleep 1
                 sleep ${sleep}
             done
