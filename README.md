@@ -17,7 +17,7 @@ of serving more or less requests per minute
 kubectl scale deployment version1 -n openfaas-fn --replicas=2
 ```
 
-## Average results from 3 executions with placement config2
+## Average results among the four versions executions with placement config2 with 3 different inputs
 * Url1's duration = 180 seconds with total 11 frames created & processed (1 per 15 seconds)
 * Url4's duration = 280 seconds with total 18 frames created & processed (1 per 15 seconds)
 * Url5's duration = 500 seconds with total 26 frames created & processed (1 per 15 seconds)
