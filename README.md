@@ -35,7 +35,6 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 ### Configs:
 * config1: 
-* 
 ![Screenshot from 2022-01-19 18-19-54](https://user-images.githubusercontent.com/57920951/150173762-df3fed45-af57-4b42-ae7e-8a4f12027855.png)
 
 * config2: 
