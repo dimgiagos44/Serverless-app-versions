@@ -40,3 +40,19 @@ functions:
       - s3-secret-key
       - s3-access-key
 
+  version2b:
+    lang: faas-flow-version2b
+    handler: ./version2b
+    image: dimgiagos/version2b:latest
+    constrains:
+    - "kubernetes.io/hostname=gworker-01"
+    labels:
+      faas-flow: 1
+    annotations:
+      faas-flow-desc: "version2b instance"
+    environment_file:
+      - conf.yml
+    secrets:
+      - s3-secret-key
+      - s3-access-key
+

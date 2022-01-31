@@ -13,7 +13,7 @@ Options:
     <result>    If given --no-result, then no result will be displayed. If not, result will appear
     
     e.g         ./exec.sh version1 url1 --times=10 yes yes --sleep=10s
-    e.g         ./exec.sh 1 url2 --times=10 no no --sleep=10s --no-result
+    e.g         ./exec.sh version1 url2 --times=10 no no --sleep=10s --no-result
     e.g         ./exec.sh version2 url1 --times=15 yes no --sleep=15s"
 
 BAD_USAGE="./exec.sh: Incorrect usage.
@@ -96,103 +96,20 @@ case $2 in
 		;;
 esac
 
-case $number in
-            version1|1)
+echo 
+echo -e "\u2699 Executing "$number" ..."
+echo 
 
-            echo 
-            echo -e "\u2699  Executing version1 ..."
-            echo 
+for ((i=0;i<${times};i++));
+    do 
+        curl http://localhost:8080/function/"$number" -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
+        #sleep 4.5
+        sleep ${sleep}
+    done
 
-            for ((i=0;i<${times};i++));
-            do 
-                curl http://localhost:8080/function/version1 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                #sleep 4.5
-                sleep ${sleep}
-            done
-            ;;
 
-            version1b|1b)
 
-            echo 
-            echo -e "\u2699  Executing version1b ..."
-            echo 
-
-            for ((i=0;i<${times};i++));
-            do 
-                curl http://localhost:8080/function/version1b -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                #sleep 4.5
-                sleep ${sleep}
-            done
-            ;;
-
-            version2|2)
-
-            echo 
-            echo -e "\u2699  Executing version2 ..."
-            echo 
-
-            for ((i=0;i<${times};i++));
-            do 
-                curl http://localhost:8080/function/version2 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                #sleep 7.2
-                sleep ${sleep}
-            done
-            ;;
-
-            version3|3)
-
-            echo 
-            echo -e "\u2699  Executing version3 ..."
-            echo 
-
-            for ((i=0;i<${times};i++));
-            do 
-                curl http://localhost:8080/function/version3 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                #sleep 5.8
-                sleep ${sleep}
-            done
-            ;;
-
-            version4|4)
-
-            echo 
-            echo -e "\u2699  Executing version4 ..."
-            echo 
-
-            for ((i=0;i<${times};i++))
-            do 
-                curl http://localhost:8080/function/version4 -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                #sleep 1
-                sleep ${sleep}
-            done
-            ;;
-
-            version4b|4b)
-
-            echo 
-            echo -e "\u2699  Executing version4b ..."
-            echo 
-
-            for ((i=0;i<${times};i++))
-            do 
-                curl http://localhost:8080/function/version4b -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 15, "lower_limit": 0, "upper_limit": "full"}'
-                #sleep 1
-                sleep ${sleep}
-            done
-            ;;
-
-	        --help|-h)
-            echo "$HELP"
-            exit 0
-            ;;
-
-            *)
-		    echo "$BAD_USAGE"
-		    exit -1
-		    ;;
-esac
-
-echo -e "\u231B Average time of instance execution: $(python3 ./scripts/reader2.py 6 ${times})"
+#echo -e "\u231B Average time of instance execution: $(python3 ./scripts/reader2.py 6 ${times})"
 echo 
 
 if [ $# == 7 ]
