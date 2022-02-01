@@ -31,13 +31,13 @@ def upload_stream(bucket, file, bytes_data):
         return key_name
 
 def handle(req):
-    output_bucket = 'mybucket'
-    data = req 
-    #data = '[{"Data":[{"predictions":["stage","caldron","breastplate"],"bucket":"image-output","key":"frame.802fb3e3.jpg"}]},{"Data":[{"predictions":["web_site","analog_clock","cornet"],"bucket":"image-output","key":"frame.c683e1fd.jpg"}]},{"Data":[{"predictions":[],"bucket":"image-output","key":"frame.4b53f36f.jpg"}]}]'
-    data_as_bytes = data.encode()
-    key = 'version1.result'
-    key_name = upload_stream(output_bucket, key, io.BytesIO(data_as_bytes))
+        output_bucket = 'mybucket'
+        data = req
+        #data = '[{"Data":[{"predictions":["stage","caldron","breastplate"],"bucket":"image-output","key":"frame.802fb3e3.jpg"}]},{"Data":[{"predictions":["web_site","analog_clock","cornet"],"bucket":"image-output","key":"frame.c683e1fd.jpg"}]},{"Data":[{"predictions":[],"bucket":"image-output","key":"frame.4b53f36f.jpg"}]}]'
+        data_as_bytes = data.encode()
+        key = 'version1.result'
+        key_name = upload_stream(output_bucket, key, io.BytesIO(data_as_bytes))
 
-    
-    return key_name
+        
+        return key_name
 

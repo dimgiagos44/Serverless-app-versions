@@ -180,6 +180,9 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	})).Modify(func(data []byte) ([]byte, error) {
 		log.Println("Invoking Final Node")
 		log.Println("End data: ", string(data))
+		dataStr := string(data)
+		dataStr += "@Version1"
+		data = []byte(dataStr)
 		return data, nil
 	}).Apply("outputer").Modify(func(data []byte) ([]byte, error) {
 		elapsed2 := time.Since(start)

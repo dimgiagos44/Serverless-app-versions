@@ -57,7 +57,7 @@ URL3="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/he
 URL4="https://im3.ezgif.com/tmp/ezgif-3-f0dedbb69f.mp4" #0-280 (1 frame / 15sec)
 URL5="https://im7.ezgif.com/tmp/ezgif-7-5218b60df0.mp4" #0-500 (1 frame / 15sec)
 URL6="https://im2.ezgif.com/tmp/ezgif-2-d71ed59216.mp4" #0-400 (1 frame / 10sec)
-URL7="https://im7.ezgif.com/tmp/ezgif-7-5218b60df0.mp4" #0-500 (1 frame / 5 sec)
+URL7="https://im2.ezgif.com/tmp/ezgif-2-1087e7bdca.mp4" #0-500 (1 frame / 5 sec)
 
 case $2 in 
         url1|1)
