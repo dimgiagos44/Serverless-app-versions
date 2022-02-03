@@ -6,6 +6,8 @@ import (
 	faasflow "github.com/faasflow/lib/openfaas"
 	"log"
 	"strconv"
+	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -35,23 +37,61 @@ type OutputWrapper struct {
 	Data []Output
 }
 
+type Once struct {
+	m    sync.Mutex
+	done uint32
+}
+
+func (o *Once) Do(f func()) {
+	if atomic.LoadUint32(&o.done) == 1 {
+		return
+	}
+	// Slow-path.
+	o.m.Lock()
+	defer o.m.Unlock()
+	if o.done == 0 {
+		defer atomic.StoreUint32(&o.done, 1)
+		f()
+	}
+}
+
+func (o *Once) Reset() {
+	o.m.Lock()
+	defer o.m.Unlock()
+	atomic.StoreUint32(&o.done, 0)
+}
+
+var (
+	now           time.Time
+	calcTotalOnce Once
+)
+
+func GetTotal() time.Time {
+	// Init / calc total once:
+	calcTotalOnce.Do(func() {
+		log.Println("Fetching total...")
+		// Do some heavy work, make HTTP calls, whatever you want:
+		now = time.Now() // This will set total to 1 (once and for all)
+	})
+
+	// Here you can safely use total:
+	return now
+}
+
+func reset() {
+	calcTotalOnce.Reset()
+	return
+}
+
 // Define provide definition of the workflow
 func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	dag := flow.Dag()
 	context.Name = "version2b"
-	start := time.Now()
+	start := GetTotal()
 	dag.Node("start-node").Modify(func(data []byte) ([]byte, error) {
-		//time1 := time.Now()
-		//log.Println("Before Framer: ", string(time1.Format("15:04:05.000000000")))
-		time1 := time.Since(start)
-		log.Println("Before framer: ", time1)
 		return data, nil
 	}).Apply("framer").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Framer2 Result: ", string(data))
-		//time2 := time.Now()
-		//log.Println("After Framer: ", string(time2.Format("15:04:05.000000000")))
-		time2 := time.Since(start)
-		log.Println("After framer: ", time2)
 		return data, nil
 	})
 	foreachDag := dag.ForEachBranch(
@@ -84,10 +124,6 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	})
 	dag.Node("second-node").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Facedetector results (Aggregated): ", string(data))
-		//time3 := time.Now()
-		//log.Println("After facedetector: ", string(time3.Format("15:04:05.000000000")))
-		time3 := time.Since(start)
-		log.Println("After facedetector: ", time3)
 		return data, nil
 	})
 	foreachDag2 := dag.ForEachBranch(
@@ -111,8 +147,6 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 			}
 			results2Byte, _ := json.Marshal(results2)
 			log.Println("Aggregated results after inference: ", string(results2Byte))
-			time4 := time.Since(start)
-			log.Println("After inference: ", time4)
 			return results2Byte, nil
 		}),
 	)
@@ -124,18 +158,15 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 		for _, data := range results {
 			result = result + string(data)
 		}
-		elapsed := time.Since(start)
-		elapsedFloat := float64(elapsed)
-		elapsedStr := strconv.FormatFloat(elapsedFloat, 'g', -1, 64)
-		result = result + " TotalTime=" + elapsedStr
 		return []byte(result), nil
 	})).Modify(func(data []byte) ([]byte, error) {
 		log.Println("Invoking Final Node")
 		log.Println("End data: ", string(data))
 		return data, nil
 	}).Apply("outputer").Modify(func(data []byte) ([]byte, error) {
-		elapsed2 := time.Since(start)
-		log.Println("Version2 took: ", elapsed2)
+		end := time.Since(start)
+		reset()
+		log.Println("Version2b took: ", end)
 		return data, nil
 	})
 	dag.Edge("start-node", "F")

@@ -5,38 +5,76 @@ import (
 	//"encoding/json"
 	faasflow "github.com/faasflow/lib/openfaas"
 	"log"
-	"strconv"
+	"sync"
+	"sync/atomic"
 	"time"
 )
+
+type Once struct {
+	m    sync.Mutex
+	done uint32
+}
+
+func (o *Once) Do(f func()) {
+	if atomic.LoadUint32(&o.done) == 1 {
+		return
+	}
+	// Slow-path.
+	o.m.Lock()
+	defer o.m.Unlock()
+	if o.done == 0 {
+		defer atomic.StoreUint32(&o.done, 1)
+		f()
+	}
+}
+
+func (o *Once) Reset() {
+	o.m.Lock()
+	defer o.m.Unlock()
+	atomic.StoreUint32(&o.done, 0)
+}
+
+var (
+	now           time.Time
+	calcTotalOnce Once
+)
+
+func GetTotal() time.Time {
+	// Init / calc total once:
+	calcTotalOnce.Do(func() {
+		log.Println("Fetching total...")
+		// Do some heavy work, make HTTP calls, whatever you want:
+		now = time.Now() // This will set total to 1 (once and for all)
+	})
+
+	// Here you can safely use total:
+	return now
+}
+
+func reset() {
+	calcTotalOnce.Reset()
+	return
+}
 
 // Define provide definition of the workflow
 func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	dag := flow.Dag()
-	start := time.Now()
+	start := GetTotal()
 	dag.Node("start-node").Modify(func(data []byte) ([]byte, error) {
-		//time1 := time.Now()
-		//log.Println("Before monolith: ", string(time1.Format("15:04:05.000000000")))
-		time1 := time.Since(start)
-		log.Println("Before monolith: ", time1)
 		return data, nil
 	}).Apply("monolith").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Monolith result: ", string(data))
-		time2 := time.Since(start)
-		log.Println("After monolith: ", time2)
 		return data, nil
 	})
 	dag.Node("final-node").Modify(func(data []byte) ([]byte, error) {
 		result := ""
 		result = result + string(data)
-		elapsed := time.Since(start)
-		elapsedFloat := float64(elapsed)
-		elapsedStr := strconv.FormatFloat(elapsedFloat, 'g', -1, 64)
-		result = result + " TotalTime=" + elapsedStr
 		log.Println("End data: ", result)
 		return []byte(result), nil
 	}).Apply("outputer").Modify(func(data []byte) ([]byte, error) {
-		elapsed2 := time.Since(start)
-		log.Println("Version4b took: ", elapsed2)
+		end := time.Since(start)
+		reset()
+		log.Println("Version4b took: ", end)
 		return data, nil
 	})
 	dag.Edge("start-node", "final-node")
