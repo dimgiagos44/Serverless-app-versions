@@ -12,9 +12,9 @@ Options:
     <sleep>     sleep duration between invocations - e.g 10 => 10 seconds
     <result>    If given --no-result, then no result will be displayed. If not, result will appear
     
-    e.g         ./exec.sh version1 url1 --times=10 yes yes --sleep=10s
-    e.g         ./exec.sh version1 url2 --times=10 no no --sleep=10s --no-result
-    e.g         ./exec.sh version2 url1 --times=15 yes no --sleep=15s"
+    e.g         ./exec.sh version1 url1 --times=10 yes yes --sleep=10s --step=5s
+    e.g         ./exec.sh version1 url2 --times=10 no no --sleep=10s --step=10s --no-result
+    e.g         ./exec.sh version2 url1 --times=15 yes no --sleep=15s --step=5s"
 
 BAD_USAGE="./exec.sh: Incorrect usage.
 Try './exec.sh -h' or './exec.sh --help' for further information."
@@ -48,6 +48,11 @@ sleep=$6
 arrSleep=(${sleep//=/ })
 arrSleep2=(${arrSleep[1]//s/ })
 sleep=${arrSleep2[0]}
+
+step=$7
+arrStep=(${step//=/ })
+arrStep2=(${arrStep[1]//s/ })
+step=${arrStep2[0]}
 
 
 URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4" #duration 2m 15s
@@ -107,7 +112,7 @@ echo
 
 for ((i=0;i<${times};i++));
     do 
-        curl http://localhost:8080/function/"$number" -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": 5, "lower_limit": 0, "upper_limit": "full"}'
+        curl http://localhost:8080/function/"$number" -d '{"output_bucket": "image-output", "url": "'"$URL"'", "seconds": '"$step"', "lower_limit": 0, "upper_limit": "full"}'
         #sleep 4.5
         sleep ${sleep}
     done
@@ -117,9 +122,9 @@ for ((i=0;i<${times};i++));
 #echo -e "\u231B Average time of instance execution: $(python3 ./scripts/reader2.py 6 ${times})"
 echo 
 
-if [ $# == 7 ]
+if [ $# == 8 ]
 then
-    if [ $7 == '--no-result' ]
+    if [ $8 == '--no-result' ]
     then 
         echo "No result displayed."
         echo 
