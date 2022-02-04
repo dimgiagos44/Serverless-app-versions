@@ -18,7 +18,7 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 ```
 ## Benchmarking
 
-### Average results from version1 vs version4 with 4 different inputs
+### Average results from version1 vs version4 with 4 different inputs with config3
 * Url1's duration = 180 seconds (0-180) with total 11 frames created & processed (1 per 15 seconds)
 * Url4's duration = 280 seconds (0-280) with total 18 frames created & processed (1 per 15 seconds)
 * Url5's duration = 500 seconds (0-500) with total 26 frames created & processed (1 per 15 seconds)
