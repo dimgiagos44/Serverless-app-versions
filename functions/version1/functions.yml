@@ -32,11 +32,11 @@ functions:
     lang: python3-flask-debian
     handler: ./faceanalyzer
     image: dimgiagos/faceanalyzer:latest
-    constraints:
-    - "kubernetes.io/hostname=gworker-01"
     build_args:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
       ADDITIONAL_PACKAGE: libgtk2.0-dev
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
     environment:
       exec_timeout: 1m
       read_timeout: 1m
@@ -46,10 +46,10 @@ functions:
     lang: python3-flask-debian
     handler: ./mobilenet
     image: dimgiagos/mobilenet:latest
-    constraints:
-    - "kubernetes.io/hostname=gworker-01"
     build_args:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
     environment:
       exec_timeout: 1m
       read_timeout: 1m
