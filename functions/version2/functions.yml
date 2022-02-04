@@ -28,7 +28,7 @@ functions:
     lang: faas-flow
     handler: ./version2
     image: dimgiagos/version2:latest
-    constrains:
+    constraints:
     - "kubernetes.io/hostname=gworker-01"
     labels:
       faas-flow: 1
@@ -44,7 +44,7 @@ functions:
     lang: faas-flow-version2b
     handler: ./version2b
     image: dimgiagos/version2b:latest
-    constrains:
+    constraints:
     - "kubernetes.io/hostname=gworker-01"
     labels:
       faas-flow: 1
