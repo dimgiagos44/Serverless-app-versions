@@ -26,6 +26,11 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 ![Screenshot from 2022-02-04 10-38-27](https://user-images.githubusercontent.com/57920951/152516475-9b542414-3b81-4221-be99-28e5888d5744.png)
 
+### Average results from version1 vs version2 vs version3 vs version4 with 1 input with config3
+* Url6's duration = 500 seconds (0-500) with total 78 frames created & processed (1 per 5 seconds)
+
+ ![78frames_execution](https://user-images.githubusercontent.com/57920951/152551732-63426362-a7df-46bd-8f42-eb00fe53c3d7.png)
+
 ### Configs:
 * config1: 
 ![Screenshot from 2022-01-19 18-19-54](https://user-images.githubusercontent.com/57920951/150173762-df3fed45-af57-4b42-ae7e-8a4f12027855.png)
