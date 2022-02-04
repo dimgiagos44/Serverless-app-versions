@@ -9,7 +9,7 @@ Main repository for Master thesis on serverless.
 * After deploying all the functions, by using the [exec script](https://github.com/dimgiagos44/Serverless-app-versions/blob/main/exec.sh)
 we can run the desired instance on our local cluster as many times as we like in a sequential way of invocations
 ```
-./exec.sh version1 url1 --times=10 yes yes --sleep=5s
+./exec.sh version1 url1 --times=10 yes yes --sleep=5s --step=15s
 ```
 * We can scale each function's replicas up or down so as to make the versions capable
 of serving more or less requests per minute
