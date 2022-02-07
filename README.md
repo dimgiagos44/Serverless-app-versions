@@ -30,6 +30,14 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 * Url6's duration = 500 seconds (0-500) with total 78 frames created & processed (1 per 5 seconds)
 
  ![78frames_execution](https://user-images.githubusercontent.com/57920951/152551732-63426362-a7df-46bd-8f42-eb00fe53c3d7.png)
+ 
+### Average results from version1. Single and Multi-node deployment, 3 replicas for facedetector-faceanalyzer-mobilenet
+* Url1's duration = 180 seconds (0-180) with total 11 frames created & processed (1 per 15 seconds)
+* Url4's duration = 280 seconds (0-280) with total 18 frames created & processed (1 per 15 seconds)
+* Url5's duration = 500 seconds (0-500) with total 26 frames created & processed (1 per 15 seconds)
+* Url6's duration = 500 seconds (0-500) with total 78 frames created & processed (1 per 5 seconds)
+
+![single_multi](https://user-images.githubusercontent.com/57920951/152852549-79b49d4b-a656-4a55-86ff-ce13a1ad572f.png)
 
 ### Configs:
 * config1: 
