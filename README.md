@@ -40,6 +40,7 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 ![single_multi2](https://user-images.githubusercontent.com/57920951/152982651-d522ac39-8d8e-4c61-9a32-cc74b095681b.png)
 
+<!---
 ### Configs:
 * config1: 
 ![Screenshot from 2022-01-19 18-19-54](https://user-images.githubusercontent.com/57920951/150173762-df3fed45-af57-4b42-ae7e-8a4f12027855.png)
@@ -49,7 +50,7 @@ all functions placed on the worker3 (coroni)
 
 * config3: 
 all functions placed on the worker1 (davinci)
-
+--->
 ## Example Usage
 
 ![Screenshot from 2022-01-15 20-41-39](https://user-images.githubusercontent.com/57920951/149634004-1356f129-a036-4c0b-857b-aa24e710a2ba.png)
