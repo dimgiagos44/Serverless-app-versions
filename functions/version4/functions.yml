@@ -48,3 +48,33 @@ functions:
       - s3-secret-key
       - s3-access-key
 
+  monolith2:
+    lang: python3-flask-debian
+    handler: ./monolith2
+    image: dimgiagos/monolith2:latest
+    build_args:
+      ADDITIONAL_PACKAGE: libgl1-mesa-glx
+      ADDITIONAL_PACKAGE: libgtk2.0-dev
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+    environment:
+      exec_timeout: 1m
+      read_timeout: 1m
+      write_timeout: 1m
+
+  version4c:
+    lang: faas-flow-version4c
+    handler: ./version4c
+    image: dimgiagos/version4c:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+    labels:
+      faas-flow: 1
+    annotations:
+      faas-flow-desc: "version4 instance"
+    environment_file:
+      - conf.yml
+    secrets:
+      - s3-secret-key
+      - s3-access-key
+
