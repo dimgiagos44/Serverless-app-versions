@@ -55,8 +55,8 @@ arrStep2=(${arrStep[1]//s/ })
 step=${arrStep2[0]}
 
 
-#URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4" #duration 2m 15s
-URL1="https://im3.ezgif.com/tmp/ezgif-3-b56610b863.mp4"
+URL1="https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female.mp4" #duration 2m 15s
+#URL1="https://im3.ezgif.com/tmp/ezgif-3-b56610b863.mp4"
 URL2="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/bottle-detection.mp4" #duration 40s
 URL3="https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/head-pose-face-detection-male.mp4" #duration 2m 14s
 URL4="https://im3.ezgif.com/tmp/ezgif-3-f0dedbb69f.mp4" #0-280 (1 frame / 15sec)
