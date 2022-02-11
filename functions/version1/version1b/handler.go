@@ -89,6 +89,57 @@ func reset() {
 	return
 }
 
+var (
+	nowFramer      time.Duration
+	calcFramerOnce Once
+)
+
+func GetFramer(start time.Time) time.Duration {
+	calcFramerOnce.Do(func() {
+		nowFramer = time.Since(start)
+	})
+	return nowFramer
+}
+
+func resetFramer() {
+	calcFramerOnce.Reset()
+	return
+}
+
+var (
+	nowFace      time.Duration
+	calcFaceOnce Once
+)
+
+func GetFace(start time.Time) time.Duration {
+	calcFaceOnce.Do(func() {
+		nowFace = time.Since(start)
+	})
+	return nowFace
+}
+
+func resetFace() {
+	calcFaceOnce.Reset()
+	return
+}
+
+var (
+	nowInf      time.Duration
+	calcInfOnce Once
+)
+
+func GetInf(start time.Time) time.Duration {
+	calcInfOnce.Do(func() {
+		nowInf = time.Since(start)
+	})
+	return nowInf
+}
+
+func resetInf() {
+	calcInfOnce.Reset()
+	return
+}
+
 // Define provide definition of the workflow
 func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	dag := flow.Dag()
@@ -97,6 +148,9 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 		return data, nil
 	}).Apply("framer").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Framer Result: ", string(data))
+		nowFramer := GetFramer(start)
+		log.Println("AFTER-FRAMER: ", nowFramer)
+		resetFramer()
 		return data, nil
 	})
 	foreachDag := dag.ForEachBranch(
@@ -133,6 +187,9 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 	})
 	dag.Node("second-node").Modify(func(data []byte) ([]byte, error) {
 		log.Println("Facedetector results (Aggregated): ", string(data))
+		nowFace := GetFace(start)
+		log.Println("AFTER-FACE: ", nowFace)
+		resetFace()
 		return data, nil
 	})
 	foreachDag2 := dag.ForEachBranch(
@@ -159,6 +216,9 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 			}
 			results2Byte, _ := json.Marshal(results2)
 			log.Println("Aggregated results after conditionals: ", string(results2Byte))
+			nowInf := GetInf(start)
+			log.Println("AFTER-INF: ", nowInf)
+			resetInf()
 			return results2Byte, nil
 		}),
 	)

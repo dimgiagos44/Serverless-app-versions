@@ -8,4 +8,6 @@ environment:
   consul_dc: "dc1"
   s3_url: "minio.faasflow:9000"
   s3_tls: false
-  exec_timeout: 1m
+  exec_timeout: 10m
+  read_timeout: 10m
+  write_timeout: 10m
