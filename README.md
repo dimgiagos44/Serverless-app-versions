@@ -40,6 +40,15 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 ![single_multi2](https://user-images.githubusercontent.com/57920951/152982651-d522ac39-8d8e-4c61-9a32-cc74b095681b.png)
 
+### Average results from version1 (single/multi-node) vs version4
+
+![Screenshot from 2022-02-11 19-03-16](https://user-images.githubusercontent.com/57920951/153639470-f6976d68-519b-4296-baa4-1c5ebd6d16b6.png)
+
+### Timestamps experiment for Version1(3 replicas) single-node VS Version1(3 replicas) multi-node deployments
+
+![Screenshot from 2022-02-11 19-24-07](https://user-images.githubusercontent.com/57920951/153639554-15e0b71f-d2f9-4675-8445-173caa9e36c9.png)
+
+
 <!---
 ### Configs:
 * config1: 
