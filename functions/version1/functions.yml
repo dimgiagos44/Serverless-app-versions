@@ -10,7 +10,7 @@ functions:
     build_args:
       ADDITIONAL_PACKAGE: libgtk2.0-dev
     constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-02"
     environment:
       exec_timeout: 1m
       read_timeout: 1m
@@ -22,7 +22,7 @@ functions:
     build_args:
       ADDITIONAL_PACKAGE: libgtk2.0-dev
     constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-02"
     environment:
       exec_timeout: 1m
       read_timeout: 1m
@@ -36,7 +36,7 @@ functions:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
       ADDITIONAL_PACKAGE: libgtk2.0-dev
     constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-02"
     environment:
       exec_timeout: 1m
       read_timeout: 1m
@@ -49,7 +49,7 @@ functions:
     build_args:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
     constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-02"
     environment:
       exec_timeout: 1m
       read_timeout: 1m
@@ -75,14 +75,14 @@ functions:
     handler: ./outputer
     image: dimgiagos/outputer:latest
     constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-02"
 
   version1b:
     lang: faas-flow-version1
     handler: ./version1b
     image: dimgiagos/version1b:latest
     constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-02"
     labels:
       faas-flow: 1
     annotations:
