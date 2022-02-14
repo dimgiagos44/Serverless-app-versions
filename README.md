@@ -19,6 +19,8 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 ## Benchmarking
 
 ### Average results from version1 vs version4 with 4 different inputs with single node deployment (davinci)
+*Adding replicas to Version1's pods seems not to accelerate the execution.*
+
 * Url1's duration = 180 seconds (0-180) with total 11 frames created & processed (1 per 15 seconds)
 * Url4's duration = 280 seconds (0-280) with total 18 frames created & processed (1 per 15 seconds)
 * Url5's duration = 500 seconds (0-500) with total 26 frames created & processed (1 per 15 seconds)
@@ -27,6 +29,8 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 ![Screenshot from 2022-02-04 10-38-27](https://user-images.githubusercontent.com/57920951/152516475-9b542414-3b81-4221-be99-28e5888d5744.png)
 
 ### Average results from version1 vs version2 vs version3 vs version4 with 1 input with single node (davinci)
+*Expected result for each version's time.*
+
 * Url6's duration = 500 seconds (0-500) with total 78 frames created & processed (1 per 5 seconds)
 
  ![78frames_execution](https://user-images.githubusercontent.com/57920951/152551732-63426362-a7df-46bd-8f42-eb00fe53c3d7.png)
