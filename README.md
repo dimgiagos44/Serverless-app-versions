@@ -52,6 +52,9 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 ![timestamps_experiment](https://user-images.githubusercontent.com/57920951/153643250-ea74508f-3049-48b1-a51d-addd0be4791f.png)
 
+### Average results for Version1(1, 3 replicas) for single-node deployment: Davinci VS Liono
+
+![Screenshot from 2022-02-14 12-41-20](https://user-images.githubusercontent.com/57920951/153849266-85194275-68a4-4ccd-bfb9-923df6a0fb2b.png)
 
 <!---
 ### Configs:
