@@ -40,9 +40,8 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 ![single_multi2](https://user-images.githubusercontent.com/57920951/152982651-d522ac39-8d8e-4c61-9a32-cc74b095681b.png)
 
-### Average results from version1 (single/multi-node) vs version4
-
-
+### Average results from version1 (single/multi-node) vs version4 (no pressures applied)
+*The weird thing here is that multi-replicas deployments are not faster than the single-replica deployment*
 ![version1-4-single-multi](https://user-images.githubusercontent.com/57920951/153644735-bdc69f30-88f3-4ba1-895e-eb1e7c49aebb.png)
 
 ### Timestamps experiment for Version1(3 replicas) single-node VS Version1(3 replicas) multi-node deployments
