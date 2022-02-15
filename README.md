@@ -57,29 +57,17 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 ![timestamps_experiment](https://user-images.githubusercontent.com/57920951/153643250-ea74508f-3049-48b1-a51d-addd0be4791f.png)
 
 ### Average results for Version1(1, 3 replicas) for single-node deployment: Davinci VS Liono
+*This was done to check whether some of the machines are stronger than others*
 
 ![Screenshot from 2022-02-14 12-41-20](https://user-images.githubusercontent.com/57920951/153849266-85194275-68a4-4ccd-bfb9-923df6a0fb2b.png)
 
 ### CPU-MemBandwidth-LLC pressure scenarios for Version1 (single/multi-node) and Version4
-<table border="0">
-<tr>
-    <td><b style="font-size:20px">Single-node placement</b></td>
-    <td><b style="font-size:20px">Multi-node placement</b></td>
-</tr>
-<tr>
-    <td><b style="font-size:10px"></b>All functions deployed to davinci</td>
-    <td><b style="font-size:10px"></b> framer, mobilenet, version1b &rarr;davinci<td>
-</tr>
-<tr>
-    <td><b style="font-size:10px"></b></td>
-    <td><b style="font-size:10px"></b> facedetector, outputer &rarr;liono<td>
-</tr>
-<tr>
-    <td><b style="font-size:10px"></b></td>
-    <td><b style="font-size:10px"></b> faceanalyzer &rarr;coroni<td>
-</tr>
-</table>
 
+| Single-node placement | Multi-node placement |
+| --- | --- |
+| All functions &rarr; davinci | framer, mobilenet, version1b &rarr; davinci |
+|  | facedetector, outputer &rarr; liono |
+|  | faceanalyzer &rarr; coroni | 
 
 #### 0-0-0 cluster pressure
 
