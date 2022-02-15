@@ -12,9 +12,9 @@ functions:
     constraints:
     - "kubernetes.io/hostname=gworker-01"
     environment:
-      exec_timeout: 1m
-      read_timeout: 1m
-      write_timeout: 1m
+      exec_timeout: 2m
+      read_timeout: 2m
+      write_timeout: 2m
   facedetector:
     lang: python3-flask-debian
     handler: ./facedetector
@@ -22,11 +22,11 @@ functions:
     build_args:
       ADDITIONAL_PACKAGE: libgtk2.0-dev
     constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-02"
     environment:
-      exec_timeout: 1m
-      read_timeout: 1m
-      write_timeout: 1m
+      exec_timeout: 2m
+      read_timeout: 2m
+      write_timeout: 2m
     
   faceanalyzer:
     lang: python3-flask-debian
@@ -36,11 +36,11 @@ functions:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
       ADDITIONAL_PACKAGE: libgtk2.0-dev
     constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-03"
     environment:
-      exec_timeout: 1m
-      read_timeout: 1m
-      write_timeout: 1m
+      exec_timeout: 2m
+      read_timeout: 2m
+      write_timeout: 2m
 
   mobilenet:
     lang: python3-flask-debian
@@ -51,9 +51,9 @@ functions:
     constraints:
     - "kubernetes.io/hostname=gworker-01"
     environment:
-      exec_timeout: 1m
-      read_timeout: 1m
-      write_timeout: 1m
+      exec_timeout: 2m
+      read_timeout: 2m
+      write_timeout: 2m
         
   version1:
     lang: faas-flow
@@ -75,7 +75,7 @@ functions:
     handler: ./outputer
     image: dimgiagos/outputer:latest
     constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    - "kubernetes.io/hostname=gworker-02"
 
   version1b:
     lang: faas-flow-version1
