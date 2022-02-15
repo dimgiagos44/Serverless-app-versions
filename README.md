@@ -61,6 +61,26 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 ![Screenshot from 2022-02-14 12-41-20](https://user-images.githubusercontent.com/57920951/153849266-85194275-68a4-4ccd-bfb9-923df6a0fb2b.png)
 
 ### CPU-MemBandwidth-LLC pressure scenarios for Version1 (single/multi-node) and Version4
+<table border="0">
+<tr>
+    <td><b style="font-size:20px">Single-node placement</b></td>
+    <td><b style="font-size:20px">Multi-node placement</b></td>
+</tr>
+<tr>
+    <td><b style="font-size:10px"></b>All functions deployed to davinci</td>
+    <td><b style="font-size:10px"></b> framer, mobilenet, version1b &rarr;davinci<td>
+</tr>
+<tr>
+    <td><b style="font-size:10px"></b></td>
+    <td><b style="font-size:10px"></b> facedetector, outputer &rarr;liono<td>
+</tr>
+<tr>
+    <td><b style="font-size:10px"></b></td>
+    <td><b style="font-size:10px"></b> faceanalyzer &rarr;coroni<td>
+</tr>
+</table>
+
+
 #### 0-0-0 cluster pressure
 
 ![0_0_0_cluster_pressure](https://user-images.githubusercontent.com/57920951/154027148-9e36c9fd-b21c-44ec-8c60-376f105aaca4.png)
