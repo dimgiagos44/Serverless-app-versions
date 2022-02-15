@@ -60,6 +60,15 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 ![Screenshot from 2022-02-14 12-41-20](https://user-images.githubusercontent.com/57920951/153849266-85194275-68a4-4ccd-bfb9-923df6a0fb2b.png)
 
+### CPU-MemBandwidth-LLC pressure scenarios for Version1 (single/multi-node) and Version4
+#### 0-0-0 cluster pressure
+
+![0_0_0_cluster_pressure](https://user-images.githubusercontent.com/57920951/154027148-9e36c9fd-b21c-44ec-8c60-376f105aaca4.png)
+
+#### 3CPU-0-0 cluster pressure
+
+![3_0_0_cluster_pressure](https://user-images.githubusercontent.com/57920951/154027200-5a4c0ddd-b51e-438c-8901-6b788f770fe5.png)
+
 <!---
 ### Configs:
 * config1: 
