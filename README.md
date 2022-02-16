@@ -82,6 +82,11 @@ kubectl scale deployment version1 -n openfaas-fn --replicas=2
 
 ![0_3_0_cluster_pressure](https://user-images.githubusercontent.com/57920951/154117073-0891f663-a2ed-401b-86a2-62164c56ebd2.png)
 
+#### 0-0-3LLCache cluster pressure
+
+![0_0_3_cluster_pressure](https://user-images.githubusercontent.com/57920951/154260452-8a67c5e2-0304-4ba0-b994-8b6596c58181.png)
+
+
 <!---
 ### Configs:
 * config1: 
