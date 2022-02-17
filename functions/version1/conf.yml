@@ -6,6 +6,8 @@ environment:
   enable_hmac: true
   consul_url: "consul.faasflow:8500"
   consul_dc: "dc1"
+  redis_url: "redis.default.svc.cluster.local:6379"
+  redis_master: ""
   s3_url: "minio.faasflow:9000"
   s3_tls: false
   exec_timeout: 2m

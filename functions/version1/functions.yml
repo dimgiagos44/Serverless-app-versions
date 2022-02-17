@@ -21,8 +21,8 @@ functions:
     image: dimgiagos/facedetector:latest
     build_args:
       ADDITIONAL_PACKAGE: libgtk2.0-dev
-    #constraints:
-    #- "kubernetes.io/hostname=gworker-02"
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
     environment:
       exec_timeout: 2m
       read_timeout: 2m
@@ -35,8 +35,8 @@ functions:
     build_args:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
       ADDITIONAL_PACKAGE: libgtk2.0-dev
-    #constraints:
-    #- "kubernetes.io/hostname=gworker-03"
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
     environment:
       exec_timeout: 2m
       read_timeout: 2m
@@ -48,8 +48,8 @@ functions:
     image: dimgiagos/mobilenet:latest
     build_args:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
-    #constraints:
-    #- "kubernetes.io/hostname=gworker-01"
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
     environment:
       exec_timeout: 2m
       read_timeout: 2m
@@ -75,7 +75,7 @@ functions:
     handler: ./outputer
     image: dimgiagos/outputer:latest
     constraints:
-    - "kubernetes.io/hostname=gworker-02"
+    - "kubernetes.io/hostname=gworker-01"
 
   version1b:
     lang: faas-flow-version1
