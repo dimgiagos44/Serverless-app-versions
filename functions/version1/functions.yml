@@ -94,3 +94,19 @@ functions:
       - s3-access-key
 
 
+  version1c:
+    lang: faas-flow-version1c
+    handler: ./version1c
+    image: dimgiagos/version1c:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+    labels:
+      faas-flow: 1
+    annotations:
+      faas-flow-desc: "version1c instance"
+    environment_file:
+      - conf.yml
+    secrets:
+      - s3-secret-key
+      - s3-access-key
+
