@@ -163,7 +163,7 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 			var data2 FramerResponse
 			json.Unmarshal(data, &data2)
 			results := make(map[string][]byte)
-			for i := 0; i < len(data2.FrameNames); i++ {
+			for i := 0; i < len(data2.FrameNames)/2; i++ {
 				str := `{"input-bucket": "image-output", "key": "` + data2.FrameNames[i] + `"}`
 				results[data2.FrameNames[i]] = []byte(str)
 			}
@@ -183,8 +183,55 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 			return results2Byte, nil
 		}),
 	)
+	foreachDag1 := dag.ForEachBranch(
+		"F1",
+		func(data []byte) map[string][]byte {
+			//for each returned key in the hashmap a new branch will be executed
+			//this function executes in the runtime of foreach F
+			var data2 FramerResponse
+			json.Unmarshal(data, &data2)
+			results := make(map[string][]byte)
+			for i := len(data2.FrameNames) / 2; i < len(data2.FrameNames); i++ {
+				str := `{"input-bucket": "image-output", "key": "` + data2.FrameNames[i] + `"}`
+				results[data2.FrameNames[i]] = []byte(str)
+			}
+			return results
+		},
+		faasflow.Aggregator(func(results map[string][]byte) ([]byte, error) {
+			//aggregate all dynamic branches results
+			var responses []FaceDetectorResponse
+			var results2 FaceDetectorResults
+			for _, data := range results {
+				var resp FaceDetectorResponse
+				json.Unmarshal(data, &resp)
+				responses = append(responses, resp)
+			}
+			results2.Results = responses
+			results2Byte, _ := json.Marshal(results2)
+			log.Println("results2Byte =", string(results2Byte))
+			return results2Byte, nil
+		}),
+	)
 	foreachDag.Node("foreach-node1").Apply("facedetector").Modify(func(data []byte) ([]byte, error) {
 		//log.Print("Result from facedetector: ", string(data))
+		return data, nil
+	})
+	foreachDag1.Node("foreach1-node1").Apply("facedetector2").Modify(func(data []byte) ([]byte, error) {
+		return data, nil
+	})
+	dag.Node("first-node", faasflow.Aggregator(func(data map[string][]byte) ([]byte, error) {
+		var results FaceDetectorResults
+		var results2 []FaceDetectorResponse
+		for _, value := range data {
+			var result FaceDetectorResults
+			json.Unmarshal(value, &result)
+			results2 = append(results2, result.Results...)
+		}
+		results.Results = results2
+		resultsByte, _ := json.Marshal(results)
+		log.Println("resultsByte =", string(resultsByte))
+		return resultsByte, nil
+	})).Modify(func(data []byte) ([]byte, error) {
 		return data, nil
 	})
 	dag.Node("second-node").Modify(func(data []byte) ([]byte, error) {
@@ -275,7 +322,10 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 		return data, nil
 	})
 	dag.Edge("start-node", "F")
-	dag.Edge("F", "second-node")
+	dag.Edge("start-node", "F1")
+	dag.Edge("F", "first-node")
+	dag.Edge("F1", "first-node")
+	dag.Edge("first-node", "second-node")
 	dag.Edge("second-node", "F2")
 	dag.Edge("F2", "final-node")
 	return
