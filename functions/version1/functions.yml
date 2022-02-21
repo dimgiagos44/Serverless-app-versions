@@ -110,3 +110,32 @@ functions:
       - s3-secret-key
       - s3-access-key
 
+  version1d:
+    lang: faas-flow-version1d
+    handler: ./version1d
+    image: dimgiagos/version1d:latest
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+    labels:
+      faas-flow: 1
+    annotations:
+      faas-flow-desc: "version1d instance"
+    environment_file:
+      - conf.yml
+    secrets:
+      - s3-secret-key
+      - s3-access-key
+
+  facedetector2:
+    lang: python3-flask-debian
+    handler: ./facedetector2
+    image: dimgiagos/facedetector:latest
+    build_args:
+      ADDITIONAL_PACKAGE: libgtk2.0-dev
+    constraints:
+    - "kubernetes.io/hostname=gworker-01"
+    environment:
+      exec_timeout: 2m
+      read_timeout: 2m
+      write_timeout: 2m
+
