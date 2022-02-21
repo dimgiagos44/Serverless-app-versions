@@ -163,14 +163,18 @@ func Define(flow *faasflow.Workflow, context *faasflow.Context) (err error) {
 			var data2 FramerResponse
 			json.Unmarshal(data, &data2)
 			results := make(map[string][]byte)
+			log.Println("i_am_at_foreach_F")
 			for i := 0; i < len(data2.FrameNames)/2; i++ {
 				str := `{"input-bucket": "image-output", "key": "` + data2.FrameNames[i] + `"}`
 				results[data2.FrameNames[i]] = []byte(str)
+				log.Println("data2.FrameNames[i] =", data2.FrameNames[i])
+				log.Println("results[data2.FrameNames[i]] =", string(results[data2.FrameNames[i]]))
 			}
 			return results
 		},
 		faasflow.Aggregator(func(results map[string][]byte) ([]byte, error) {
 			//aggregate all dynamic branches results
+			log.Println("I AM AT AGGREGATOR...")
 			var responses []FaceDetectorResponse
 			var results2 FaceDetectorResults
 			for _, data := range results {
