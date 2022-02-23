@@ -1,6 +1,8 @@
 # Version1 experiments
 
-## Average results from version1. Single and Multi-node deployment, 3 replicas for facedetector-faceanalyzer-mobilenet
+## Average results from version1. Single and Multi-node deployment, 3 replicas for facedetector-faceanalyzer-mobilenet (no pressure)
+
+*No differences are spoted, which is mainly because of *
 
 * Url1's duration = 180 seconds (0-180) with total 11  frames created & processed (1 per 15 seconds)
 * Url4's duration = 280 seconds (0-280) with total 18  frames created & processed (1 per 15 seconds)
