@@ -7,3 +7,7 @@
 * Url6's duration = 500 seconds (0-500) with total 78 frames created & processed (1 per 5 seconds)
 
  ![78frames_execution](https://user-images.githubusercontent.com/57920951/152551732-63426362-a7df-46bd-8f42-eb00fe53c3d7.png)
+ 
+ ## Ram allocation across functions and versions (estimated)
+
+![ram_allocation](https://user-images.githubusercontent.com/57920951/155381308-2832aed7-5625-462b-8e14-1c19ed472a24.png)
