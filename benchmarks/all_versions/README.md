@@ -10,4 +10,4 @@
  
  ## Ram allocation across functions and versions (estimated)
 
-![ram_allocation](https://user-images.githubusercontent.com/57920951/155381308-2832aed7-5625-462b-8e14-1c19ed472a24.png)
+![ram_allocation](https://user-images.githubusercontent.com/57920951/155381960-e3631fd6-5ab8-4378-8f8e-c3b7af1cfb28.png)
