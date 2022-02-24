@@ -11,5 +11,7 @@
  ![78frames_execution](https://user-images.githubusercontent.com/57920951/152551732-63426362-a7df-46bd-8f42-eb00fe53c3d7.png)
  
  ## Ram allocation across functions and versions (estimated)
+ 
+ *Version2 is heavier than Version1 in terms or RAM allocation and as fast as Version1*
 
 ![ram_allocation](https://user-images.githubusercontent.com/57920951/155381960-e3631fd6-5ab8-4378-8f8e-c3b7af1cfb28.png)
