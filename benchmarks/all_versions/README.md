@@ -3,6 +3,7 @@
 ## Average results from version1 vs version2 vs version3 vs version4 with 1 input with single node (davinci)
 
 *Expected result for each version's time.*
+*Version2 seems no faster than Version1 both in 65_frames and 130_frames experiments*
 
 * Url6's duration = 500 seconds (0-500) with total 78 frames created & processed (1 per 5 seconds)
 
