@@ -21,11 +21,11 @@ synchronously and as a result the queue-worker (OpenFaas component) is unable to
 
 ## CPU-MemBandwidth-LLC pressure scenarios for Version1 (single/multi-node) and Version4
 
-| Single-node placement | Multi-node placement 1a | 1b | 1c 
-| --- | --- | --- | --- |
-| All functions &rarr; davinci | framer, mobilenet, version1b &rarr; davinci | framer, mobilenet, version1b, outputer &rarr; davinci| framer, facedetector &rarr; davinci |
-|  | facedetector, outputer &rarr; liono | facedetector, faceanalyzer, outputer &rarr; liono | faceanalyzer, mobilenet, outputer, version1b &rarr; liono|
-|  | faceanalyzer &rarr; coroni |  | | 
+| Single-node placement | Multi-node placement 1a | 1b | 1c | 1a x 3 | Version4 | 
+| --- | --- | --- | --- | --- | --- |
+| All functions &rarr; davinci | framer, mobilenet, version1b &rarr; davinci | framer, mobilenet, version1b, outputer &rarr; davinci| framer, facedetector &rarr; davinci | same as 1a | monolith &rarr; davinci  |
+|  | facedetector, outputer &rarr; liono | facedetector, faceanalyzer, outputer &rarr; liono | faceanalyzer, mobilenet, outputer, version1b &rarr; liono| | | 
+|  | faceanalyzer &rarr; coroni |  | |  | | 
 
 #### 0-0-0 cluster pressure
 
