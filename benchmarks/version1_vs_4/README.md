@@ -23,7 +23,7 @@ synchronously and as a result the queue-worker (OpenFaas component) is unable to
 
 | Single-node placement | Multi-node placement 1a | 1b | 1c 
 | --- | --- | --- | --- |
-| All functions &rarr; davinci | framer, mobilenet, version1b &rarr; davinci | framer, mobilenet, version1b, outputer &rarr; davinci| framer, facedetector &rarr davinci |
+| All functions &rarr; davinci | framer, mobilenet, version1b &rarr; davinci | framer, mobilenet, version1b, outputer &rarr; davinci| framer, facedetector &rarr; davinci |
 |  | facedetector, outputer &rarr; liono | facedetector, faceanalyzer, outputer &rarr; liono | faceanalyzer, mobilenet, outputer, version1b &rarr; liono|
 |  | faceanalyzer &rarr; coroni |  | | 
 
