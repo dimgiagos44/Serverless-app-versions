@@ -29,22 +29,25 @@ synchronously and as a result the queue-worker (OpenFaas component) is unable to
 
 #### 0-0-0 cluster pressure
 
-![0_0_0_cluster_pressure](https://user-images.githubusercontent.com/57920951/154116994-b3e2e103-38b7-4e96-a6f8-619fde28532e.png)
+![0_0_0_pressure](https://user-images.githubusercontent.com/57920951/155745027-1879e3f4-8b19-426f-b300-46bad4712e93.png)
+
 
 #### 3CPU-0-0 cluster pressure
 
-![3_0_0_cluster_pressure](https://user-images.githubusercontent.com/57920951/154298733-0c1b70ee-64df-492b-9127-8913a719dc4a.png)
+![3_0_0_pressure](https://user-images.githubusercontent.com/57920951/155745048-ae371fb0-66b5-4a11-a6f4-48ad99bce90e.png)
 
 
 #### 0-3MemBand-0 cluster pressure
 
-![0_3_0_cluster_pressure](https://user-images.githubusercontent.com/57920951/154298766-013d69a7-702e-4192-8367-c02003f843c4.png)
+![0_3_0_pressure](https://user-images.githubusercontent.com/57920951/155745076-37b0ab61-369c-42b3-b069-f795a788429c.png)
 
 
 #### 0-0-3LLCache cluster pressure
 
-![0_0_3_cluster_pressure](https://user-images.githubusercontent.com/57920951/154260452-8a67c5e2-0304-4ba0-b994-8b6596c58181.png)
+![0_0_3_pressure](https://user-images.githubusercontent.com/57920951/155745091-9f2bdda9-e460-4835-acd9-e9018259e4a8.png)
+
 
 #### 1-1-1 cluster pressure
 
-![1_1_1_cluster_pressure](https://user-images.githubusercontent.com/57920951/154334752-b4cf8d83-058e-48fb-87ba-1441770106c7.png)
+![1_1_1_pressure](https://user-images.githubusercontent.com/57920951/155745110-d6fd5769-b4e6-4e18-9600-c450c6e76987.png)
+
