@@ -21,8 +21,8 @@ functions:
     image: dimgiagos/facedetector:latest
     build_args:
       ADDITIONAL_PACKAGE: libgtk2.0-dev
-    constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    #constraints:
+    #- "kubernetes.io/hostname=gworker-01"
     environment:
       exec_timeout: 2m
       read_timeout: 2m
@@ -35,8 +35,8 @@ functions:
     build_args:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
       ADDITIONAL_PACKAGE: libgtk2.0-dev
-    constraints:
-    - "kubernetes.io/hostname=gworker-02"
+    #constraints:
+    #- "kubernetes.io/hostname=gworker-02"
     environment:
       exec_timeout: 2m
       read_timeout: 2m
@@ -48,8 +48,8 @@ functions:
     image: dimgiagos/mobilenet:latest
     build_args:
       ADDITIONAL_PACKAGE: libgl1-mesa-glx
-    constraints:
-    - "kubernetes.io/hostname=gworker-02"
+    #constraints:
+    #- "kubernetes.io/hostname=gworker-02"
     environment:
       exec_timeout: 2m
       read_timeout: 2m
@@ -130,14 +130,14 @@ functions:
       - s3-secret-key
       - s3-access-key
 
-  facedetector2:
+  facedetectorfn:
     lang: python3-flask-debian
-    handler: ./facedetector2
+    handler: ./facedetectorfn
     image: dimgiagos/facedetector:latest
     build_args:
       ADDITIONAL_PACKAGE: libgtk2.0-dev
-    constraints:
-    - "kubernetes.io/hostname=gworker-01"
+    #constraints:
+    #- "kubernetes.io/hostname=gworker-01"
     environment:
       exec_timeout: 2m
       read_timeout: 2m
@@ -155,6 +155,4 @@ functions:
       exec_timeout: 2m
       read_timeout: 2m
       write_timeout: 2m
-
-
 

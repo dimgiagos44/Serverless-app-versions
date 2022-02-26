@@ -77,7 +77,8 @@ def handle(req):
 
         if frameId % multiplier == 0:
                 image_file = process(image)
-                key_name = upload_stream(output_bucket, str(frame_num), image_file)
+                name = str(frame_num) + '.' + str(seconds)
+                key_name = upload_stream(output_bucket, name, image_file)
                 key_names.append(key_name)
                 frame_num += 1
         
