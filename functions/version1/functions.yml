@@ -136,8 +136,8 @@ functions:
     image: dimgiagos/facedetector:latest
     build_args:
       ADDITIONAL_PACKAGE: libgtk2.0-dev
-    #constraints:
-    #- "kubernetes.io/hostname=gworker-01"
+    constraints:
+    - "kubernetes.io/hostname=gworker-02"
     environment:
       exec_timeout: 2m
       read_timeout: 2m

@@ -1,8 +1,10 @@
+#import grequests
 import requests
 import time
 import urllib
 import json
 import sys
+from datetime import datetime
 
 
 start = time.time()
@@ -32,6 +34,7 @@ jpg_add = '.' + str(step) + '.jpg'
 
 
 # FRAMERFN PART
+
 print('Executing the framer...')
 
 framerfn_data = {"output_bucket": "image-output", "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", 
@@ -43,12 +46,14 @@ print(str(framerfn_req.content))
 
 # FACEDETECTORFN PART
 print('Executing the facedetector...')
+headers_facedetector = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'https://en18ywg3vg3z8.x.pipedream.net/'}
+#rs = (grequests.post(facedetectorfn_url_async, data = json.dumps({"input-bucket": "image-output", "key": str(i) + jpg_add}), headers = headers_facedetector) for i in range(frames_number))
+#print(grequests.map(rs))
 facedetector_results = []
 for i in range(frames_number):
     name = str(i) + jpg_add
     facedetectorfn_data = {"input-bucket": "image-output", "key": name}
-    facedetectorfn_req = requests.post(facedetectorfn_url_async, json.dumps(facedetectorfn_data), headers=headers)
-    #print(time.time())
+    facedetectorfn_req = requests.post(facedetectorfn_url_async, json.dumps(facedetectorfn_data), headers=headers_facedetector)
     facedetector_results.append(facedetectorfn_req.content)
 print(facedetector_results)
 
@@ -62,12 +67,20 @@ face_exists_array_65 = ['f', 't',  't', 't', 't', 'f', 't', 't', 'f', 't', 'f', 
 
 if (frames_number == 7):
     face_exists = face_exists_array_7
+    time.sleep(3.5)
+    print('sleeping')
 elif (frames_number == 16):
     face_exists = face_exists_array_16
+    time.sleep(6.8)
+    print('sleeping')
 elif (frames_number == 32):
     face_exists = face_exists_array_32
+    time.sleep(14.5)
+    print('sleeping')
 elif (frames_number == 65):
     face_exists = face_exists_array_65
+    time.sleep(29)
+    print('sleeping')
 else: 
     print('Error at faceanalyzer-mobilenet step!') 
 
@@ -92,5 +105,4 @@ print('faceanalyzer results: ', faceanalyzer_results)
 print('mobilenet results: ', mobilenet_results)
 
 end = time.time()
-
 print(f'Runtime of the execution took {end - start}')
