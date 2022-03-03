@@ -10,8 +10,6 @@ from datetime import datetime
 start = time.time()
 
 # GLOBALS
-#step = 40
-#frames_number = 16
 step = int(sys.argv[1])
 frames_number = int(sys.argv[2])
 
@@ -34,15 +32,11 @@ jpg_add = '.' + str(step) + '.jpg'
 
 
 # FRAMERFN PART
-
 print('Executing the framer...')
-
 framerfn_data = {"output_bucket": "image-output", "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", 
                 "seconds": step, "lower_limit": 0, "upper_limit": "full"}
 framerfn_req = requests.post(framerfn_url, json.dumps(framerfn_data), headers=headers)
 print(str(framerfn_req.content))
-#frame_names = ['0.90.jpg', '1.90.jpg', '2.90.jpg', '3.90.jpg', '4.90.jpg', '5.90.jpg', '6.90.jpg']
-#frame_names = ['0.40.jpg', '0.40.jpg', '0.40.jpg', '0.40.jpg', '0.40.jpg', '0.40.jpg', '0.40.jpg', '0.40.jpg', '0.40.jpg']
 
 # FACEDETECTORFN PART
 print('Executing the facedetector...')
@@ -67,19 +61,19 @@ face_exists_array_65 = ['f', 't',  't', 't', 't', 'f', 't', 't', 'f', 't', 'f', 
 
 if (frames_number == 7):
     face_exists = face_exists_array_7
-    time.sleep(3.5)
+    time.sleep(2)
     print('sleeping')
 elif (frames_number == 16):
     face_exists = face_exists_array_16
-    time.sleep(6.8)
+    time.sleep(3.3)
     print('sleeping')
 elif (frames_number == 32):
     face_exists = face_exists_array_32
-    time.sleep(14.5)
+    time.sleep(6.7)
     print('sleeping')
 elif (frames_number == 65):
     face_exists = face_exists_array_65
-    time.sleep(29)
+    time.sleep(12.5)
     print('sleeping')
 else: 
     print('Error at faceanalyzer-mobilenet step!') 
