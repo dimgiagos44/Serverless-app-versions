@@ -1,0 +1,6 @@
+minio==7.1.1
+numpy
+Pillow==8.4.0
+tensorflow
+opencv-python-headless
+requests

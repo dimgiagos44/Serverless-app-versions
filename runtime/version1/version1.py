@@ -20,6 +20,9 @@ framerfn_url_async = 'http://localhost:8080/async-function/framerfn'
 facedetectorfn_url = 'http://localhost:8080/function/facedetectorfn'
 facedetectorfn_url_async = 'http://localhost:8080/async-function/facedetectorfn'
 
+facedetectorfn2_url = 'http://localhost:8080/function/facedetectorfn2'
+facedetectorfn2_url_async = 'http://localhost:8080/async-function/facedetectorfn2'
+
 faceanalyzer_url = 'http://localhost:8080/function/faceanalyzer'
 faceanalyzer_url_async = 'http://localhost:8080/async-function/faceanalyzer'
 
@@ -38,6 +41,7 @@ framerfn_data = {"output_bucket": "image-output", "url": "https://commondatastor
 framerfn_req = requests.post(framerfn_url, json.dumps(framerfn_data), headers=headers)
 print(str(framerfn_req.content))
 
+'''
 # FACEDETECTORFN PART
 print('Executing the facedetector...')
 headers_facedetector = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'https://en18ywg3vg3z8.x.pipedream.net/'}
@@ -50,10 +54,10 @@ for i in range(frames_number):
     facedetectorfn_req = requests.post(facedetectorfn_url_async, json.dumps(facedetectorfn_data), headers=headers_facedetector)
     facedetector_results.append(facedetectorfn_req.content)
 print(facedetector_results)
-
-# FACEANALYZER, MOBILENET PART
-print('Executing the faceanalyzer and mobilenet...')
-
+'''
+# FACEDETECTOR-FACEANALYZER-MOBILENET PART
+headers_facedetector_yes = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'http://gateway:8080/async-function/faceanalyzerfn'}
+headers_facedetector_no = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'http://gateway:8080/async-function/mobilenetfn'}
 face_exists_array_7 = ['f', 't', 'f', 'f', 't', 'f', 'f']
 face_exists_array_16 = ['t', 't', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f']
 face_exists_array_32 = ['t', 't', 'f', 't', 't', 't', 't', 'f', 't', 'f', 'f', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f', 't', 't', 't', 'f', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f']
@@ -61,20 +65,53 @@ face_exists_array_65 = ['f', 't',  't', 't', 't', 'f', 't', 't', 'f', 't', 'f', 
 
 if (frames_number == 7):
     face_exists = face_exists_array_7
-    time.sleep(2)
-    print('sleeping')
 elif (frames_number == 16):
     face_exists = face_exists_array_16
-    time.sleep(3.3)
-    print('sleeping')
 elif (frames_number == 32):
     face_exists = face_exists_array_32
-    time.sleep(6.7)
-    print('sleeping')
 elif (frames_number == 65):
     face_exists = face_exists_array_65
-    time.sleep(12.5)
-    print('sleeping')
+else: 
+    print('Error at faceanalyzer-mobilenet step!')
+
+i = 0
+for flag in face_exists:
+    name = str(i) + jpg_add
+    if (flag == 't'):
+        faceanalyzer_data = {"input-bucket": "image-output", "key": name}
+        faceanalyzer_req = requests.post(facedetectorfn2_url_async, json.dumps(faceanalyzer_data), headers=headers_facedetector_yes)
+        i = i + 1
+    else:
+        mobilenet_data = {"input-bucket": "image-output", "key": name}
+        mobilenet_req = requests.post(facedetectorfn2_url_async, json.dumps(mobilenet_data), headers=headers_facedetector_no)
+        i = i + 1
+
+
+'''
+# FACEANALYZER, MOBILENET PART
+print('Executing the faceanalyzer and mobilenet...')
+headers_facedetector = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'https://en18ywg3vg3z8.x.pipedream.net/'}
+face_exists_array_7 = ['f', 't', 'f', 'f', 't', 'f', 'f']
+face_exists_array_16 = ['t', 't', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f']
+face_exists_array_32 = ['t', 't', 'f', 't', 't', 't', 't', 'f', 't', 'f', 'f', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f', 't', 't', 't', 'f', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f']
+face_exists_array_65 = ['f', 't',  't', 't', 't', 'f', 't', 't', 'f', 't', 'f',  't', 't', 't', 'f', 'f', 'f', 't', 't', 'f', 'f',  'f',  't',  'f', 'f', 'f', 'f', 'f', 'f', 't', 't', 'f', 't', 'f', 't', 'f', 'f', 'f',  'f', 'f', 'f', 't', 't', 't', 't',  't', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f']
+
+if (frames_number == 7):
+    face_exists = face_exists_array_7
+    #time.sleep(2)
+    #print('sleeping')
+elif (frames_number == 16):
+    face_exists = face_exists_array_16
+    #time.sleep(3.3)
+    #print('sleeping')
+elif (frames_number == 32):
+    face_exists = face_exists_array_32
+    #time.sleep(6.7)
+    #print('sleeping')
+elif (frames_number == 65):
+    face_exists = face_exists_array_65
+    #time.sleep(12.5)
+    #print('sleeping')
 else: 
     print('Error at faceanalyzer-mobilenet step!') 
 
@@ -85,18 +122,18 @@ for flag in face_exists:
     if (flag == 't'):
         name = str(i) + jpg_add
         faceanalyzer_data = {"input-bucket": "image-output", "key": name}
-        faceanalyzer_req = requests.post(faceanalyzer_url_async, json.dumps(faceanalyzer_data), headers=headers)
+        faceanalyzer_req = requests.post(faceanalyzer_url_async, json.dumps(faceanalyzer_data), headers=headers_facedetector)
         faceanalyzer_results.append(faceanalyzer_req.content)
         i = i + 1
     else:
         name = str(i) + jpg_add
         mobilenet_data = {"input-bucket": "image-output", "key": name}
-        mobilenet_req = requests.post(mobilenet_url_async, json.dumps(mobilenet_data), headers=headers)
+        mobilenet_req = requests.post(mobilenet_url_async, json.dumps(mobilenet_data), headers=headers_facedetector)
         mobilenet_results.append(mobilenet_req.content)
         i = i + 1
 
 print('faceanalyzer results: ', faceanalyzer_results)
 print('mobilenet results: ', mobilenet_results)
-
+'''
 end = time.time()
 print(f'Runtime of the execution took {end - start}')
