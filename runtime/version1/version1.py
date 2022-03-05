@@ -31,6 +31,9 @@ mobilenet_url_async = 'http://localhost:8080/async-function/mobilenet'
 
 # REQUEST INFORMATION
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+headers_facedetector = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'https://en18ywg3vg3z8.x.pipedream.net/'}
+headers_facedetector_yes = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'http://gateway:8080/async-function/faceanalyzerfn'}
+headers_facedetector_no = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'http://gateway:8080/async-function/mobilenetfn'}
 jpg_add = '.' + str(step) + '.jpg'
 
 
@@ -44,7 +47,6 @@ print(str(framerfn_req.content))
 '''
 # FACEDETECTORFN PART
 print('Executing the facedetector...')
-headers_facedetector = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'https://en18ywg3vg3z8.x.pipedream.net/'}
 #rs = (grequests.post(facedetectorfn_url_async, data = json.dumps({"input-bucket": "image-output", "key": str(i) + jpg_add}), headers = headers_facedetector) for i in range(frames_number))
 #print(grequests.map(rs))
 facedetector_results = []
@@ -56,8 +58,6 @@ for i in range(frames_number):
 print(facedetector_results)
 '''
 # FACEDETECTOR-FACEANALYZER-MOBILENET PART
-headers_facedetector_yes = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'http://gateway:8080/async-function/faceanalyzerfn'}
-headers_facedetector_no = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'http://gateway:8080/async-function/mobilenetfn'}
 face_exists_array_7 = ['f', 't', 'f', 'f', 't', 'f', 'f']
 face_exists_array_16 = ['t', 't', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f']
 face_exists_array_32 = ['t', 't', 'f', 't', 't', 't', 't', 'f', 't', 'f', 'f', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f', 't', 't', 't', 'f', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f']
@@ -77,13 +77,12 @@ else:
 i = 0
 for flag in face_exists:
     name = str(i) + jpg_add
+    facedetector_data = {"input-bucket": "image-output", "key": name}
     if (flag == 't'):
-        faceanalyzer_data = {"input-bucket": "image-output", "key": name}
-        faceanalyzer_req = requests.post(facedetectorfn2_url_async, json.dumps(faceanalyzer_data), headers=headers_facedetector_yes)
+        faceanalyzer_req = requests.post(facedetectorfn2_url_async, json.dumps(facedetector_data), headers=headers_facedetector_yes)
         i = i + 1
     else:
-        mobilenet_data = {"input-bucket": "image-output", "key": name}
-        mobilenet_req = requests.post(facedetectorfn2_url_async, json.dumps(mobilenet_data), headers=headers_facedetector_no)
+        mobilenet_req = requests.post(facedetectorfn2_url_async, json.dumps(facedetector_data), headers=headers_facedetector_no)
         i = i + 1
 
 
