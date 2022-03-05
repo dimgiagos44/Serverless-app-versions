@@ -21,3 +21,24 @@
 *This was done to check whether some of the machines are stronger than others*
 
 ![Screenshot from 2022-02-14 12-41-20](https://user-images.githubusercontent.com/57920951/153849266-85194275-68a4-4ccd-bfb9-923df6a0fb2b.png)
+
+## Heatmaps for facedetector part with scaling replica pods and queue-workers
+
+![facedetector_heatmap_7frames_nopressure](https://user-images.githubusercontent.com/57920951/156896587-c3f38b0a-b0c8-4958-a488-267233651aad.png)
+
+![facedetector_heatmap_16frames_nopressure](https://user-images.githubusercontent.com/57920951/156896591-e422d996-cf31-4239-b24f-44df23764bea.png)
+
+![facedetector_heatmap_32frames_nopressure](https://user-images.githubusercontent.com/57920951/156896598-4689bd5c-9070-4f35-b6bf-7cdf1fbc97c5.png)
+
+![facedetector_heatmap_65frames_nopressure](https://user-images.githubusercontent.com/57920951/156896600-33b4b389-a112-4bbc-a0e2-2cd54279559e.png)
+
+## Heatmaps for faceanalyzer-mobilenet part with scaling replica pods and queue-workers
+
+![facemob_heatmap_7frames_nopressure](https://user-images.githubusercontent.com/57920951/156896635-a529c789-633a-4639-a32f-f2cf4bc42406.png)
+
+![facemob_heatmap_16frames_nopressure](https://user-images.githubusercontent.com/57920951/156896640-9d9b3e54-add0-4c59-a82c-15368bb6e123.png)
+
+![facemob_heatmap_32frames_nopressure](https://user-images.githubusercontent.com/57920951/156896644-27725733-674e-484d-b8ae-12229291d5bc.png)
+
+![facemob_heatmap_65frames_nopressure](https://user-images.githubusercontent.com/57920951/156896646-bf420f94-1e01-43a7-b02c-d97abf7e5500.png)
+
