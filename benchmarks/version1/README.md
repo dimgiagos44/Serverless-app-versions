@@ -42,3 +42,14 @@
 
 ![facemob_heatmap_65frames_nopressure](https://user-images.githubusercontent.com/57920951/156896646-bf420f94-1e01-43a7-b02c-d97abf7e5500.png)
 
+## Heatmaps for pressure applied on facedetector part, with scaling queue-workers
+
+![facedetector_7frames_pressure](https://user-images.githubusercontent.com/57920951/156930870-7673cedf-4951-4fbd-a75d-a000c6c5ec40.png)
+
+![facedetector_16frames_pressure](https://user-images.githubusercontent.com/57920951/156930875-3b4681e0-9154-4c47-ba9d-006562d4482e.png)
+
+![facedetector_32frames_pressure](https://user-images.githubusercontent.com/57920951/156930881-7589b5f5-b10e-4c6c-962c-f75a78a5e88d.png)
+
+![facedetector_65frames_pressure](https://user-images.githubusercontent.com/57920951/156930882-c1c2476e-2600-4e4a-8fc8-716c782ee4c0.png)
+
+
