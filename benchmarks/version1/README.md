@@ -22,7 +22,9 @@
 
 ![Screenshot from 2022-02-14 12-41-20](https://user-images.githubusercontent.com/57920951/153849266-85194275-68a4-4ccd-bfb9-923df6a0fb2b.png)
 
-## Heatmaps for facedetector part with scaling replica pods and queue-workers
+## Heatmaps for Facedetector part latency, while scaling queue-workers & function's replicas
+
+*Scaling function's replicas doesnt seem to accelarate the process, but the # of queue-workers plays an important role*
 
 ![facedetector_heatmap_7frames_nopressure](https://user-images.githubusercontent.com/57920951/156896587-c3f38b0a-b0c8-4958-a488-267233651aad.png)
 
@@ -32,7 +34,9 @@
 
 ![facedetector_heatmap_65frames_nopressure](https://user-images.githubusercontent.com/57920951/156896600-33b4b389-a112-4bbc-a0e2-2cd54279559e.png)
 
-## Heatmaps for faceanalyzer-mobilenet part with scaling replica pods and queue-workers
+## Heatmaps for faceanalyzer-mobilenet part latency, while scaling queue-workers & functions' replicas
+
+*Same finding as above experiment*
 
 ![facemob_heatmap_7frames_nopressure](https://user-images.githubusercontent.com/57920951/156896635-a529c789-633a-4639-a32f-f2cf4bc42406.png)
 
@@ -43,6 +47,8 @@
 ![facemob_heatmap_65frames_nopressure](https://user-images.githubusercontent.com/57920951/156896646-bf420f94-1e01-43a7-b02c-d97abf7e5500.png)
 
 ## Heatmaps for pressure applied on facedetector part, with scaling queue-workers
+
+*Small delays are witnessed when applying artificial pressure (Cpu pressure, memory bandwidth pressure, l3 cache pressure)*
 
 ![facedetector_7frames_pressure](https://user-images.githubusercontent.com/57920951/156930870-7673cedf-4951-4fbd-a75d-a000c6c5ec40.png)
 
