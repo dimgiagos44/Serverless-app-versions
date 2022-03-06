@@ -50,12 +50,12 @@
 
 *Small delays are witnessed when applying artificial pressure (Cpu pressure, memory bandwidth pressure, l3 cache pressure)*
 
-![facedetector_7frames_pressure](https://user-images.githubusercontent.com/57920951/156930870-7673cedf-4951-4fbd-a75d-a000c6c5ec40.png)
+![facedetector_7frames_pressure](https://user-images.githubusercontent.com/57920951/156931561-bfd95a72-ac2a-4a4f-991e-df8873cb209b.png)
 
-![facedetector_16frames_pressure](https://user-images.githubusercontent.com/57920951/156930875-3b4681e0-9154-4c47-ba9d-006562d4482e.png)
+![facedetector_16frames_pressure](https://user-images.githubusercontent.com/57920951/156931562-f32fa465-22a6-47f1-82d2-db50fcd11aa5.png)
 
-![facedetector_32frames_pressure](https://user-images.githubusercontent.com/57920951/156930881-7589b5f5-b10e-4c6c-962c-f75a78a5e88d.png)
+![facedetector_32frames_pressure](https://user-images.githubusercontent.com/57920951/156931574-ec356f19-cbe9-4ea6-a755-870bdf2910cf.png)
 
-![facedetector_65frames_pressure](https://user-images.githubusercontent.com/57920951/156930882-c1c2476e-2600-4e4a-8fc8-716c782ee4c0.png)
+![facedetector_65frames_pressure](https://user-images.githubusercontent.com/57920951/156931577-e9f85cd1-f30d-40b9-8912-18a47a623afd.png)
 
 
