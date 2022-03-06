@@ -2,13 +2,13 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-workers = ['1', '2', '4', '8', '16']
+workers = ['1-sync', '1', '2', '4', '8', '16']
 replicas = ['0-0-4', '0-4-0', '4-0-0', '0-0-0']
 
-times = np.array([[15.21, 26, 18, 11, 10],
-                    [14.85, 27, 14, 8.3, 8],
-                    [14.31, 26.7, 16, 8.4, 8],
-                    [14.18, 26.5, 13.66, 7.25, 8]])
+times = np.array([[1.95, 5, 2.7, 2.3, 1, 1.2],
+                    [1.86, 5, 2.75, 1, 1, 1],
+                    [1.86, 5, 2.75, 1, 1, 1.2],
+                    [1.62, 5, 2.75, 1.75, 1, 1.2]])
 
 
 fig, ax = plt.subplots()
@@ -28,7 +28,7 @@ for i in range(len(replicas)):
         text = ax.text(j, i, times[i, j],
                        ha="center", va="center", color="w")
 
-ax.set_title('Facedetector latencies (sec) - frames: 65')
+ax.set_title('Facedetector latencies (sec) - frames: 7')
 #fig.tight_layout()
 plt.xticks(np.arange(len(workers)), labels=workers)
 plt.yticks(np.arange(len(replicas)), labels=replicas)
