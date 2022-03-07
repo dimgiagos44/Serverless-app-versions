@@ -29,7 +29,7 @@ synchronously and as a result the queue-worker (OpenFaas component) is unable to
 
 #### 0-0-0 cluster pressure
 
-![0_0_0_pressure](https://user-images.githubusercontent.com/57920951/155745027-1879e3f4-8b19-426f-b300-46bad4712e93.png)
+<!--- ![0_0_0_pressure](https://user-images.githubusercontent.com/57920951/155745027-1879e3f4-8b19-426f-b300-46bad4712e93.png) -->
 
 
 #### 3CPU-0-0 cluster pressure
