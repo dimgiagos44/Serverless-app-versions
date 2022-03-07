@@ -16,15 +16,14 @@ client = Minio(
         http_client=urllib3.PoolManager(cert_reqs="CERT_NONE")
 )
 
+
 def download_stream(bucket, file):
         data = client.get_object(bucket, file)
         return data.read()
 
-def upload_stream(bucket, frame_num, bytes_data):
-        key_name = frame_num 
-        key_name += '.jpg'
-        client.put_object(bucket, key_name, bytes_data, bytes_data.getbuffer().nbytes)
-        return key_name
+def upload_stream(bucket, file, bytes_data):
+        client.put_object(bucket, file, bytes_data, bytes_data.getbuffer().nbytes)
+        return 
 
 def process(image_array):
         image = Image.fromarray(image_array)
@@ -49,6 +48,7 @@ def handle(req):
     successOpen = success
     #seconds = 20
     frame_num = 0
+    s = '.' + str(seconds) + '.jpg'
     fps = vidcap.get(cv2.CAP_PROP_FPS)
     
     if upper_limit == 'full':
@@ -77,9 +77,9 @@ def handle(req):
 
         if frameId % multiplier == 0:
                 image_file = process(image)
-                name = str(frame_num) + '.' + str(seconds)
-                key_name = upload_stream(output_bucket, name, image_file)
-                key_names.append(key_name)
+                name = str(frame_num) + s
+                upload_stream(output_bucket, name, image_file)
+                key_names.append(name)
                 frame_num += 1
         
     

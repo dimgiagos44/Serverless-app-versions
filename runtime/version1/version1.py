@@ -125,4 +125,7 @@ print('faceanalyzer results: ', faceanalyzer_results)
 print('mobilenet results: ', mobilenet_results)
 '''
 end = time.time()
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
 print(f'Runtime of the execution took {end - start}')
+print("Current time =", current_time)

@@ -27,22 +27,13 @@ client = Minio(
         http_client=urllib3.PoolManager(cert_reqs="CERT_NONE")
 )
 
-def unique_name(name):
-        name, extension = name.split('.')
-        return '{name}.{random}.{extension}'.format(
-                    name=name,
-                    extension=extension,
-                    random=str(uuid.uuid4()).split('-')[0]
-                )
-
 def download_stream(bucket, file):
         data = client.get_object(bucket, file)
         return data.read()
 
 def upload_stream(bucket, file, bytes_data):
-        key_name = unique_name(file)
-        client.put_object(bucket, key_name, bytes_data, bytes_data.getbuffer().nbytes)
-        return key_name
+        client.put_object(bucket, file, bytes_data, bytes_data.getbuffer().nbytes)
+        return file
 
 ############## FRAMER PART ##################
 def framer_process(image_array):
@@ -127,6 +118,7 @@ def handle(req):
     success, image = vidcap.read()
     successOpen = success
     frame_num = 0
+    s = '.' + str(seconds) + '.jpg'
     fps = vidcap.get(cv2.CAP_PROP_FPS)
 
     if upper_limit == 'full':
@@ -156,17 +148,12 @@ def handle(req):
 
         if frameId % multiplier == 0:
                 image_file = framer_process(image)
-                key_name = upload_stream(output_bucket, 'frame.jpg', image_file)
-                key_names.append(key_name)
+                name = str(frame_num) + s
+                upload_stream(output_bucket, name, image_file)
+                key_names.append(name)
                 frame_num += 1
 
     vidcap.release()
-    result0 = {
-            'output_bucket': output_bucket,
-            'frame_names': key_names,
-            'frame_number': frame_num,
-            'request_status': successOpen
-    }
 
     final_results = []
     for key in key_names:
