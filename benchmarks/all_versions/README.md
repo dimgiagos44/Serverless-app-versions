@@ -1,6 +1,6 @@
 # Version1 vs Version2 vs Version3 vs Version4
 
-## Average results from version1 vs version2 vs version3 vs version4 with 1 input with single node (davinci)
+## Average results from version1 vs version2 vs version3 vs version4 with 1 input with single node (davinci), with Faas-Flow runtime
 
 *Expected result for each version's time.*
 
@@ -10,7 +10,7 @@
 
  ![78frames_execution](https://user-images.githubusercontent.com/57920951/152551732-63426362-a7df-46bd-8f42-eb00fe53c3d7.png)
  
- ## Ram allocation across functions and versions (estimated)
+ ## Ram allocation across functions and versions (estimated), with Faas-Flow runtime
  
  *Version2 is heavier than Version1 in terms or RAM allocation and as fast as Version1*
 
