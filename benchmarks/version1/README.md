@@ -8,7 +8,9 @@
 * Url6's duration = 500 seconds (0-500) with total 78  frames created & processed (1 per 5 seconds)
 * Url7's duration = 654 seconds (0-654) with total 130 frames created & processed (1 per 5 seconds)
 
-![single_multi2](https://user-images.githubusercontent.com/57920951/152982651-d522ac39-8d8e-4c61-9a32-cc74b095681b.png)
+<!--- ![single_multi2](https://user-images.githubusercontent.com/57920951/152982651-d522ac39-8d8e-4c61-9a32-cc74b095681b.png) -->
+
+<img src="https://user-images.githubusercontent.com/57920951/152982651-d522ac39-8d8e-4c61-9a32-cc74b095681b.png" width="500" height="320">
 
 ## Timestamps experiment for Version1(3 replicas) single-node VS Version1(3 replicas) multi-node deployments
 
