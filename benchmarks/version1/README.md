@@ -18,37 +18,27 @@
 
 <img src="https://user-images.githubusercontent.com/57920951/154118396-c824ea70-510a-480f-9fe1-18d325f87b14.png" width="500" height="320">
 
-<!--- ![timestamps_experiment](https://user-images.githubusercontent.com/57920951/153643250-ea74508f-3049-48b1-a51d-addd0be4791f.png) -->
+![timestamps_experiment](https://user-images.githubusercontent.com/57920951/153643250-ea74508f-3049-48b1-a51d-addd0be4791f.png)
 
-<img src="https://user-images.githubusercontent.com/57920951/153643250-ea74508f-3049-48b1-a51d-addd0be4791f.png" width="600" height="620">
 
 ## Average results for Version1(1, 3 replicas) for single-node deployment: Davinci VS Liono
 *This was done to check whether some of the machines are stronger than others*
 
-<!--- ![Screenshot from 2022-02-14 12-41-20](https://user-images.githubusercontent.com/57920951/153849266-85194275-68a4-4ccd-bfb9-923df6a0fb2b.png) -->
-
-<img src="https://user-images.githubusercontent.com/57920951/153849266-85194275-68a4-4ccd-bfb9-923df6a0fb2b.png" width="500" height="320">
+![Screenshot from 2022-02-14 12-41-20](https://user-images.githubusercontent.com/57920951/153849266-85194275-68a4-4ccd-bfb9-923df6a0fb2b.png)
 
 
 ## Heatmaps for Facedetector part latency, while scaling queue-workers & function's replicas
 
 *Scaling function's replicas doesnt seem to accelarate the process, but the # of queue-workers plays an important role*
 
-<!--- ![facedetector_heatmap_7frames_nopressure](https://user-images.githubusercontent.com/57920951/156896587-c3f38b0a-b0c8-4958-a488-267233651aad.png) -->
+![facedetector_heatmap_7frames_nopressure](https://user-images.githubusercontent.com/57920951/156896587-c3f38b0a-b0c8-4958-a488-267233651aad.png)
 
-<!--- ![facedetector_heatmap_16frames_nopressure](https://user-images.githubusercontent.com/57920951/156896591-e422d996-cf31-4239-b24f-44df23764bea.png) -->
+![facedetector_heatmap_16frames_nopressure](https://user-images.githubusercontent.com/57920951/156896591-e422d996-cf31-4239-b24f-44df23764bea.png) 
 
-<!--- ![facedetector_heatmap_32frames_nopressure](https://user-images.githubusercontent.com/57920951/156896598-4689bd5c-9070-4f35-b6bf-7cdf1fbc97c5.png) -->
+![facedetector_heatmap_32frames_nopressure](https://user-images.githubusercontent.com/57920951/156896598-4689bd5c-9070-4f35-b6bf-7cdf1fbc97c5.png) 
 
-<!--- ![facedetector_heatmap_65frames_nopressure](https://user-images.githubusercontent.com/57920951/156896600-33b4b389-a112-4bbc-a0e2-2cd54279559e.png) -->
+![facedetector_heatmap_65frames_nopressure](https://user-images.githubusercontent.com/57920951/156896600-33b4b389-a112-4bbc-a0e2-2cd54279559e.png) 
 
-<img src="https://user-images.githubusercontent.com/57920951/156896587-c3f38b0a-b0c8-4958-a488-267233651aad.png" width="500" height="320">
-
-<img src="https://user-images.githubusercontent.com/57920951/156896591-e422d996-cf31-4239-b24f-44df23764bea.png" width="500" height="320">
-
-<img src="https://user-images.githubusercontent.com/57920951/156896598-4689bd5c-9070-4f35-b6bf-7cdf1fbc97c5.png" width="500" height="320">
-
-<img src="https://user-images.githubusercontent.com/57920951/156896600-33b4b389-a112-4bbc-a0e2-2cd54279559e.png" width="500" height="320">
 
 ## Heatmaps for faceanalyzer-mobilenet part latency, while scaling queue-workers & functions' replicas
 
