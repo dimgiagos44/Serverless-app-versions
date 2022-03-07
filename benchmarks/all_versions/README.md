@@ -14,4 +14,4 @@
  
  *Version2 is heavier than Version1 in terms or RAM allocation and as fast as Version1*
 
-![ram_allocation](https://user-images.githubusercontent.com/57920951/155381960-e3631fd6-5ab8-4378-8f8e-c3b7af1cfb28.png) { width: 200px; }
+![ram_allocation](https://user-images.githubusercontent.com/57920951/155381960-e3631fd6-5ab8-4378-8f8e-c3b7af1cfb28.png 100x100)
