@@ -19,6 +19,14 @@ synchronously and as a result the queue-worker (OpenFaas component) is unable to
 
 ![version1-4-single-multi](https://user-images.githubusercontent.com/57920951/153644735-bdc69f30-88f3-4ba1-895e-eb1e7c49aebb.png)
 
+
+## CPU - Memory Bandwidth - L3 cache pressure scenarios for Version1 (multiple queue-workers acceleration) and Version4
+
+### 0 - 0 - 0 cluster pressure 
+
+![version1_4_000_pressure](https://user-images.githubusercontent.com/57920951/157099906-66a5022a-8d37-48a4-a6fd-77ebe4646bfa.png)
+
+
 ## CPU-MemBandwidth-LLC pressure scenarios for Version1 (single/multi-node) and Version4
 
 | Single-node placement | Multi-node placement 1a | 1b | 1c | 1a x 3 | Version4 | 
@@ -29,27 +37,26 @@ synchronously and as a result the queue-worker (OpenFaas component) is unable to
 
 #### 0-0-0 cluster pressure
 
-<!--- ![0_0_0_pressure](https://user-images.githubusercontent.com/57920951/155745027-1879e3f4-8b19-426f-b300-46bad4712e93.png) -->
+![0_0_0_pressure](https://user-images.githubusercontent.com/57920951/155745027-1879e3f4-8b19-426f-b300-46bad4712e93.png)
 
-![version1_4_000_pressure](https://user-images.githubusercontent.com/57920951/157099505-f739f72a-8011-464b-a0e9-c01be3614511.png)
 
 
 #### 3CPU-0-0 cluster pressure
 
-<!--- ![3_0_0_pressure](https://user-images.githubusercontent.com/57920951/155745048-ae371fb0-66b5-4a11-a6f4-48ad99bce90e.png) -->
+![3_0_0_pressure](https://user-images.githubusercontent.com/57920951/155745048-ae371fb0-66b5-4a11-a6f4-48ad99bce90e.png)
 
 
 #### 0-3MemBand-0 cluster pressure
 
-<!--- ![0_3_0_pressure](https://user-images.githubusercontent.com/57920951/155745076-37b0ab61-369c-42b3-b069-f795a788429c.png) -->
+![0_3_0_pressure](https://user-images.githubusercontent.com/57920951/155745076-37b0ab61-369c-42b3-b069-f795a788429c.png)
 
 
 #### 0-0-3LLCache cluster pressure
 
-<!--- ![0_0_3_pressure](https://user-images.githubusercontent.com/57920951/155745091-9f2bdda9-e460-4835-acd9-e9018259e4a8.png) -->
+![0_0_3_pressure](https://user-images.githubusercontent.com/57920951/155745091-9f2bdda9-e460-4835-acd9-e9018259e4a8.png)
 
 
 #### 1-1-1 cluster pressure
 
-<!--- ![1_1_1_pressure](https://user-images.githubusercontent.com/57920951/155745110-d6fd5769-b4e6-4e18-9600-c450c6e76987.png) -->
+![1_1_1_pressure](https://user-images.githubusercontent.com/57920951/155745110-d6fd5769-b4e6-4e18-9600-c450c6e76987.png)
 
