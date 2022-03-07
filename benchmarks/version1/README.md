@@ -20,7 +20,7 @@
 
 <!--- ![timestamps_experiment](https://user-images.githubusercontent.com/57920951/153643250-ea74508f-3049-48b1-a51d-addd0be4791f.png) -->
 
-<img src="https://user-images.githubusercontent.com/57920951/153643250-ea74508f-3049-48b1-a51d-addd0be4791f.png" width="500" height="320">
+<img src="https://user-images.githubusercontent.com/57920951/153643250-ea74508f-3049-48b1-a51d-addd0be4791f.png" width="600" height="620">
 
 ## Average results for Version1(1, 3 replicas) for single-node deployment: Davinci VS Liono
 *This was done to check whether some of the machines are stronger than others*
