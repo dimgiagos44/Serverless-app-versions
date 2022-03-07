@@ -1,6 +1,6 @@
 # Version1 (single/multi-node, single/multi-replicas) vs Version4 benchmarks
 
-## Average results from version1 vs version4 with 4 different inputs with single node deployment (davinci)
+## Average results from Version1 vs Version4 with 4 different inputs with single node deployment (davinci), with Faas-Flow runtime
 
 *Adding replicas to Version1's pods seems not to accelerate the execution. Check below why*
 
@@ -11,7 +11,7 @@
 
 ![Screenshot from 2022-02-04 10-38-27](https://user-images.githubusercontent.com/57920951/152516475-9b542414-3b81-4221-be99-28e5888d5744.png)
 
-## Average results from version1 (single/multi-node) vs version4 (no pressures applied)
+## Average results from Version1 (single/multi-node) vs Version4 (no pressures applied), with Faas-Flow runtime
 
 1. *The weird thing here is that multi-replicas deployments are not faster than the single-replica deployment: No speedup achieved, thus no differences are spoted. The reason is because of [faas-flow's](https://github.com/s8sg/faas-flow) logic to invoke functions
 synchronously and as a result the queue-worker (OpenFaas component) is unable to process requests concurrently*
@@ -20,14 +20,14 @@ synchronously and as a result the queue-worker (OpenFaas component) is unable to
 ![version1-4-single-multi](https://user-images.githubusercontent.com/57920951/153644735-bdc69f30-88f3-4ba1-895e-eb1e7c49aebb.png)
 
 
-## CPU - Memory Bandwidth - L3 cache pressure scenarios for Version1 (multiple queue-workers acceleration) and Version4
+## CPU - Memory Bandwidth - L3 cache pressure scenarios for Version1 (multiple queue-workers acceleration) and Version4, with custom runtime
 
 ### 0 - 0 - 0 cluster pressure 
 
 ![version1_4_000_pressure](https://user-images.githubusercontent.com/57920951/157099906-66a5022a-8d37-48a4-a6fd-77ebe4646bfa.png)
 
 
-## CPU-MemBandwidth-LLC pressure scenarios for Version1 (single/multi-node) and Version4
+## CPU-MemBandwidth-LLC pressure scenarios for Version1 (single/multi-node) and Version4, with Faas-Flow runtime
 
 | Single-node placement | Multi-node placement 1a | 1b | 1c | 1a x 3 | Version4 | 
 | --- | --- | --- | --- | --- | --- |
