@@ -10,7 +10,7 @@
 
  <!--- ![78frames_execution](https://user-images.githubusercontent.com/57920951/152551732-63426362-a7df-46bd-8f42-eb00fe53c3d7.png) -->
  
- <img src="https://user-images.githubusercontent.com/57920951/152551732-63426362-a7df-46bd-8f42-eb00fe53c3d7.png" width="420" height="280">
+ <img src="https://user-images.githubusercontent.com/57920951/152551732-63426362-a7df-46bd-8f42-eb00fe53c3d7.png" width="500" height="320">
  
  ## Ram allocation across functions and versions (estimated), with Faas-Flow runtime
  
@@ -18,4 +18,4 @@
 
 <!--- ![ram_allocation](https://user-images.githubusercontent.com/57920951/155381960-e3631fd6-5ab8-4378-8f8e-c3b7af1cfb28.png) -->
 
-<img src="https://user-images.githubusercontent.com/57920951/155381960-e3631fd6-5ab8-4378-8f8e-c3b7af1cfb28.png" width="500" height="320">
+<img src="https://user-images.githubusercontent.com/57920951/155381960-e3631fd6-5ab8-4378-8f8e-c3b7af1cfb28.png" width="520" height="350">
