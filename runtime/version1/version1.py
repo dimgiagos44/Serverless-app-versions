@@ -59,6 +59,7 @@ print(facedetector_results)
 '''
 
 # FACEDETECTOR-FACEANALYZER-MOBILENET PART
+print('Executing the facedetector-faceanalyzer-mobilenet...')
 face_exists_array_7 = ['f', 't', 'f', 'f', 't', 'f', 'f']
 face_exists_array_16 = ['t', 't', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f']
 face_exists_array_32 = ['t', 't', 'f', 't', 't', 't', 't', 'f', 't', 'f', 'f', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f', 't', 't', 't', 'f', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f']
