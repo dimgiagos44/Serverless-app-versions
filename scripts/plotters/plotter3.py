@@ -4,7 +4,7 @@ import numpy as np
 
 ticks = [1, 2]
 
-barWidth = 0.15
+barWidth = 0.12
 fig, ax = plt.subplots(figsize =(12, 8))
 
 # set height of bar
@@ -34,10 +34,10 @@ rects4 = plt.bar(br4, version1_8, color ='y', width = barWidth,
         edgecolor ='grey', label ='version1_8')
 rects5 = plt.bar(br5, version1_16, color ='pink', width = barWidth,
         edgecolor ='grey', label ='version1_16')
-rects6 = plt.bar(br6, version1_8, color ='black', width = barWidth,
+rects6 = plt.bar(br6, version4, color ='black', width = barWidth,
         edgecolor ='grey', label ='version4')
 
-plt.xlabel('0-0-0 pressure', fontweight ='bold', fontsize = 15)
+plt.xlabel('# of frames \n (No pressure)', fontweight ='bold', fontsize = 15)
 plt.ylabel('Average execution time (sec)', fontweight ='bold', fontsize = 15)
 plt.xticks([r + barWidth for r in range(len(version1_1))], labels)
 
@@ -49,7 +49,7 @@ ax.bar_label(rects1, padding=3, )
 ax.bar_label(rects6, padding=5)
 # function to show the plot
 #plt.show()
-plt.title('Version1_#_of_queue-workers & Version4', fontsize=20, 
+plt.title('Version1 with multiple queue-workers & Version4', fontsize=20, 
         color='white', backgroundcolor='green', pad='2.0')
 plt.legend()
 plt.show()
