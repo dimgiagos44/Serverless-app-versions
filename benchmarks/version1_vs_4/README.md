@@ -24,7 +24,8 @@ synchronously and as a result the queue-worker (OpenFaas component) is unable to
 
 ### 0 - 0 - 0 cluster pressure 
 
-![version1_4_000_pressure](https://user-images.githubusercontent.com/57920951/157099906-66a5022a-8d37-48a4-a6fd-77ebe4646bfa.png)
+
+![version1_4_nopressure](https://user-images.githubusercontent.com/57920951/157480348-b3ab78a6-a140-4135-b75a-41388b01c071.png)
 
 
 ## CPU-MemBandwidth-LLC pressure scenarios for Version1 (single/multi-node) and Version4, with Faas-Flow runtime
