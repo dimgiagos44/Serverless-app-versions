@@ -33,7 +33,7 @@ ax.set_title('Version4 latencies (sec)')
 #fig.tight_layout()
 plt.xticks(np.arange(len(frames)), labels=frames)
 plt.yticks(np.arange(len(configs)), labels=configs)
-ax.set_xlabel('# Queue-workers')
+ax.set_xlabel('# Frames')
 ax.set_ylabel('Placement configuration')
 plt.show()
 
