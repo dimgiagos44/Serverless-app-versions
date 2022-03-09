@@ -26,6 +26,21 @@
 
 ![Screenshot from 2022-02-14 12-41-20](https://user-images.githubusercontent.com/57920951/153849266-85194275-68a4-4ccd-bfb9-923df6a0fb2b.png)
 
+## Heatmaps for Version1 latency, while scaling queue-workers on different placement configurations
+
+<img src="https://user-images.githubusercontent.com/57920951/157476777-55246317-8070-4d9b-a5db-754c9d5e40b9.png" width="425"/> <img src="https://user-images.githubusercontent.com/57920951/157476798-a7b7b7c7-ff79-4c0d-aa81-557608e9bdb4.png" width="425"/> 
+
+<img src="https://user-images.githubusercontent.com/57920951/157476812-554e9e6a-d6d1-456c-bed8-d93984569c95.png" width="425"/> <img src="https://user-images.githubusercontent.com/57920951/157476834-49203ead-a4aa-4f89-a4ce-5c6ebb477b8e.png" width="425"/> 
+
+<!--- ![version1_7frames_nopressure](https://user-images.githubusercontent.com/57920951/157476777-55246317-8070-4d9b-a5db-754c9d5e40b9.png) -->
+
+<!--- ![version1_16frames_nopressure](https://user-images.githubusercontent.com/57920951/157476798-a7b7b7c7-ff79-4c0d-aa81-557608e9bdb4.png) -->
+
+<!--- ![version1_32frames_nopressure](https://user-images.githubusercontent.com/57920951/157476812-554e9e6a-d6d1-456c-bed8-d93984569c95.png) -->
+
+<!--- ![version1_65frames_nopressure](https://user-images.githubusercontent.com/57920951/157476834-49203ead-a4aa-4f89-a4ce-5c6ebb477b8e.png) -->
+
+
 
 ## Heatmaps for Facedetector part latency, while scaling queue-workers & function's replicas
 
