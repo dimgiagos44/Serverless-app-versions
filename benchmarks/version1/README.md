@@ -48,13 +48,17 @@
 
 *Same finding as above experiment*
 
-![facemob_heatmap_7frames_nopressure](https://user-images.githubusercontent.com/57920951/156896635-a529c789-633a-4639-a32f-f2cf4bc42406.png)
+<img src="https://user-images.githubusercontent.com/57920951/156896635-a529c789-633a-4639-a32f-f2cf4bc42406.png" width="425"/> <img src="https://user-images.githubusercontent.com/57920951/156896640-9d9b3e54-add0-4c59-a82c-15368bb6e123.png" width="425"/> 
 
-![facemob_heatmap_16frames_nopressure](https://user-images.githubusercontent.com/57920951/156896640-9d9b3e54-add0-4c59-a82c-15368bb6e123.png)
+<img src="https://user-images.githubusercontent.com/57920951/156896644-27725733-674e-484d-b8ae-12229291d5bc.png" width="425"/> <img src="https://user-images.githubusercontent.com/57920951/156896646-bf420f94-1e01-43a7-b02c-d97abf7e5500.png" width="425"/> 
 
-![facemob_heatmap_32frames_nopressure](https://user-images.githubusercontent.com/57920951/156896644-27725733-674e-484d-b8ae-12229291d5bc.png)
+<!--- ![facemob_heatmap_7frames_nopressure](https://user-images.githubusercontent.com/57920951/156896635-a529c789-633a-4639-a32f-f2cf4bc42406.png) -->
 
-![facemob_heatmap_65frames_nopressure](https://user-images.githubusercontent.com/57920951/156896646-bf420f94-1e01-43a7-b02c-d97abf7e5500.png)
+<!--- ![facemob_heatmap_16frames_nopressure](https://user-images.githubusercontent.com/57920951/156896640-9d9b3e54-add0-4c59-a82c-15368bb6e123.png) -->
+
+<!--- ![facemob_heatmap_32frames_nopressure](https://user-images.githubusercontent.com/57920951/156896644-27725733-674e-484d-b8ae-12229291d5bc.png) -->
+
+<!--- ![facemob_heatmap_65frames_nopressure](https://user-images.githubusercontent.com/57920951/156896646-bf420f94-1e01-43a7-b02c-d97abf7e5500.png) -->
 
 ## Heatmaps for pressure applied on facedetector part, with scaling queue-workers
 
