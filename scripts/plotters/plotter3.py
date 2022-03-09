@@ -49,7 +49,7 @@ ax.bar_label(rects1, padding=3, )
 ax.bar_label(rects6, padding=5)
 # function to show the plot
 #plt.show()
-plt.title('Version1 with multiple queue-workers & Version4', fontsize=20, 
+plt.title('Version1, multiple queue-workers, 1 replica per function & Version4', fontsize=20, 
         color='white', backgroundcolor='green', pad='2.0')
 plt.legend()
 plt.show()
