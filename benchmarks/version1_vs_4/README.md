@@ -22,7 +22,7 @@ synchronously and as a result the queue-worker (OpenFaas component) is unable to
 
 ## CPU - Memory Bandwidth - L3 cache pressure scenarios for Version1 (multiple queue-workers acceleration) and Version4, with custom runtime
 
-### 0 - 0 - 0 cluster pressure 
+### 0 - 0 - 0 cluster pressure, all functions placed on Liono 
 
 
 ![version1_4_nopressure](https://user-images.githubusercontent.com/57920951/157480348-b3ab78a6-a140-4135-b75a-41388b01c071.png)
