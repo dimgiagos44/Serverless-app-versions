@@ -31,6 +31,8 @@
 
 *Scaling function's replicas doesnt seem to accelarate the process, but the # of queue-workers plays an important role*
 
+<img src="https://user-images.githubusercontent.com/57920951/156896587-c3f38b0a-b0c8-4958-a488-267233651aad.png" width="425"/> <img src="image2.png" width="https://user-images.githubusercontent.com/57920951/156896591-e422d996-cf31-4239-b24f-44df23764bea.png"/> 
+
 ![facedetector_heatmap_7frames_nopressure](https://user-images.githubusercontent.com/57920951/156896587-c3f38b0a-b0c8-4958-a488-267233651aad.png) 
 
 ![facedetector_heatmap_16frames_nopressure](https://user-images.githubusercontent.com/57920951/156896591-e422d996-cf31-4239-b24f-44df23764bea.png) 
