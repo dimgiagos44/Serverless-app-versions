@@ -28,6 +28,8 @@ class CustomEnv(gym.Env):
             17: '14441', 18: '14442', 19: '14443', 20: '11122', 21: '11133', 22: '11144', 23: '12211', 24: '12233', 25: '12244'
         }
 
+        self.inputs = { 0: ['90', '7'], 1: ['40', '16'], 2: ['20', '32'], 3: ['10', '65']}
+
         self.action_space = gym.spaces.Discrete(len(self.switcher))
         self.observation_space = gym.spaces.Box() #se ti diastima timwn anikoun oi metavlites pou apartizoun to state
 
@@ -47,7 +49,7 @@ class CustomEnv(gym.Env):
     if action[0] == 0: deploy monolith2 on action[1] node
     else: deploy framerfn on action[1] node, facedetectorfn2 on action[2] node etc.
     '''
-    def takeAction(self, action):
+    def takeAction(self, action, input):
         action_vector = self.switcher.get(action)
         deploy_monolith_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2'
         deploy_framerfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=framerfn'
@@ -57,19 +59,13 @@ class CustomEnv(gym.Env):
         constraint_worker_command = ['', ' --constraint "kubernetes.io/hostname=gworker-01"', ' --constraint "kubernetes.io/hostname=gworker-02"',
                                     ' --constraint "kubernetes.io/hostname=gworker-03"', ' --constraint "kubernetes.io/hostname=gworker-04"']
         if (action_vector[0] == 0):
-            #command = 'faas remove monolith2'
-            #subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            #time.sleep(3)
             if (action_vector[1] >= 1 or action_vector[1] <= 4):
                 command = deploy_monolith_command + constraint_worker_command[action_vector[1]]
                 subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
                 time.sleep(3)
             else:
                 print('Wrong configuration on action vector #1!')
-        elif (action_vector[0] == 1): 
-            #command = 'faas remove framerfn && faas remove facedetectornf2 && faas remove faceanalyzerfn && faas remove mobilenetfn'
-            #subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            #ime.sleep(3)
+        elif (action_vector[0] == 1):
             command =  deploy_framerfn_command + constraint_worker_command[action_vector[1]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             command = deploy_facedetectorfn2_command + constraint_worker_command[action_vector[2]]
@@ -81,6 +77,15 @@ class CustomEnv(gym.Env):
             time.sleep(3)
         else:
             print('Wrong configuration on action vector #2!')
+        
+        if (action_vector[0] == 0):
+            command = 'python3 ../../runtime/version4/version4.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
+            latency = subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        elif (action_vector[0] == 1):
+            command = 'python3 ../../runtime/version1/version1.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
+            latency = subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        else: 
+            print('Error occured in action taking!')
         return 0
 
     def reset(self):
