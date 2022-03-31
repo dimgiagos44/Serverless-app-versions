@@ -54,13 +54,13 @@ class CustomEnv(gym.Env):
             command = 'faas remove monolith2'
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             time.sleep(3)
-            if (action[1] >= 1 or action[1] <= 4)
+            if (action[1] >= 1 or action[1] <= 4):
                 command = deploy_monolith_command + constraint_worker_command[action[1]]
                 subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
                 time.sleep(3)
             else:
                 print('Wrong configuration on action vector #1!')
-        elif (action[1] == 1): 
+        elif (action[0] == 1): 
             command = 'faas remove framerfn && faas remove facedetectornf2 && faas remove faceanalyzerfn && faas remove mobilenetfn'
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             time.sleep(3)
