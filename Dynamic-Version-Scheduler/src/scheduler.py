@@ -23,9 +23,9 @@ class CustomEnv(gym.Env):
         self.process = None
 
         self.switcher = {
-            0:  '01000', 1:  '02000', 2:  '03000', 3:  '04000', 4:  '11111', 5:  '12222', 6:  '13333', 7:  '14444',
-            8:  '11112', 9:  '11113', 10: '11114', 11: '12221', 12: '12223', 13: '12224', 14: '13331', 15: '13332', 16: '13334',
-            17: '14441', 18: '14442', 19: '14443', 20: '11122', 21: '11133', 22: '11144', 23: '12211', 24: '12233', 25: '12244'
+            0:  '01000', 1:  '0200', 2:  '0300', 3:  '0400', 4:  '1111', 5:  '1222', 6:  '1333', 7:  '1444',
+            8: '1112', 9: '1113', 10: '1114', 11: '1221', 12: '1223', 13: '1224', 14: '1331', 15: '1332',
+            16: '1334', 17: '1441', 18: '1442', 19: '1443', 20: '1231', 21: '1233', 22: '1234', 23: '1233'
         }
 
         self.inputs = { 0: ['90', '7'], 1: ['40', '16'], 2: ['20', '32'], 3: ['10', '65']}
@@ -72,7 +72,7 @@ class CustomEnv(gym.Env):
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             command =  deploy_faceanalyzerfn_command + constraint_worker_command[action[3]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = deploy_mobilenetfn_command + constraint_worker_command[action_vector[4]]
+            command = deploy_mobilenetfn_command + constraint_worker_command[action_vector[3]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             time.sleep(3)
         else:

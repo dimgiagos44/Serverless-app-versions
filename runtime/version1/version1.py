@@ -82,63 +82,30 @@ for flag in face_exists:
         mobilenet_req = requests.post(facedetectorfn2_url_async, json.dumps(facedetector_data), headers=headers_facedetector_no)
         i = i + 1
 
-#first_async_time = os.system('kubectl logs queue-worker-7579944c7d-7xzbm -n openfaas | grep -e "timestamp" | tail -n 1 | grep -oP "(?<=timestamp:)[0-9]+"')
-#output = subprocess.getoutput('kubectl logs queue-worker-7579944c7d-7xzbm -n openfaas --since=30s | grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n 7 | wc -l')
-queue_workers = ['queue-worker-7579944c7d-7xzbm', 'queue-worker-7579944c7d-7xzbm', 'queue-worker-7579944c7d-8q4kb', 'queue-worker-7579944c7d-gd5lq', 'queue-worker-7579944c7d-mvl49',
-                'queue-worker-7579944c7d-slmb4', 'queue-worker-7579944c7d-v8s75', 'queue-worker-7579944c7d-vdvft']
-sum_frames_received = -1
-sum_command_received = 0
+frames_received = -1
+command_received = 0
 started = False
 finished = True
 start_now = datetime.utcnow()
 start_now_str = start_now.isoformat("T") + "Z"
 #print('start_now_str = ', start_now_str)
 
-check_start_command0 = 'kubectl logs ' + queue_workers[0] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n 1 | wc -l'
-check_start_command1 = 'kubectl logs ' + queue_workers[1] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n 1 | wc -l'
-check_start_command2 = 'kubectl logs ' + queue_workers[2] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n 1 | wc -l'
-check_start_command3 = 'kubectl logs ' + queue_workers[3] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n 1 | wc -l'
-check_start_command4 = 'kubectl logs ' + queue_workers[4] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n 1 | wc -l'
-check_start_command5 = 'kubectl logs ' + queue_workers[5] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n 1 | wc -l'
-check_start_command6 = 'kubectl logs ' + queue_workers[6] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n 1 | wc -l'
-check_start_command7 = 'kubectl logs ' + queue_workers[7] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n 1 | wc -l'
-while (sum_command_received < 1):
-    command_received0 = int(subprocess.getoutput(check_start_command0))
-    command_received1 = int(subprocess.getoutput(check_start_command1))
-    command_received2 = int(subprocess.getoutput(check_start_command2))
-    command_received3 = int(subprocess.getoutput(check_start_command3))
-    command_received4 = int(subprocess.getoutput(check_start_command4))
-    command_received5 = int(subprocess.getoutput(check_start_command5))
-    command_received6 = int(subprocess.getoutput(check_start_command6))
-    command_received7 = int(subprocess.getoutput(check_start_command7))
-    sum_command_received = command_received0 + command_received1 + command_received2 + command_received3 + command_received4 + command_received5 + command_received6 + command_received7
+
+check_start_command = 'kubectl logs gateway-7ff44f68cb-x5lq9 gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n 1 | wc -l'
+while (command_received < 1):
+    command_received = int(subprocess.getoutput(check_start_command))
 
 started = True
-#count_frames_command = 'kubectl logs queue-worker-7579944c7d-7xzbm -n openfaas --since=' + time_interval + 's | grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
-count_frames_command0 = 'kubectl logs ' + queue_workers[0] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
-count_frames_command1 = 'kubectl logs ' + queue_workers[1] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
-count_frames_command2 = 'kubectl logs ' + queue_workers[2] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
-count_frames_command3 = 'kubectl logs ' + queue_workers[3] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
-count_frames_command4 = 'kubectl logs ' + queue_workers[4] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
-count_frames_command5 = 'kubectl logs ' + queue_workers[5] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
-count_frames_command6 = 'kubectl logs ' + queue_workers[6] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
-count_frames_command7 = 'kubectl logs ' + queue_workers[7] + ' -n openfaas --since-time=' + start_now_str + '| grep -e "Invoked: mobilenetfn" -e "Invoked: faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
-while (sum_frames_received < frames_number - 2):
-    frames_received0 = int(subprocess.getoutput(count_frames_command0))
-    frames_received1 = int(subprocess.getoutput(count_frames_command1))
-    frames_received2 = int(subprocess.getoutput(count_frames_command2))
-    frames_received3 = int(subprocess.getoutput(count_frames_command3))
-    frames_received4 = int(subprocess.getoutput(count_frames_command4))
-    frames_received5 = int(subprocess.getoutput(count_frames_command5))
-    frames_received6 = int(subprocess.getoutput(count_frames_command6))
-    frames_received7 = int(subprocess.getoutput(count_frames_command7))
-    sum_frames_received = frames_received0 + frames_received1 + frames_received2 + frames_received3 + frames_received4 + frames_received5 + frames_received6 + frames_received7
-    if (sum_frames_received == 0): 
+count_frames_command = 'kubectl logs gateway-7ff44f68cb-x5lq9 gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
+while (frames_received < frames_number - 2):
+    time.sleep(0.4)
+    frames_received = int(subprocess.getoutput(count_frames_command))
+    if (frames_received == 0): 
         finished = False
         break
 
 if finished == True:
-    print('finally frames_received =', sum_frames_received)
+    print('finally frames_received =', frames_received)
 else: 
     print('Process not finished..')
 
