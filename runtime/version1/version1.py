@@ -41,14 +41,14 @@ headers_facedetector_yes = {'Content-Type': 'application/x-www-form-urlencoded',
 headers_facedetector_no = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'http://gateway:8080/async-function/mobilenetfn'}
 jpg_add = '.' + str(step) + '.jpg'
 
-'''
+
 # FRAMERFN PART
 print('Executing the framer...')
 framerfn_data = {"output_bucket": "image-output", "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", 
                 "seconds": step, "lower_limit": 0, "upper_limit": "full"}
 framerfn_req = requests.post(framerfn_url, json.dumps(framerfn_data), headers=headers)
 print(str(framerfn_req.content))
-'''
+
 # FACEDETECTOR-FACEANALYZER-MOBILENET PART
 print('Executing the facedetector-faceanalyzer-mobilenet...')
 face_exists_array_7 = ['f', 't', 'f', 'f', 't', 'f', 'f']
@@ -58,16 +58,12 @@ face_exists_array_65 = ['f', 't',  't', 't', 't', 'f', 't', 't', 'f', 't', 'f', 
 
 if (frames_number == 7):
     face_exists = face_exists_array_7
-    time_interval = '11'
 elif (frames_number == 16):
     face_exists = face_exists_array_16
-    time_interval = '25'
 elif (frames_number == 32):
     face_exists = face_exists_array_32
-    time_interval = '48'
 elif (frames_number == 65):
     face_exists = face_exists_array_65
-    time_interval = '100'
 else: 
     print('Error at faceanalyzer-mobilenet step!')
 
@@ -88,7 +84,7 @@ started = False
 finished = True
 start_now = datetime.utcnow()
 start_now_str = start_now.isoformat("T") + "Z"
-#print('start_now_str = ', start_now_str)
+print('start now =', start_now)
 
 
 check_start_command = 'kubectl logs gateway-7ff44f68cb-x5lq9 gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n 1 | wc -l'
