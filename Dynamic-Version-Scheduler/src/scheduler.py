@@ -24,7 +24,7 @@ class CustomEnv(gym.Env):
 
 
         self.action_space = gym.spaces.Discrete(8)
-        self.observation_space = gym.spaces.Box()
+        self.observation_space = gym.spaces.Box() #se ti diastima timwn anikoun oi metavlites pou apartizoun to state
 
         self.placementInit()
 
@@ -37,73 +37,44 @@ class CustomEnv(gym.Env):
         pmc = None
         return pmc
 
+    '''
+    action[0] = 0 or 1, monolith2 or spasmeno
+    if action[0] == 0: deploy monolith2 on action[1] node
+    else: deploy framerfn on action[1] node, facedetectorfn2 on action[2] node etc.
+    '''
     def takeAction(self, action):
-        if (action >= 0 and action <= 3):
+        deploy_monolith_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2'
+        deploy_framerfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=framerfn'
+        deploy_facedetectorfn2_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=facedetectorfn2'
+        deploy_faceanalyzerfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=faceanalyzerfn'
+        deploy_mobilenetfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=mobilenetfn'
+        constraint_worker_command = ['', ' --constraint "kubernetes.io/hostname=gworker-01"', ' --constraint "kubernetes.io/hostname=gworker-02"',
+                                    ' --constraint "kubernetes.io/hostname=gworker-03"', ' --constraint "kubernetes.io/hostname=gworker-04"']
+        if (action[0] == 0):
             command = 'faas remove monolith2'
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             time.sleep(3)
-        else: 
+            if (action[1] >= 1 or action[1] <= 4)
+                command = deploy_monolith_command + constraint_worker_command[action[1]]
+                subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                time.sleep(3)
+            else:
+                print('Wrong configuration on action vector #1!')
+        elif (action[1] == 1): 
             command = 'faas remove framerfn && faas remove facedetectornf2 && faas remove faceanalyzerfn && faas remove mobilenetfn'
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             time.sleep(3)
-        if (action == 0):
-            command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2 --constraint "kubernetes.io/hostname=gworker-01"'
+            command =  deploy_framerfn_command + constraint_worker_command[action[1]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            time.sleep(3)
-        elif (action == 1):
-            command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2 --constraint "kubernetes.io/hostname=gworker-02"'
+            command = deploy_facedetectorfn2_command + constraint_worker_command[action[2]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            time.sleep(3)
-        elif (action == 2):
-            command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2 --constraint "kubernetes.io/hostname=gworker-03"'
-            subprocess.getoutput(command)
-            time.sleep(3)
-        elif (action == 3):
-            command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2 --constraint "kubernetes.io/hostname=gworker-04"'
+            command =  deploy_faceanalyzerfn_command + constraint_worker_command[action[3]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            time.sleep(3)
-        elif (action == 4):
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=framerfn --constraint "kubernetes.io/hostname=gworker-01"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=facedetectorfn2 --constraint "kubernetes.io/hostname=gworker-01"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=faceanalyzerfn --constraint "kubernetes.io/hostname=gworker-01"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=mobilenetfn --constraint "kubernetes.io/hostname=gworker-01"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            time.sleep(3)
-        elif (action == 5):
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=framerfn --constraint "kubernetes.io/hostname=gworker-02"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=facedetectorfn2 --constraint "kubernetes.io/hostname=gworker-02"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=faceanalyzerfn --constraint "kubernetes.io/hostname=gworker-02"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=mobilenetfn --constraint "kubernetes.io/hostname=gworker-02"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            time.sleep(3)
-        elif (action == 6):
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=framerfn --constraint "kubernetes.io/hostname=gworker-03"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=facedetectorfn2 --constraint "kubernetes.io/hostname=gworker-03"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=faceanalyzerfn --constraint "kubernetes.io/hostname=gworker-03"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=mobilenetfn --constraint "kubernetes.io/hostname=gworker-03"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            time.sleep(3)
-        elif (action == 7):
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=framerfn --constraint "kubernetes.io/hostname=gworker-04"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=facedetectorfn2 --constraint "kubernetes.io/hostname=gworker-04"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=faceanalyzerfn --constraint "kubernetes.io/hostname=gworker-04"'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = 'faas deploy -f ../../functions/version1/functions.yml --filter=mobilenetfn --constraint "kubernetes.io/hostname=gworker-04"'
+            command = deploy_mobilenetfn_command + constraint_worker_command[action[4]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             time.sleep(3)
         else:
-            print('no action taken')
+            print('Wrong configuration on action vector #2!')
         return 0
 
     def reset(self):
