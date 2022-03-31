@@ -15,6 +15,14 @@ containerReward = {
 
 processReady = threading.Lock()
 
+qosTarget = None
+dequeues = {}
+
+EVENTS = []
+EVENT_MAX = []
+EVENT_MAX = [e*2 for e in EVENT_MAX]
+
+
 class CustomEnv(gym.Env):
     def __init__(self,):
         super(CustomEnv, self).__init__()
@@ -62,7 +70,7 @@ class CustomEnv(gym.Env):
             if (action_vector[1] >= 1 or action_vector[1] <= 4):
                 command = deploy_monolith_command + constraint_worker_command[action_vector[1]]
                 subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-                time.sleep(3)
+                time.sleep(10)
             else:
                 print('Wrong configuration on action vector #1!')
         elif (action_vector[0] == 1):
@@ -74,7 +82,7 @@ class CustomEnv(gym.Env):
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             command = deploy_mobilenetfn_command + constraint_worker_command[action_vector[3]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            time.sleep(3)
+            time.sleep(10)
         else:
             print('Wrong configuration on action vector #2!')
         
@@ -92,6 +100,10 @@ class CustomEnv(gym.Env):
         state = None
         return state
     
+    def normData(self):
+        return None
+    
+    
     def getState(self, before, after):
         return 0
     
@@ -103,6 +115,7 @@ class CustomEnv(gym.Env):
         containerReward['lock'].acquire()
         containerReward['reward'] = []
         containerReward['lock'].release()
+        return None
 
     def step(self, action):
         while(not processReady.acquire(blocking=False)):
