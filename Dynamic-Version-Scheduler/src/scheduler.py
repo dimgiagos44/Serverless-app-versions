@@ -20,10 +20,15 @@ class CustomEnv(gym.Env):
         super(CustomEnv, self).__init__()
 
         self.startingTime = round(time.time())
-        self.process = None 
+        self.process = None
 
+        self.switcher = {
+            0:  '01000', 1:  '02000', 2:  '03000', 3:  '04000', 4:  '11111', 5:  '12222', 6:  '13333', 7:  '14444',
+            8:  '11112', 9:  '11113', 10: '11114', 11: '12221', 12: '12223', 13: '12224', 14: '13331', 15: '13332', 16: '13334',
+            17: '14441', 18: '14442', 19: '14443', 20: '11122', 21: '11133', 22: '11144', 23: '12211', 24: '12233', 25: '12244'
+        }
 
-        self.action_space = gym.spaces.Discrete(8)
+        self.action_space = gym.spaces.Discrete(len(self.switcher))
         self.observation_space = gym.spaces.Box() #se ti diastima timwn anikoun oi metavlites pou apartizoun to state
 
         self.placementInit()
@@ -43,6 +48,7 @@ class CustomEnv(gym.Env):
     else: deploy framerfn on action[1] node, facedetectorfn2 on action[2] node etc.
     '''
     def takeAction(self, action):
+        action_vector = self.switcher.get(action)
         deploy_monolith_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2'
         deploy_framerfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=framerfn'
         deploy_facedetectorfn2_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=facedetectorfn2'
@@ -50,27 +56,27 @@ class CustomEnv(gym.Env):
         deploy_mobilenetfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=mobilenetfn'
         constraint_worker_command = ['', ' --constraint "kubernetes.io/hostname=gworker-01"', ' --constraint "kubernetes.io/hostname=gworker-02"',
                                     ' --constraint "kubernetes.io/hostname=gworker-03"', ' --constraint "kubernetes.io/hostname=gworker-04"']
-        if (action[0] == 0):
-            command = 'faas remove monolith2'
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            time.sleep(3)
-            if (action[1] >= 1 or action[1] <= 4):
-                command = deploy_monolith_command + constraint_worker_command[action[1]]
+        if (action_vector[0] == 0):
+            #command = 'faas remove monolith2'
+            #subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            #time.sleep(3)
+            if (action_vector[1] >= 1 or action_vector[1] <= 4):
+                command = deploy_monolith_command + constraint_worker_command[action_vector[1]]
                 subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
                 time.sleep(3)
             else:
                 print('Wrong configuration on action vector #1!')
-        elif (action[0] == 1): 
-            command = 'faas remove framerfn && faas remove facedetectornf2 && faas remove faceanalyzerfn && faas remove mobilenetfn'
+        elif (action_vector[0] == 1): 
+            #command = 'faas remove framerfn && faas remove facedetectornf2 && faas remove faceanalyzerfn && faas remove mobilenetfn'
+            #subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            #ime.sleep(3)
+            command =  deploy_framerfn_command + constraint_worker_command[action_vector[1]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            time.sleep(3)
-            command =  deploy_framerfn_command + constraint_worker_command[action[1]]
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = deploy_facedetectorfn2_command + constraint_worker_command[action[2]]
+            command = deploy_facedetectorfn2_command + constraint_worker_command[action_vector[2]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             command =  deploy_faceanalyzerfn_command + constraint_worker_command[action[3]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            command = deploy_mobilenetfn_command + constraint_worker_command[action[4]]
+            command = deploy_mobilenetfn_command + constraint_worker_command[action_vector[4]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             time.sleep(3)
         else:
