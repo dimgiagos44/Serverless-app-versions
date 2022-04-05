@@ -7,6 +7,9 @@ import tensorflow as tf
 import time
 import threading
 import numpy as np
+import dequeue
+import random
+import json
 
 containerReward = {
     'reward': [],
@@ -15,10 +18,21 @@ containerReward = {
 
 processReady = threading.Lock()
 
-qosTarget = None
-dequeues = {}
+window_size = None
 
-EVENTS = []
+qosTarget = None
+
+deques = {
+    'IPC': dequeue([], maxlen=window_size),
+    'MEM_READ': dequeue([], maxlen=window_size),
+    'MEM_WRITE': dequeue([], maxlen=window_size),
+    'L3M': dequeue([], maxlen=window_size),
+    'C0RES': dequeue([], maxlen=window_size),
+    'C1RES': dequeue([], maxlen=window_size),
+    'NOT_C0RES_C1RES': dequeue([], maxlen=window_size),
+}
+
+EVENTS = ['IPC', 'MEM_READ', 'MEM_WRITE', 'L3M', 'C0RES', 'C1RES', 'NOT_C0RES_C1RES']
 EVENT_MAX = []
 EVENT_MAX = [e*2 for e in EVENT_MAX]
 
@@ -26,6 +40,9 @@ EVENT_MAX = [e*2 for e in EVENT_MAX]
 class CustomEnv(gym.Env):
     def __init__(self,):
         super(CustomEnv, self).__init__()
+        global deques, window_size
+        self.dequeues = deques
+        self.window_size = window_size
 
         self.startingTime = round(time.time())
         self.process = None
@@ -33,7 +50,8 @@ class CustomEnv(gym.Env):
         self.switcher = {
             0:  '01000', 1:  '0200', 2:  '0300', 3:  '0400', 4:  '1111', 5:  '1222', 6:  '1333', 7:  '1444',
             8: '1112', 9: '1113', 10: '1114', 11: '1221', 12: '1223', 13: '1224', 14: '1331', 15: '1332',
-            16: '1334', 17: '1441', 18: '1442', 19: '1443', 20: '1231', 21: '1233', 22: '1234', 23: '1233'
+            16: '1334', 17: '1441', 18: '1442', 19: '1443', 20: '1231', 21: '1232', 22: '1233', 23: '1234',
+            24: '1241', 25: '1242', 26: '1243', 27: '1244', 28: '1341', 29: '1342', 30: '1343', 31: '1344',
         }
 
         self.inputs = { 0: ['90', '7'], 1: ['40', '16'], 2: ['20', '32'], 3: ['10', '65']}
@@ -43,13 +61,47 @@ class CustomEnv(gym.Env):
 
         self.placementInit()
 
-    def placementInit():
+    def placementInit(self):
         command = 'faas remove framerfn && faas remove facedetectornf2 && faas remove faceanalyzerfn && faas remove mobilenetfn && faas remove monolith2'
         subprocess.call(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         time.sleep(3)
+    
+    def getMetrics(self, period=5):
+        liono_command = 'go run ../influx/main.go ' + str(period) + ' average liono'
+        #davinci_command = 'go run ../influx/main.go ' + str(period) + ' average davinci'
+        coroni_command = 'go run ../influx/main.go ' + str(period) + ' average coroni'
+        #cheetara_command = 'go run ../influx/main.go ' + str(period) + ' average cheetara'
+
+        liono_metrics_str = subprocess.getoutput(liono_command)
+        #davinci_metrics_str = subprocess.getoutput(davinci_command)
+        coroni_metrics_str = subprocess.getoutput(coroni_command)
+        #cheetara_metrics_str = subprocess.getoutput(cheetara_command)
+
+        all_metrics_str = [liono_metrics_str, coroni_metrics_str]
+
+        metrics = []
+        for metrics_str in all_metrics_str:
+            ipc = metrics_str.split('IPC: ')[1].split(',')[0]
+            memRead = metrics_str.split('Reads: ')[1].split(',')[0]
+            memWrite = metrics_str.split('Writes: ')[1].split(',')[0]
+            l3m = metrics_str.split('l3m: ')[1].split(',')[0]
+            c0res = metrics_str.split('average_c0res: ')[1].split(',')[0]
+            c1res = metrics_str.split('average_c1res: ')[1].split(',')[0]
+            not_c0res_c1res = metrics_str.split('average_not_c0res_c1res: ')[1].split(',')[0]
+            metric = {
+                'IPC': float(ipc),
+                'MEM_READ': float(memRead),
+                'MEM_WRITE': float(memWrite),
+                'L3M': float(l3m),
+                'C0RES': float(c0res),
+                'C1RES': float(c1res),
+                'NOT_C0RES_C1RES': float(not_c0res_c1res)
+            }
+            metrics.append(metric)
+        return metrics
 
     def getPMC(self):
-        pmc = None
+        pmc = self.getMetrics()
         return pmc
 
     '''
@@ -57,7 +109,7 @@ class CustomEnv(gym.Env):
     if action[0] == 0: deploy monolith2 on action[1] node
     else: deploy framerfn on action[1] node, facedetectorfn2 on action[2] node etc.
     '''
-    def takeAction(self, action, input):
+    def takeAction(self, input, action):
         action_vector = self.switcher.get(action)
         deploy_monolith_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2'
         deploy_framerfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=framerfn'
@@ -87,15 +139,18 @@ class CustomEnv(gym.Env):
             print('Wrong configuration on action vector #2!')
         
         if (action_vector[0] == 0):
-            command = 'python3 ../../runtime/version4/version4.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
-            latency = subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            command = 'python3 ../../runtime/version4/version4fn.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
+            res = subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            latency = float(res.split(':')[1])
         elif (action_vector[0] == 1):
-            command = 'python3 ../../runtime/version1/version1.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
-            latency = subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            command = 'python3 ../../runtime/version1/version1fn.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
+            res = subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            latency = float(res.split(':')[1])
         else: 
             print('Error occured in action taking!')
-        return 0
+        return 0, latency
 
+    # @must
     def reset(self):
         state = None
         return state
@@ -108,6 +163,24 @@ class CustomEnv(gym.Env):
         return 0
     
     def getReward(self, ignoreAction = 0):
+        global containerReward
+        while(len(containerReward['reward']) == 0):
+            time.sleep(0.01)
+            
+        containerReward['lock'].acquire()
+        sjrn99 = np.percentile(containerReward['reward'], 99)
+        qos = round(sjrn99/1e3)
+        containerReward['lock'].release()
+
+       
+        qosTarget = None
+        if qos > qosTarget:
+            reward = None
+        else:
+            reward = None
+        if ignoreAction != 0:
+            reward = None
+        
         return 0
 
     def clearReward(self):
@@ -117,14 +190,16 @@ class CustomEnv(gym.Env):
         containerReward['lock'].release()
         return None
 
+    # @must
     def step(self, action):
         while(not processReady.acquire(blocking=False)):
             time.sleep(1)
             print('Waiting on process to be ready')
         pmc_before = self.getPMC()
-        ignored_action = self.takeAction(action)
+        input_index = random.randint(0, 3)
+        ignored_action = self.takeAction(input_index, action)
         self.clearReward()
-        time.sleep(2)
+        time.sleep(4)
         pmc_after = self.getPMC()
         state = self.getState(pmc_before, pmc_after)
         reward = self.getReward(ignored_action)

@@ -11,8 +11,6 @@ from datetime import datetime
 
 start = time.time()
 now0 = datetime.now()
-started_time = now0.strftime("%H:%M:%S")
-print("Started time =", started_time)
 
 # GLOBALS
 step = int(sys.argv[1])
@@ -22,17 +20,8 @@ frames_number = int(sys.argv[2])
 framerfn_url = 'http://localhost:8080/function/framerfn'
 framerfn_url_async = 'http://localhost:8080/async-function/framerfn'
 
-facedetectorfn_url = 'http://localhost:8080/function/facedetectorfn'
-facedetectorfn_url_async = 'http://localhost:8080/async-function/facedetectorfn'
-
 facedetectorfn2_url = 'http://localhost:8080/function/facedetectorfn2'
 facedetectorfn2_url_async = 'http://localhost:8080/async-function/facedetectorfn2'
-
-faceanalyzer_url = 'http://localhost:8080/function/faceanalyzer'
-faceanalyzer_url_async = 'http://localhost:8080/async-function/faceanalyzer'
-
-mobilenet_url = 'http://localhost:8080/function/mobilenet'
-mobilenet_url_async = 'http://localhost:8080/async-function/mobilenet'
 
 # REQUEST INFORMATION
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -43,14 +32,12 @@ jpg_add = '.' + str(step) + '.jpg'
 
 '''
 # FRAMERFN PART
-print('Executing the framer...')
 framerfn_data = {"output_bucket": "image-output", "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", 
                 "seconds": step, "lower_limit": 0, "upper_limit": "full"}
 framerfn_req = requests.post(framerfn_url, json.dumps(framerfn_data), headers=headers)
-print(str(framerfn_req.content))
 '''
+
 # FACEDETECTOR-FACEANALYZER-MOBILENET PART
-print('Executing the facedetector-faceanalyzer-mobilenet...')
 face_exists_array_7 = ['f', 't', 'f', 'f', 't', 'f', 'f']
 face_exists_array_16 = ['t', 't', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f']
 face_exists_array_32 = ['t', 't', 'f', 't', 't', 't', 't', 'f', 't', 'f', 'f', 'f', 'f', 'f', 't', 'f', 'f', 'f', 'f', 'f', 't', 't', 't', 'f', 't', 'f', 'f', 'f', 'f', 'f', 'f', 'f']
@@ -66,6 +53,7 @@ elif (frames_number == 65):
     face_exists = face_exists_array_65
 else: 
     print('Error at faceanalyzer-mobilenet step!')
+    
 
 i = 0
 for flag in face_exists:
@@ -84,7 +72,6 @@ started = False
 finished = True
 start_now = datetime.utcnow()
 start_now_str = start_now.isoformat("T") + "Z"
-print('start now =', start_now)
 
 
 check_start_command = 'kubectl logs gateway-7ff44f68cb-df7sj gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n 1 | wc -l'
@@ -100,13 +87,9 @@ while (frames_received < frames_number - 2):
         finished = False
         break
 
-if finished == True:
-    print('finally frames_received =', frames_received)
-else: 
+if finished == False:
     print('Process not finished..')
 
 end = time.time()
 now = datetime.now()
-current_time = now.strftime("%H:%M:%S")
-print(f'Runtime of the execution took {end - start}')
-print("Current time =", current_time)
+print('Result:', end - start)
