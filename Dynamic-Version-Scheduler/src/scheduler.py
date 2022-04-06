@@ -41,13 +41,13 @@ class CustomEnv(gym.Env):
     def __init__(self,):
         super(CustomEnv, self).__init__()
         global deques, window_size
-        self.dequeues = deques
+        self.deques = deques
         self.window_size = window_size
 
         self.startingTime = round(time.time())
         self.process = None
 
-        self.switcher = {
+        self.actionSelector = {
             0:  '01000', 1:  '0200', 2:  '0300', 3:  '0400', 4:  '1111', 5:  '1222', 6:  '1333', 7:  '1444',
             8: '1112', 9: '1113', 10: '1114', 11: '1221', 12: '1223', 13: '1224', 14: '1331', 15: '1332',
             16: '1334', 17: '1441', 18: '1442', 19: '1443', 20: '1231', 21: '1232', 22: '1233', 23: '1234',
@@ -56,7 +56,14 @@ class CustomEnv(gym.Env):
 
         self.inputs = { 0: ['90', '7'], 1: ['40', '16'], 2: ['20', '32'], 3: ['10', '65']}
 
-        self.action_space = gym.spaces.Discrete(len(self.switcher))
+        self.latencies = { 
+            0: [10, 15, 30, 45, 60, 90], 
+            1: [10, 18, 25, 40, 50, 60, 70, 85, 90, 105, 120], 
+            2: [10, 15, 20, 30, 45, 60, 75, 90, 100, 110, 130, 150], 
+            3: [10, 15, 20, 30, 45, 60, 70, 80, 90, 100, 110, 120, 135, 150, 180, 190, 200, 210] 
+        }
+
+        self.action_space = gym.spaces.Discrete(len(self.actionSelector))
         self.observation_space = gym.spaces.Box() #se ti diastima timwn anikoun oi metavlites pou apartizoun to state
 
         self.placementInit()
@@ -110,7 +117,7 @@ class CustomEnv(gym.Env):
     else: deploy framerfn on action[1] node, facedetectorfn2 on action[2] node etc.
     '''
     def takeAction(self, input, action):
-        action_vector = self.switcher.get(action)
+        action_vector = self.actionSelector.get(action)
         deploy_monolith_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2'
         deploy_framerfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=framerfn'
         deploy_facedetectorfn2_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=facedetectorfn2'
@@ -162,7 +169,7 @@ class CustomEnv(gym.Env):
     def getState(self, before, after):
         return 0
     
-    def getReward(self, ignoreAction = 0):
+    def getReward(self, ignoreAction = 0, latency = 0, input_index = 0):
         global containerReward
         while(len(containerReward['reward']) == 0):
             time.sleep(0.01)
@@ -172,8 +179,10 @@ class CustomEnv(gym.Env):
         qos = round(sjrn99/1e3)
         containerReward['lock'].release()
 
-       
-        qosTarget = None
+        qos = latency
+
+        qosTargetIndex = random.randint(0, len(self.latencies[input_index]) - 1)
+        qosTarget = self.latencies[qosTargetIndex]
         if qos > qosTarget:
             reward = None
         else:
@@ -197,12 +206,12 @@ class CustomEnv(gym.Env):
             print('Waiting on process to be ready')
         pmc_before = self.getPMC()
         input_index = random.randint(0, 3)
-        ignored_action = self.takeAction(input_index, action)
+        ignored_action, latency = self.takeAction(input_index, action)
         self.clearReward()
         time.sleep(4)
         pmc_after = self.getPMC()
         state = self.getState(pmc_before, pmc_after)
-        reward = self.getReward(ignored_action)
+        reward = self.getReward(ignored_action, latency, input_index)
         processReady.release()
         return state, reward, 0, {}
 
@@ -218,3 +227,7 @@ model = None
 if __name__ == "__main__":
     model.learn(total_timesteps=20000)
     model.save("./models/%s/model.zip" % dt)
+
+#TODO: reward function
+#TODO: input: # of frames & desired qos
+#TODO: possible actions
