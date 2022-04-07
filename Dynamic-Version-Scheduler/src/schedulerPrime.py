@@ -47,6 +47,12 @@ class CustomEnv(gym.Env):
         self.startingTime = round(time.time())
         self.process = None
 
+        self.actionSelector = {
+            0:  '01000', 1:  '0200', 2:  '0300', 3:  '0400', 4:  '1111', 5:  '1222', 6:  '1333', 7:  '1444',
+            8: '1112', 9: '1113', 10: '1114', 11: '1221', 12: '1223', 13: '1224', 14: '1331', 15: '1332',
+            16: '1334', 17: '1441', 18: '1442', 19: '1443', 20: '1231', 21: '1232', 22: '1233', 23: '1234',
+            24: '1241', 25: '1242', 26: '1243', 27: '1244', 28: '1341', 29: '1342', 30: '1343', 31: '1344',
+        }
 
         self.inputs = { 0: ['90', '7'], 1: ['40', '16'], 2: ['20', '32'], 3: ['10', '65']}
 
@@ -57,7 +63,7 @@ class CustomEnv(gym.Env):
             3: [10, 15, 20, 30, 45, 60, 70, 80, 90, 100, 110, 120, 135, 150, 180, 190, 200, 210] 
         }
 
-        self.action_space = gym.spaces.Discrete(8)
+        self.action_space = gym.spaces.Discrete(len(self.actionSelector))
         self.observation_space = gym.spaces.Box() #se ti diastima timwn anikoun oi metavlites pou apartizoun to state
 
         self.placementInit()
@@ -81,9 +87,7 @@ class CustomEnv(gym.Env):
         all_metrics_str = [liono_metrics_str, coroni_metrics_str]
 
         metrics = []
-        scores = []
         for metrics_str in all_metrics_str:
-            score = metrics_str.split('Score: ')[1].split(',')[0]
             ipc = metrics_str.split('IPC: ')[1].split(',')[0]
             memRead = metrics_str.split('Reads: ')[1].split(',')[0]
             memWrite = metrics_str.split('Writes: ')[1].split(',')[0]
@@ -101,59 +105,56 @@ class CustomEnv(gym.Env):
                 'NOT_C0RES_C1RES': float(not_c0res_c1res)
             }
             metrics.append(metric)
-            scores.append(score)
-        
-        return metrics, scores
-    
-    def findBestScore(self, scores):
-        return 0
+        return metrics
+
+    def getPMC(self):
+        pmc = self.getMetrics()
+        return pmc
 
     '''
     action[0] = 0 or 1, monolith2 or spasmeno
     if action[0] == 0: deploy monolith2 on action[1] node
     else: deploy framerfn on action[1] node, facedetectorfn2 on action[2] node etc.
     '''
-    def takeAction(self, input, action, bestScoreIndex):
+    def takeAction(self, input, action):
         action_vector = self.actionSelector.get(action)
-        #deploy_monolith_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2'
+        deploy_monolith_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2'
         deploy_framerfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=framerfn'
         deploy_facedetectorfn2_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=facedetectorfn2'
         deploy_faceanalyzerfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=faceanalyzerfn'
         deploy_mobilenetfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=mobilenetfn'
-        scale_models_commnand = 'kubectl scale deployment facedetectorfn2 faceanalyzerfn mobilenetfn -n openfaas-fn --replicas='
-        replicas_command = ['', '1', '2', '3', '4']
         constraint_worker_command = ['', ' --constraint "kubernetes.io/hostname=gworker-01"', ' --constraint "kubernetes.io/hostname=gworker-02"',
                                     ' --constraint "kubernetes.io/hostname=gworker-03"', ' --constraint "kubernetes.io/hostname=gworker-04"']
-
-        if action == 0:
-            command = deploy_framerfn_command  + constraint_worker_command[bestScoreIndex]
+        if (action_vector[0] == 0):
+            if (action_vector[1] >= 1 or action_vector[1] <= 4):
+                command = deploy_monolith_command + constraint_worker_command[action_vector[1]]
+                subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                time.sleep(10)
+            else:
+                print('Wrong configuration on action vector #1!')
+        elif (action_vector[0] == 1):
+            command =  deploy_framerfn_command + constraint_worker_command[action_vector[1]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        elif action == 1:
-            command = deploy_facedetectorfn2_command + constraint_worker_command[bestScoreIndex]
+            command = deploy_facedetectorfn2_command + constraint_worker_command[action_vector[2]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        elif action == 2:
-            command = deploy_faceanalyzerfn_command + constraint_worker_command[bestScoreIndex]
+            command =  deploy_faceanalyzerfn_command + constraint_worker_command[action[3]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            commnad = deploy_mobilenetfn_command + constraint_worker_command[bestScoreIndex]
+            command = deploy_mobilenetfn_command + constraint_worker_command[action_vector[3]]
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        elif action == 3:
-            command = scale_models_commnand + replicas_command[1]
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        elif action == 4:
-            command = scale_models_commnand + replicas_command[2]
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        elif action == 5:
-            command = scale_models_commnand + replicas_command[3]
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        elif action == 6:
-            command = scale_models_commnand + replicas_command[4]
-            subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            time.sleep(10)
         else:
-            print('Maintaining..') 
+            print('Wrong configuration on action vector #2!')
         
-        command = 'python3 ../../runtime/version1/version1fn.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
-        res = subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        latency = float(res.split(':')[1])
+        if (action_vector[0] == 0):
+            command = 'python3 ../../runtime/version4/version4fn.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
+            res = subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            latency = float(res.split(':')[1])
+        elif (action_vector[0] == 1):
+            command = 'python3 ../../runtime/version1/version1fn.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
+            res = subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            latency = float(res.split(':')[1])
+        else: 
+            print('Error occured in action taking!')
         return 0, latency
 
     # @must
@@ -166,21 +167,7 @@ class CustomEnv(gym.Env):
     
     
     def getState(self, before, after):
-        state = [0] * len(EVENTS)
-        for i in range(0, len(EVENTS)):
-            state[i] = after[i] - before[i]
-        
-        check_framerfn_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep framerfn'
-        check_facedetectorfn2_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep facedetectorfn2'
-        check_models_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep mobilenetfn'
-        framerfn_pos_str = subprocess.getoutput(check_framerfn_pos_command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        framerfn_pos = int(framerfn_pos_str.split('gworker-0')[1].split(' ')[0])
-        facedetectorfn2_pos_str = subprocess.getoutput(check_facedetectorfn2_pos_command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        facedetectorfn2_pos = int(facedetectorfn2_pos_str.split('gworker-0')[1].split(' ')[0])
-        state.append(framerfn_pos)
-        state.append(facedetectorfn2_pos)
-        normalized = self.normData(state)
-        return list(normalized)
+        return 0
     
     def getReward(self, ignoreAction = 0, latency = 0, input_index = 0):
         global containerReward
@@ -217,17 +204,16 @@ class CustomEnv(gym.Env):
         while(not processReady.acquire(blocking=False)):
             time.sleep(1)
             print('Waiting on process to be ready')
-        pmc_before, scores = self.getMetrics(period=5)
-        inputIndex = random.randint(0, 3)
-        bestScoreIndex = self.findBestScore(scores)
-        ignored_action, latency = self.takeAction(inputIndex, action, bestScoreIndex)
+        pmc_before = self.getPMC()
+        input_index = random.randint(0, 3)
+        ignored_action, latency = self.takeAction(input_index, action)
         self.clearReward()
         time.sleep(4)
         pmc_after = self.getPMC()
-        observedState = self.getState(pmc_before, pmc_after)
-        reward = self.getReward(ignored_action, latency, inputIndex)
+        state = self.getState(pmc_before, pmc_after)
+        reward = self.getReward(ignored_action, latency, input_index)
         processReady.release()
-        return observedState, reward, 0, {}
+        return state, reward, 0, {}
 
 dt = datetime.now().strftime("%m_%d_%H")
 Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
