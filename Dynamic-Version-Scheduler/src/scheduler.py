@@ -18,20 +18,6 @@ containerReward = {
 
 processReady = threading.Lock()
 
-window_size = None
-
-qosTarget = None
-
-deques = {
-    'IPC': dequeue([], maxlen=window_size),
-    'MEM_READ': dequeue([], maxlen=window_size),
-    'MEM_WRITE': dequeue([], maxlen=window_size),
-    'L3M': dequeue([], maxlen=window_size),
-    'C0RES': dequeue([], maxlen=window_size),
-    'C1RES': dequeue([], maxlen=window_size),
-    'NOT_C0RES_C1RES': dequeue([], maxlen=window_size),
-}
-
 EVENTS = ['IPC', 'MEM_READ', 'MEM_WRITE', 'L3M', 'C0RES', 'C1RES', 'NOT_C0RES_C1RES']
 EVENT_MAX = []
 EVENT_MAX = [e*2 for e in EVENT_MAX]
@@ -40,13 +26,9 @@ EVENT_MAX = [e*2 for e in EVENT_MAX]
 class CustomEnv(gym.Env):
     def __init__(self,):
         super(CustomEnv, self).__init__()
-        global deques, window_size
-        self.deques = deques
-        self.window_size = window_size
 
         self.startingTime = round(time.time())
         self.process = None
-
 
         self.inputs = { 0: ['90', '7'], 1: ['40', '16'], 2: ['20', '32'], 3: ['10', '65']}
 
@@ -57,8 +39,8 @@ class CustomEnv(gym.Env):
             3: [10, 15, 20, 30, 45, 60, 70, 80, 90, 100, 110, 120, 135, 150, 180, 190, 200, 210] 
         }
 
-        self.action_space = gym.spaces.Discrete(8)
-        self.observation_space = gym.spaces.Box() #se ti diastima timwn anikoun oi metavlites pou apartizoun to state
+        self.action_space = gym.spaces.Discrete(8) # totally 8 possible actions for the agent
+        self.observation_space = gym.spaces.Box() # se ti diastima timwn anikoun oi metavlites pou apartizoun to state
 
         self.placementInit()
 
@@ -106,7 +88,7 @@ class CustomEnv(gym.Env):
         return metrics, scores
     
     def findBestScore(self, scores):
-        return 0
+        return scores.index(max(scores))
 
     '''
     action[0] = 0 or 1, monolith2 or spasmeno
@@ -114,7 +96,6 @@ class CustomEnv(gym.Env):
     else: deploy framerfn on action[1] node, facedetectorfn2 on action[2] node etc.
     '''
     def takeAction(self, input, action, bestScoreIndex):
-        action_vector = self.actionSelector.get(action)
         #deploy_monolith_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2'
         deploy_framerfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=framerfn'
         deploy_facedetectorfn2_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=facedetectorfn2'
@@ -150,15 +131,17 @@ class CustomEnv(gym.Env):
             subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         else:
             print('Maintaining..') 
-        
+        time.sleep(4)
+
         command = 'python3 ../../runtime/version1/version1fn.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
         res = subprocess.getoutput(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         latency = float(res.split(':')[1])
+
         return 0, latency
 
     # @must
     def reset(self):
-        state = None
+        state = [0] * (len(EVENTS) + 2)
         return state
     
     def normData(self):
@@ -172,26 +155,21 @@ class CustomEnv(gym.Env):
         
         check_framerfn_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep framerfn'
         check_facedetectorfn2_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep facedetectorfn2'
-        check_models_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep mobilenetfn'
+        #check_models_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep mobilenetfn'
+        
         framerfn_pos_str = subprocess.getoutput(check_framerfn_pos_command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         framerfn_pos = int(framerfn_pos_str.split('gworker-0')[1].split(' ')[0])
         facedetectorfn2_pos_str = subprocess.getoutput(check_facedetectorfn2_pos_command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         facedetectorfn2_pos = int(facedetectorfn2_pos_str.split('gworker-0')[1].split(' ')[0])
+        
         state.append(framerfn_pos)
         state.append(facedetectorfn2_pos)
         normalized = self.normData(state)
+
         return list(normalized)
     
     def getReward(self, ignoreAction = 0, latency = 0, input_index = 0):
-        global containerReward
-        while(len(containerReward['reward']) == 0):
-            time.sleep(0.01)
-            
-        containerReward['lock'].acquire()
-        sjrn99 = np.percentile(containerReward['reward'], 99)
-        qos = round(sjrn99/1e3)
-        containerReward['lock'].release()
-
+        
         qos = latency
 
         qosTargetIndex = random.randint(0, len(self.latencies[input_index]) - 1)
@@ -217,16 +195,16 @@ class CustomEnv(gym.Env):
         while(not processReady.acquire(blocking=False)):
             time.sleep(1)
             print('Waiting on process to be ready')
-        pmc_before, scores = self.getMetrics(period=5)
+        pmc_current, scores = self.getMetrics(period=5)
         inputIndex = random.randint(0, 3)
         bestScoreIndex = self.findBestScore(scores)
         ignored_action, latency = self.takeAction(inputIndex, action, bestScoreIndex)
-        self.clearReward()
+        #self.clearReward()
         time.sleep(4)
-        pmc_after = self.getPMC()
-        observedState = self.getState(pmc_before, pmc_after)
+        pmc_next = self.getMetrics(period=5)
+        observedState = self.getState(pmc_current, pmc_next)
         reward = self.getReward(ignored_action, latency, inputIndex)
-        processReady.release()
+        #processReady.release()
         return observedState, reward, 0, {}
 
 dt = datetime.now().strftime("%m_%d_%H")
