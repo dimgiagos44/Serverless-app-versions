@@ -39,7 +39,7 @@ class CustomEnv(gym.Env):
         }
 
         self.action_space = gym.spaces.Discrete(8) # totally 8 possible actions for the agent
-        self.observation_space = gym.spaces.Box(low=0, high=5, shape=(10,), dtype=np.float64) # se ti diastima timwn anikoun oi metavlites pou apartizoun to state
+        self.observation_space = gym.spaces.Box(low=0, high=5, shape=(11,), dtype=np.float64) # se ti diastima timwn anikoun oi metavlites pou apartizoun to state
 
         self.placementInit()
 
@@ -88,7 +88,9 @@ class CustomEnv(gym.Env):
         return metrics, scores
     
     def findBestScore(self, scores):
-        return scores.index(max(scores))
+        #return scores.index(max(scores))
+        random_list = [1, 2, 4]
+        return random.choice(random_list)
 
     '''
     action[0] = 0 or 1, monolith2 or spasmeno
@@ -115,7 +117,7 @@ class CustomEnv(gym.Env):
         elif action == 2:
             command = deploy_faceanalyzerfn_command + constraint_worker_command[bestScoreIndex]
             subprocess.getoutput(command)
-            commnad = deploy_mobilenetfn_command + constraint_worker_command[bestScoreIndex]
+            commnand = deploy_mobilenetfn_command + constraint_worker_command[bestScoreIndex]
             subprocess.getoutput(command)
         elif action == 3:
             command = scale_models_commnand + replicas_command[1]
@@ -145,7 +147,7 @@ class CustomEnv(gym.Env):
     # @must
     def reset(self):
         #state = [0] * (len(EVENTS) + 2)
-        state = [0] * 10
+        state = [0] * 11
         return state
     
     def normData(self, state):
@@ -153,21 +155,20 @@ class CustomEnv(gym.Env):
         for i in range(0, 7):
             out = state[i]/(EVENT_MAX[i])
             state_space.append(out)
-        state_space.append(state[-3])
-        state_space.append(state[-2])
-        state_space.append(state[-1])
+        state_space.append(int(state[-4]))
+        state_space.append(int(state[-3]))
+        state_space.append(int(state[-2]))
+        state_space.append(int(state[-1]))
         return np.array(state_space)
     
     def getState(self, before, after):
         state = [0] * len(EVENTS)
-        #state = []
-        #thelei allagi
         for i in range(0, 4):
             state[0] += after[i]['IPC']
             state[1] += after[i]['MEM_READ']
             state[2] += after[i]['MEM_WRITE']
             state[3] += after[i]['L3M']
-            state[4] +=after[i]['C0RES']
+            state[4] += after[i]['C0RES']
             state[5] += after[i]['C1RES']
             state[6] += after[i]['NOT_C0RES_C1RES']
         
@@ -177,6 +178,7 @@ class CustomEnv(gym.Env):
         check_framerfn_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep framerfn'
         check_facedetectorfn2_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep facedetectorfn2'
         check_models_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep mobilenetfn'
+        check_number_of_replicas_command = 'faas list | grep mobilenetfn'
         
         framerfn_pos_str = subprocess.getoutput(check_framerfn_pos_command)
         framerfn_pos = int(framerfn_pos_str.split('gworker-0')[1].split(' ')[0])
@@ -184,17 +186,20 @@ class CustomEnv(gym.Env):
         facedetectorfn2_pos = int(facedetectorfn2_pos_str.split('gworker-0')[1].split(' ')[0])
         models_pos_str = subprocess.getoutput(check_models_pos_command)
         models_pos = int(models_pos_str.split('gworker-0')[1].split(' ')[0])
+        number_of_replicas_str = subprocess.getoutput(check_number_of_replicas_command)
+        number_of_replicas = int(number_of_replicas_str[-5])
         
         state.append(framerfn_pos)
         state.append(facedetectorfn2_pos)
         state.append(models_pos)
+        state.append(number_of_replicas)
         normalized = self.normData(state)
 
         return list(normalized)
     
     def getReward(self, ignoreAction = 0, latency = 0, input_index = 3):
         qos = latency
-        qosTarget = 35
+        qosTarget = 18
         if qos > qosTarget:
             reward = -1
         else:
@@ -225,11 +230,12 @@ class CustomEnv(gym.Env):
         observedState = self.getState(pmc_current, pmc_next)
         print('observed state ->', observedState)
         reward = self.getReward(ignored_action, latency)
+        print('reward taken =', reward)
         #processReady.release()
         return observedState, reward, 0, {}
 
 dt = datetime.now().strftime("%m_%d_%H")
-Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
+#Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
 
 env = CustomEnv()
 
@@ -240,9 +246,15 @@ model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1,
             learning_rate=0.0025, learning_starts=750,
             batch_size=64, buffer_size=1000000, target_update_interval=150,
             gamma=0.99, exploration_fraction=0.1, exploration_initial_eps=1, exploration_final_eps=0.01,
-            tensorboard_log="./logs/%s/" % dt
+            #tensorboard_log="./logs/%s/" % dt
             )
 
 if __name__ == "__main__":
     model.learn(total_timesteps=20000)
     model.save("./models/%s/model.zip" % dt)
+
+
+#TODO count max values of pmc metrics
+#TODO load, save model
+#TODO generate 4 types of workflow's input
+#TODO reward function
