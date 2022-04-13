@@ -130,9 +130,9 @@ class CustomEnv(gym.Env):
             command = scale_models_commnand + replicas_command[4]
             subprocess.getoutput(command)
         else:
-            print('Maintaining..')
-        print('Took action:', action)
-        time.sleep(3)
+            pass
+        print('Took action:', action, 'and waiting 5 seconds to apply the configuration')
+        time.sleep(5)
 
         #command = 'python3 ../../runtime/version1/version1fn.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
         command = 'python3 ../../runtime/version1/version1fn.py 20 32'
