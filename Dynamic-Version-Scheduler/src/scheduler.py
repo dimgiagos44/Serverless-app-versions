@@ -29,17 +29,17 @@ class CustomEnv(gym.Env):
 
         self.startingTime = round(time.time())
 
-        self.inputs = { 0: ['90', '7'], 1: ['40', '16'], 2: ['20', '32'], 3: ['10', '65']}
+        self.inputs = { 1: ['90', '7'], 2: ['40', '16'], 3: ['20', '32'], 4: ['10', '65']}
 
-        self.latencies = { 
-            0: [10, 15, 30, 45, 60, 90], 
-            1: [10, 18, 25, 40, 50, 60, 70, 85, 90, 105, 120], 
-            2: [10, 15, 20, 30, 45, 60, 75, 90, 100, 110, 130, 150], 
-            3: [10, 15, 20, 30, 45, 60, 70, 80, 90, 100, 110, 120, 135, 150, 180, 190, 200, 210] 
+        self.qosValues = { 
+            1: [10, 15, 30, 45, 60, 90], 
+            2: [10, 18, 25, 40, 50, 60, 70, 85, 90, 105, 120], 
+            3: [10, 15, 20, 30, 45, 60, 75, 90, 100, 110, 130, 150], 
+            4: [10, 15, 20, 30, 45, 60, 70, 80, 90, 100, 110, 120, 135, 150, 180, 190, 200, 210] 
         }
 
         self.action_space = gym.spaces.Discrete(8) # totally 8 possible actions for the agent
-        self.observation_space = gym.spaces.Box(low=0, high=5, shape=(11,), dtype=np.float64) # se ti diastima timwn anikoun oi metavlites pou apartizoun to state
+        self.observation_space = gym.spaces.Box(low=0, high=300, shape=(34,), dtype=np.float64) # se ti diastima timwn anikoun oi metavlites pou apartizoun to state
 
         self.placementInit()
 
@@ -97,7 +97,7 @@ class CustomEnv(gym.Env):
     if action[0] == 0: deploy monolith2 on action[1] node
     else: deploy framerfn on action[1] node, facedetectorfn2 on action[2] node etc.
     '''
-    def takeAction(self, action, bestScoreIndex):
+    def takeAction(self, action, bestScoreIndex, inputIndex):
         #deploy_monolith_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=monolith2'
         deploy_framerfn_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=framerfn'
         deploy_facedetectorfn2_command = 'faas deploy -f ../../functions/version4/functions.yml --filter=facedetectorfn2'
@@ -133,47 +133,56 @@ class CustomEnv(gym.Env):
             subprocess.getoutput(command)
         else:
             pass
-        print('Took action:', action, 'and waiting 5 seconds to apply the configuration')
+        #print('Took action:', action, 'and waiting 5 seconds to apply the configuration')
+        print('Applying the configuration before executing... (5 sec delay)')
         time.sleep(5)
 
-        #command = 'python3 ../../runtime/version1/version1fn.py ' + self.inputs[input][0] + ' ' + self.inputs[input][1]
-        command = 'python3 ../../runtime/version1/version1fn.py 20 32'
+        command = 'python3 ../../runtime/version1/version1fn.py ' + self.inputs[inputIndex][0] + ' ' + self.inputs[inputIndex][1]
+        #command = 'python3 ../../runtime/version1/version1fn.py 20 32'
         res = subprocess.getoutput(command)
         latency = float(res.split(':')[1])
-        print('Latency =', latency)
 
         return 0, latency
 
     # @must
     def reset(self):
         #state = [0] * (len(EVENTS) + 2)
-        state = [0] * 11
+        state = [0] * 34
         return state
     
     def normData(self, state):
         state_space = []
-        for i in range(0, 7):
-            out = state[i]/(EVENT_MAX[i])
-            state_space.append(out)
+        for i in range(0, 4):
+            out = state[i]/(EVENT_MAX[0])
+            out1 = state[i+1]/(EVENT_MAX[1])
+            out2 = state[i+2]/(EVENT_MAX[2])
+            out3 = state[i+3]/(EVENT_MAX[3])
+            out4 = state[i+4]/(EVENT_MAX[4])
+            out5 = state[i+5]/(EVENT_MAX[5])
+            out6 = state[i+6]/(EVENT_MAX[6])
+            state_space.extend([out, out1, out2, out3, out4, out5, out6])
+            #state_space.append(out)
+        state_space.append(int(state[-6]))
+        state_space.append(int(state[-5]))
         state_space.append(int(state[-4]))
         state_space.append(int(state[-3]))
         state_space.append(int(state[-2]))
         state_space.append(int(state[-1]))
         return np.array(state_space)
     
-    def getState(self, before, after):
-        state = [0] * len(EVENTS)
+    def getState(self, pmc, qosTarget, inputIndex):
+        state = [0] * 34
         for i in range(0, 4):
-            state[0] += after[i]['IPC']
-            state[1] += after[i]['MEM_READ']
-            state[2] += after[i]['MEM_WRITE']
-            state[3] += after[i]['L3M']
-            state[4] += after[i]['C0RES']
-            state[5] += after[i]['C1RES']
-            state[6] += after[i]['NOT_C0RES_C1RES']
+            state[i] += pmc[i]['IPC']
+            state[i+1] += pmc[i]['MEM_READ']
+            state[i+2] += pmc[i]['MEM_WRITE']
+            state[i+3] += pmc[i]['L3M']
+            state[i+4] += pmc[i]['C0RES']
+            state[i+5] += pmc[i]['C1RES']
+            state[i+6] += pmc[i]['NOT_C0RES_C1RES']
         
-        for i in range(0, len(state)):
-            state[i] = state[i] / 4
+        #for i in range(0, len(state)):
+        #    state[i] = state[i] / 4
         
         check_framerfn_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep framerfn'
         check_facedetectorfn2_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep facedetectorfn2'
@@ -193,13 +202,14 @@ class CustomEnv(gym.Env):
         state.append(facedetectorfn2_pos)
         state.append(models_pos)
         state.append(number_of_replicas)
+        state.append(qosTarget)
+        state.append(inputIndex)
         normalized = self.normData(state)
 
         return list(normalized)
     
-    def getReward(self, ignoreAction = 0, latency = 0, input_index = 3):
+    def getReward(self, ignoreAction = 0, latency = 0, input_index = 3, qosTarget=0):
         qos = latency
-        qosTarget = 18
         if qos > qosTarget:
             reward = -1
         else:
@@ -217,25 +227,32 @@ class CustomEnv(gym.Env):
         return None
     '''
 
+    def qosGenerator(self, inputIndex=1):
+        return self.qosValues[inputIndex][random.randint(0, len(self.qosValues[inputIndex])) - 1]
+        
+
     # @must
     def step(self, action):
-        pmc_current, scores = self.getMetrics(period=5)
-        #inputIndex = random.randint(0, 3)
+        _, scores = self.getMetrics(period=5)
+
+        inputIndex = random.randint(1, 4)
         bestScoreIndex = self.findBestScore(scores)
-        ignored_action, latency = self.takeAction(action, bestScoreIndex)
-        #self.clearReward()
+        qosTarget = self.qosGenerator(inputIndex)
+        
+        ignored_action, latency = self.takeAction(action, bestScoreIndex, inputIndex)
+        reward = self.getReward(ignored_action, latency, inputIndex, qosTarget)
+        print('qosTarget =', qosTarget, '& input-index =', inputIndex, '& took action:', ignored_action)
+        print('latency =', latency, '& reward =', reward)
+        time.sleep(5)
+        pmc, _ = self.getMetrics(period=5)
         time.sleep(4)
-        pmc_next, scores = self.getMetrics(period=5)
-        time.sleep(4)
-        observedState = self.getState(pmc_current, pmc_next)
-        print('observed state ->', observedState)
-        reward = self.getReward(ignored_action, latency)
-        print('reward taken =', reward)
+        observedState = self.getState(pmc, qosTarget, inputIndex)
+        print('observed state after action ->', observedState)
         #processReady.release()
         return observedState, reward, 0, {}
 
 dt = datetime.now().strftime("%m_%d_%H")
-#Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
+Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
 
 env = CustomEnv()
 
@@ -250,7 +267,7 @@ model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1,
             )
 
 if __name__ == "__main__":
-    model.learn(total_timesteps=20000)
+    model.learn(total_timesteps=4)
     model.save("./models/%s/model.zip" % dt)
 
 
@@ -258,3 +275,6 @@ if __name__ == "__main__":
 #TODO load, save model
 #TODO generate 4 types of workflow's input
 #TODO reward function
+#TODO qos desired variation for each input
+#TODO state_vector to be 32 dimensions + desired qos
+#TODO qos percentages
