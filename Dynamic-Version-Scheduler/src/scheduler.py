@@ -38,6 +38,8 @@ class CustomEnv(gym.Env):
             4: [10, 15, 20, 30, 45, 60, 70, 80, 90, 100, 110, 120, 135, 150, 180, 190, 200, 210] 
         }
 
+        self.state = [0] * 32
+
         self.action_space = gym.spaces.Discrete(8) # totally 8 possible actions for the agent
         self.observation_space = gym.spaces.Box(low=0, high=300, shape=(34,), dtype=np.float64) # se ti diastima timwn anikoun oi metavlites pou apartizoun to state
 
@@ -47,6 +49,8 @@ class CustomEnv(gym.Env):
         #command = 'faas remove framerfn && faas remove facedetectornf2 && faas remove faceanalyzerfn && faas remove mobilenetfn && faas remove monolith2'
         #subprocess.call(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         time.sleep(5)
+        self.state[-2] = 10
+        self.state[-1] = 1
         print('Executing the init method..')
     
     def getMetrics(self, period=5):
@@ -208,24 +212,26 @@ class CustomEnv(gym.Env):
 
         return list(normalized)
     
-    def getReward(self, ignoreAction = 0, latency = 0, input_index = 3, qosTarget=0):
+    def getReward(self, ignoreAction = 0, latency = 0, qosTarget=0):
         qos = latency
         if qos > qosTarget:
-            reward = -1
+            reward = -5
         else:
-            reward = 1
+            positions = self.state[28:32]
+            if positions[0] == positions[1]:
+                if positions[1] == positions[2]:
+                    reward = 8
+                else:
+                    reward = 4
+            elif positions[1] == positions[2]:
+                reward = 4
+            elif positions[0] == positions[2]:
+                reward = 4
+            else:
+                reward = 2
         if ignoreAction != 0:
             reward = -10
         return reward
-
-    '''
-    def clearReward(self):
-        global containerReward
-        containerReward['lock'].acquire()
-        containerReward['reward'] = []
-        containerReward['lock'].release()
-        return None
-    '''
 
     def qosGenerator(self, inputIndex=1):
         return self.qosValues[inputIndex][random.randint(0, len(self.qosValues[inputIndex])) - 1]
@@ -234,21 +240,25 @@ class CustomEnv(gym.Env):
     # @must
     def step(self, action):
         _, scores = self.getMetrics(period=5)
-
-        inputIndex = random.randint(1, 4)
+        #inputIndex = random.randint(1, 4)
         bestScoreIndex = self.findBestScore(scores)
-        qosTarget = self.qosGenerator(inputIndex)
+        #qosTarget = self.qosGenerator(inputIndex)
+        qosTarget = self.state[-2]
+        inputIndex = int(self.state[-1])
         
         ignored_action, latency = self.takeAction(action, bestScoreIndex, inputIndex)
-        reward = self.getReward(ignored_action, latency, inputIndex, qosTarget)
+        reward = self.getReward(ignored_action, latency, qosTarget)
         print('qosTarget =', qosTarget, '& input-index =', inputIndex, '& took action:', ignored_action)
         print('latency =', latency, '& reward =', reward)
-        time.sleep(5)
+        time.sleep(7)
+
         pmc, _ = self.getMetrics(period=5)
-        time.sleep(4)
+        time.sleep(1)
+        inputIndex = random.randint(1, 4)
+        qosTarget = self.qosGenerator(inputIndex)
         observedState = self.getState(pmc, qosTarget, inputIndex)
         print('observed state after action ->', observedState)
-        #processReady.release()
+        self.state = observedState
         return observedState, reward, 0, {}
 
 dt = datetime.now().strftime("%m_%d_%H")
@@ -273,7 +283,7 @@ if __name__ == "__main__":
 
 #TODO count max values of pmc metrics
 #TODO load, save model
-#TODO generate 4 types of workflow's input
+#DONE generate 4 types of workflow's input:
 #TODO reward function
 #TODO qos desired variation for each input
 #TODO state_vector to be 32 dimensions + desired qos
