@@ -348,4 +348,5 @@ if __name__ == "__main__":
 #TODO load, save model
 #TODO calibrate reward if multiple replicas exist
 #TODO qos percentages again
+#TODO make takeActions more beautiful
 #TODO check holistically logic again
