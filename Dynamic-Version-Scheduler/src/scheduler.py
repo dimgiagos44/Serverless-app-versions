@@ -38,12 +38,13 @@ class CustomEnv(gym.Env):
             4: [23.5, 81.2, 138, 196.75, 231] 
         }
 
-        self.actionText = { 0: 'Moving framer', 1: 'Moving facedetector', 2: 'Moving models', 3: 'Scaling models UP', 4: 'Scaling models DOWN', 5: 'Maintaining'}
+        self.actionText = { 0: 'Moving framer', 1: 'Moving facedetector', 2: 'Moving models', 3: 'Scaling models UP', 4: 'Scaling models DOWN', 5: 'Scaling facedetectorfn UP',
+                            6: 'Scaling facedetectorfn2 DOWN', 7: 'Maintaining'}
 
-        self.state = [0] * 34
+        self.state = [0] * 35
 
-        self.action_space = gym.spaces.Discrete(5) # totally 5 possible actions for the agent
-        self.observation_space = gym.spaces.Box(low=0, high=300, shape=(34,), dtype=np.float64) # se ti diastima timwn anikoun oi metavlites pou apartizoun to state
+        self.action_space = gym.spaces.Discrete(8) # totally 8 possible actions for the agent
+        self.observation_space = gym.spaces.Box(low=0, high=300, shape=(35,), dtype=np.float64) # se ti diastima timwn anikoun oi metavlites pou apartizoun to state
 
         self.placementInit()
 
@@ -62,7 +63,7 @@ class CustomEnv(gym.Env):
         mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', 'kubernetes.io/hostname=gworker-01']
         subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
         time.sleep(10)
-        self.state[28:34] = [1.0, 1.0, 1.0, 1.0, 0, 1]
+        self.state[28:35] = [1.0, 1.0, 1.0, 1.0, 1.0, 0, 1]
         '''
         pmc, _ = self.getMetrics(period=5)
         inputIndex = random.randint(1, 4)
@@ -117,9 +118,11 @@ class CustomEnv(gym.Env):
 
     def takeAction(self, action, bestScoreIndex, inputIndex):
         check_number_of_replicas_command = 'faas list | grep mobilenetfn'
+        check_number_of_replicas_command2 = 'faas list | grep facedetectorfn2'
         number_of_replicas_str = subprocess.getoutput(check_number_of_replicas_command)
         number_of_replicas = int(number_of_replicas_str[-5])
         scale_models_commnand = 'kubectl scale deployment faceanalyzerfn mobilenetfn -n openfaas-fn --replicas='
+        scale_models_commnand2 = 'kubectl scale deployment facedetectorfn2 -n openfaas-fn --replicas='
         replicas_command = ['', '1', '2', '3', '4']
         constraint_worker_command = ['', 'kubernetes.io/hostname=gworker-01', 'kubernetes.io/hostname=gworker-02', 'kubernetes.io/hostname=gworker-03', 'kubernetes.io/hostname=gworker-04']
 
@@ -128,6 +131,12 @@ class CustomEnv(gym.Env):
             subprocess.check_call(framer_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
             
         elif action == 1:
+            number_of_replicas_str2 = subprocess.getoutput(check_number_of_replicas_command2)
+            number_of_replicas2 = int(number_of_replicas_str2[-5])
+            if (number_of_replicas2 >= 2):
+                command = 'faas remove facedetectorfn2'
+                subprocess.getoutput(command)
+                time.sleep(8)
             facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', constraint_worker_command[bestScoreIndex]]
             subprocess.check_call(facedetectorfn2_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
         
@@ -162,7 +171,27 @@ class CustomEnv(gym.Env):
                 number_of_replicas -= 1
                 command = scale_models_commnand + replicas_command[number_of_replicas]
                 subprocess.getoutput(command)
-                
+        
+        elif action == 5:
+            number_of_replicas_str2 = subprocess.getoutput(check_number_of_replicas_command2)
+            number_of_replicas2 = int(number_of_replicas_str2[-5])
+            if (number_of_replicas2 == 4):
+                return -1, 0
+            else:
+                number_of_replicas2 += 1
+                command = scale_models_commnand2 + replicas_command[number_of_replicas2]
+                subprocess.getoutput(command)
+
+        elif action == 6:
+            number_of_replicas_str2 = subprocess.getoutput(check_number_of_replicas_command2)
+            number_of_replicas2 = int(number_of_replicas_str2[-5])
+            if (number_of_replicas2 == 1):
+                return -1, 0
+            else:
+                number_of_replicas2 -= 1
+                command = scale_models_commnand2 + replicas_command[number_of_replicas2]
+                subprocess.getoutput(command)
+
         else:
             pass
         #print('Took action:', action, 'and waiting 5 seconds to apply the configuration')
@@ -179,8 +208,7 @@ class CustomEnv(gym.Env):
 
     # @must
     def reset(self):
-        #state = [0] * (len(EVENTS) + 2)
-        state = [0] * 34
+        state = [0] * 35
         return state
     
     def normData(self, state):
@@ -195,6 +223,7 @@ class CustomEnv(gym.Env):
             out6 = state[i+6]/(EVENT_MAX[6])
             state_space.extend([out, out1, out2, out3, out4, out5, out6])
             #state_space.append(out)
+        state_space.append(int(state[-7]))
         state_space.append(int(state[-6]))
         state_space.append(int(state[-5]))
         state_space.append(int(state[-4]))
@@ -204,7 +233,7 @@ class CustomEnv(gym.Env):
         return np.array(state_space)
     
     def getState(self, pmc, qosTarget=0, inputIndex=0):
-        state = [0] * 34
+        state = [0] * 35
         for i in range(0, 4):
             state[i] += pmc[i]['IPC']
             state[i+1] += pmc[i]['MEM_READ']
@@ -221,6 +250,7 @@ class CustomEnv(gym.Env):
         check_facedetectorfn2_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep facedetectorfn2'
         check_models_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep mobilenetfn'
         check_number_of_replicas_command = 'faas list | grep mobilenetfn'
+        check_number_of_replicas_command2 = 'faas list | grep facedetectorfn2'
         
         framerfn_pos_str = subprocess.getoutput(check_framerfn_pos_command)
         framerfn_pos = int(framerfn_pos_str.split('gworker-0')[1].split(' ')[0])
@@ -230,10 +260,13 @@ class CustomEnv(gym.Env):
         models_pos = int(models_pos_str.split('gworker-0')[1].split(' ')[0])
         number_of_replicas_str = subprocess.getoutput(check_number_of_replicas_command)
         number_of_replicas = int(number_of_replicas_str[-5])
+        number_of_replicas_str2 = subprocess.getoutput(check_number_of_replicas_command2)
+        number_of_replicas2 = int(number_of_replicas_str2[-5])
         
         state.append(framerfn_pos)
         state.append(facedetectorfn2_pos)
         state.append(models_pos)
+        state.append(number_of_replicas2)
         state.append(number_of_replicas)
         state.append(qosTarget)
         state.append(inputIndex)
@@ -243,6 +276,7 @@ class CustomEnv(gym.Env):
     
     def getReward(self, ignoreAction, latency, qosTarget):
         qos = latency
+
         if qos > qosTarget:
             reward = -5
         else:
@@ -286,7 +320,7 @@ class CustomEnv(gym.Env):
         inputIndex = random.randint(1, 4)
         qosTarget = self.qosGenerator(inputIndex)
         observedState = self.getState(pmc, qosTarget, inputIndex)
-        print('observed state after action ->', observedState[28:32])
+        print('observed state after action ->', observedState[28:33])
         self.state = observedState
         return observedState, reward, 0, {}
 
@@ -306,17 +340,18 @@ model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1,
             )
 
 if __name__ == "__main__":
-    model.learn(total_timesteps=15)
+    model.learn(total_timesteps=50)
     model.save("./models/%s/model.zip" % dt)
 
 
 #TODO count max values of pmc metrics
 #TODO load, save model
 #TODO calibrate reward if multiple replicas exist
-#TODO check to initialize placement of functions correctly
-#TODO check if actions are applied correctly
-#TODO check what happens with actions for models
-#TODO fix increase/decrease in action selection..
+#TODO make facedetectorfn2 scalable too
+#DONE check to initialize placement of functions correctly
+#DONE check if actions are applied correctly
+#DONE check what happens with actions for models
+#DONE fix increase/decrease in action selection..
 #DONE generate 4 types of workflow's input:
 #DONE reward function
 #DONE qos desired variation for each input
