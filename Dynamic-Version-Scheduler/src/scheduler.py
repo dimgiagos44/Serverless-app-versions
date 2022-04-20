@@ -347,13 +347,5 @@ if __name__ == "__main__":
 #TODO count max values of pmc metrics
 #TODO load, save model
 #TODO calibrate reward if multiple replicas exist
-#TODO make facedetectorfn2 scalable too
-#DONE check to initialize placement of functions correctly
-#DONE check if actions are applied correctly
-#DONE check what happens with actions for models
-#DONE fix increase/decrease in action selection..
-#DONE generate 4 types of workflow's input:
-#DONE reward function
-#DONE qos desired variation for each input
-#DONE state_vector to be 32 dimensions + desired qos
-#DONE qos percentages
+#TODO qos percentages again
+#TODO check holistically logic again
