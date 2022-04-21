@@ -14,15 +14,6 @@ from stable_baselines3 import DQN
 import random
 import json
 
-#containerReward = {'reward': [],'lock': threading.Lock()}
-
-#processReady = threading.Lock()
-
-EVENTS = ['IPC', 'MEM_READ', 'MEM_WRITE', 'L3M', 'C0RES', 'C1RES', 'NOT_C0RES_C1RES']
-EVENT_MAX = [5, 5, 5, 5, 5, 5, 5]
-EVENT_MAX = [e*2 for e in EVENT_MAX]
-
-
 class CustomEnv(gym.Env):
     def __init__(self,):
         super(CustomEnv, self).__init__()
@@ -267,9 +258,8 @@ class CustomEnv(gym.Env):
 
     def qosGenerator(self, inputIndex=1):
         return self.qosValues[inputIndex][random.randint(0, len(self.qosValues[inputIndex])) - 1]
-        
 
-    # @must
+
     def step(self, action):
         bestScoreIndex = self.findBestScore([])
         qosTarget = self.state[-2]
@@ -287,34 +277,13 @@ class CustomEnv(gym.Env):
         observedState = self.getState(pmc, qosTarget, inputIndex)
         print('observed state after action ->', observedState[28:33])
         self.state = observedState
-        return observedState, reward, 0, {}
-
-dt = datetime.now().strftime("%m_%d_%H")
-Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
-
-env = CustomEnv()
-
-policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[512, 256, 128])
-
-model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1,
-            train_freq=1,
-            learning_rate=0.0025, learning_starts=750,
-            batch_size=64, buffer_size=1000000, target_update_interval=150,
-            gamma=0.99, exploration_fraction=0.1, exploration_initial_eps=1, exploration_final_eps=0.01,
-            #tensorboard_log="./logs/%s/" % dt
-            )
+        return observedState, reward, 0, {}    
 
 
+customEnv = CustomEnv()
+models_dir = "./models/"
+model_path = f"{models_dir}/name.zip"
 
-if __name__ == "__main__":
-    model.learn(total_timesteps=50)
-    model.save("./models/%s/model.zip" % dt)
+model = DQN.load(model_path, env=customEnv)
 
-
-#TODO count max values of pmc metrics. to be done last thing before training
-#TODO load, save model
-#TODO hyperparameters check.
-#DONE calibrate reward if multiple replicas exist
-#TODO qos percentages again
-#DONE make takeActions more beautiful
-#DONE check holistically logic again
+episodes = 5
