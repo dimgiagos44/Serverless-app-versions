@@ -117,12 +117,17 @@ class CustomEnv(gym.Env):
         return random.choice(random_list)
 
     def takeAction(self, action, bestScoreIndex, inputIndex):
-        check_number_of_replicas_command = 'faas list | grep mobilenetfn'
-        check_number_of_replicas_command2 = 'faas list | grep facedetectorfn2'
-        number_of_replicas_str = subprocess.getoutput(check_number_of_replicas_command)
-        number_of_replicas = int(number_of_replicas_str[-5])
+        number_of_models_command = 'faas list | grep mobilenetfn'
+        number_of_models_str = subprocess.getoutput(number_of_models_command)
+        number_of_models = int(number_of_models_str[-5])
+
+        number_of_facedetector_command = 'faas list | grep facedetectorfn2'
+        number_of_facedetector_str = subprocess.getoutput(number_of_facedetector_command)
+        number_of_facedetector = int(number_of_facedetector_str[-5])
+
         scale_models_commnand = 'kubectl scale deployment faceanalyzerfn mobilenetfn -n openfaas-fn --replicas='
-        scale_models_commnand2 = 'kubectl scale deployment facedetectorfn2 -n openfaas-fn --replicas='
+        scale_facedetector_command = 'kubectl scale deployment facedetectorfn2 -n openfaas-fn --replicas='
+
         replicas_command = ['', '1', '2', '3', '4']
         constraint_worker_command = ['', 'kubernetes.io/hostname=gworker-01', 'kubernetes.io/hostname=gworker-02', 'kubernetes.io/hostname=gworker-03', 'kubernetes.io/hostname=gworker-04']
 
@@ -131,9 +136,7 @@ class CustomEnv(gym.Env):
             subprocess.check_call(framer_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
             
         elif action == 1:
-            number_of_replicas_str2 = subprocess.getoutput(check_number_of_replicas_command2)
-            number_of_replicas2 = int(number_of_replicas_str2[-5])
-            if (number_of_replicas2 >= 2):
+            if (number_of_facedetector >= 2):
                 command = 'faas remove facedetectorfn2'
                 subprocess.getoutput(command)
                 time.sleep(8)
@@ -141,9 +144,7 @@ class CustomEnv(gym.Env):
             subprocess.check_call(facedetectorfn2_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
         
         elif action == 2:
-            number_of_replicas_str = subprocess.getoutput(check_number_of_replicas_command)
-            number_of_replicas = int(number_of_replicas_str[-5])
-            if (number_of_replicas >= 2):
+            if (number_of_models >= 2):
                 command = 'faas remove faceanalyzerfn && faas remove mobilenetfn'
                 subprocess.getoutput(command)
                 time.sleep(8)
@@ -153,43 +154,35 @@ class CustomEnv(gym.Env):
             subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL) 
 
         elif action == 3:
-            number_of_replicas_str = subprocess.getoutput(check_number_of_replicas_command)
-            number_of_replicas = int(number_of_replicas_str[-5])
-            if (number_of_replicas == 4):
+            if (number_of_models == 4):
                 return -1, 0
             else:
-                number_of_replicas += 1
-                command = scale_models_commnand + replicas_command[number_of_replicas]
+                number_of_models += 1
+                command = scale_models_commnand + replicas_command[number_of_models]
                 subprocess.getoutput(command)
 
         elif action == 4:
-            number_of_replicas_str = subprocess.getoutput(check_number_of_replicas_command)
-            number_of_replicas = int(number_of_replicas_str[-5])
-            if (number_of_replicas == 1):
+            if (number_of_models == 1):
                 return -1, 0
             else:
-                number_of_replicas -= 1
-                command = scale_models_commnand + replicas_command[number_of_replicas]
+                number_of_models -= 1
+                command = scale_models_commnand + replicas_command[number_of_models]
                 subprocess.getoutput(command)
         
         elif action == 5:
-            number_of_replicas_str2 = subprocess.getoutput(check_number_of_replicas_command2)
-            number_of_replicas2 = int(number_of_replicas_str2[-5])
-            if (number_of_replicas2 == 4):
+            if (number_of_facedetector == 4):
                 return -1, 0
             else:
-                number_of_replicas2 += 1
-                command = scale_models_commnand2 + replicas_command[number_of_replicas2]
+                number_of_facedetector += 1
+                command = scale_facedetector_command + replicas_command[number_of_facedetector]
                 subprocess.getoutput(command)
 
         elif action == 6:
-            number_of_replicas_str2 = subprocess.getoutput(check_number_of_replicas_command2)
-            number_of_replicas2 = int(number_of_replicas_str2[-5])
-            if (number_of_replicas2 == 1):
+            if (number_of_facedetector == 1):
                 return -1, 0
             else:
-                number_of_replicas2 -= 1
-                command = scale_models_commnand2 + replicas_command[number_of_replicas2]
+                number_of_facedetector -= 1
+                command = scale_facedetector_command + replicas_command[number_of_facedetector]
                 subprocess.getoutput(command)
 
         else:
@@ -200,7 +193,6 @@ class CustomEnv(gym.Env):
         time.sleep(5)
 
         command = 'python3 ../../runtime/version1/version1fn.py ' + self.inputs[inputIndex][0] + ' ' + self.inputs[inputIndex][1]
-        #command = 'python3 ../../runtime/version1/version1fn.py 20 32'
         res = subprocess.getoutput(command)
         latency = float(res.split(':')[1])
 
@@ -223,13 +215,7 @@ class CustomEnv(gym.Env):
             out6 = state[i+6]/(EVENT_MAX[6])
             state_space.extend([out, out1, out2, out3, out4, out5, out6])
             #state_space.append(out)
-        state_space.append(int(state[-7]))
-        state_space.append(int(state[-6]))
-        state_space.append(int(state[-5]))
-        state_space.append(int(state[-4]))
-        state_space.append(int(state[-3]))
-        state_space.append(int(state[-2]))
-        state_space.append(int(state[-1]))
+        state_space.extend([int(state[-7]), int(state[-6]), int(state[-5]), int(state[-4]), int(state[-3]), int(state[-2]), int(state[-1])])
         return np.array(state_space)
     
     def getState(self, pmc, qosTarget=0, inputIndex=0):
@@ -243,14 +229,11 @@ class CustomEnv(gym.Env):
             state[i+5] += pmc[i]['C1RES']
             state[i+6] += pmc[i]['NOT_C0RES_C1RES']
         
-        #for i in range(0, len(state)):
-        #    state[i] = state[i] / 4
-        
         check_framerfn_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep framerfn'
         check_facedetectorfn2_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep facedetectorfn2'
         check_models_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep mobilenetfn'
-        check_number_of_replicas_command = 'faas list | grep mobilenetfn'
-        check_number_of_replicas_command2 = 'faas list | grep facedetectorfn2'
+        number_of_models_command = 'faas list | grep mobilenetfn'
+        number_of_facedetector_command = 'faas list | grep facedetectorfn2'
         
         framerfn_pos_str = subprocess.getoutput(check_framerfn_pos_command)
         framerfn_pos = int(framerfn_pos_str.split('gworker-0')[1].split(' ')[0])
@@ -258,18 +241,12 @@ class CustomEnv(gym.Env):
         facedetectorfn2_pos = int(facedetectorfn2_pos_str.split('gworker-0')[1].split(' ')[0])
         models_pos_str = subprocess.getoutput(check_models_pos_command)
         models_pos = int(models_pos_str.split('gworker-0')[1].split(' ')[0])
-        number_of_replicas_str = subprocess.getoutput(check_number_of_replicas_command)
-        number_of_replicas = int(number_of_replicas_str[-5])
-        number_of_replicas_str2 = subprocess.getoutput(check_number_of_replicas_command2)
-        number_of_replicas2 = int(number_of_replicas_str2[-5])
-        
-        state.append(framerfn_pos)
-        state.append(facedetectorfn2_pos)
-        state.append(models_pos)
-        state.append(number_of_replicas2)
-        state.append(number_of_replicas)
-        state.append(qosTarget)
-        state.append(inputIndex)
+        number_of_models_str = subprocess.getoutput(number_of_models_command)
+        number_of_models = int(number_of_models_str[-5])
+        number_of_facedetector_str   = subprocess.getoutput(number_of_facedetector_command)
+        number_of_facedetector = int(number_of_facedetector_str[-5])
+
+        state[28:35] = [framerfn_pos, facedetectorfn2_pos, models_pos, number_of_facedetector, number_of_models, qosTarget, inputIndex]
         normalized = self.normData(state)
 
         return list(normalized)
@@ -309,7 +286,7 @@ class CustomEnv(gym.Env):
         qosTarget = self.state[-2]
         inputIndex = int(self.state[-1])
         
-        ignored_action, latency = self.takeAction(action, bestScoreIndex, inputIndex)
+        ignored_action, latency = self.takeAction(action, bestScoreIndex, inputIndex=1)
         reward = self.getReward(ignored_action, latency, qosTarget)
         print('qosTarget =', qosTarget, '\ninput-index =', inputIndex, 'bestScoreIndex =', bestScoreIndex)
         print('latency =', latency, '\nreward =', reward)
@@ -320,6 +297,7 @@ class CustomEnv(gym.Env):
         inputIndex = random.randint(1, 4)
         qosTarget = self.qosGenerator(inputIndex)
         observedState = self.getState(pmc, qosTarget, inputIndex)
+        print('len of observed state', len(observedState))
         print('observed state after action ->', observedState[28:33])
         self.state = observedState
         return observedState, reward, 0, {}
