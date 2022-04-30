@@ -14,10 +14,6 @@ from stable_baselines3 import DQN
 import random
 import json
 
-#containerReward = {'reward': [],'lock': threading.Lock()}
-
-#processReady = threading.Lock()
-
 EVENTS = ['IPC', 'MEM_READ', 'MEM_WRITE', 'L3M', 'C0RES', 'C1RES', 'NOT_C0RES_C1RES']
 EVENT_MAX = [5, 5, 5, 5, 5, 5, 5]
 EVENT_MAX = [e*2 for e in EVENT_MAX]
@@ -53,18 +49,15 @@ class CustomEnv(gym.Env):
         subprocess.getoutput(command)
         time.sleep(15)
 
-        framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', 'kubernetes.io/hostname=gworker-01']
+        framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', 'kubernetes.io/hostname=gworker-02']
         subprocess.check_call(framer_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-        facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', 'kubernetes.io/hostname=gworker-01']
+        facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', 'kubernetes.io/hostname=gworker-02']
         subprocess.check_call(facedetectorfn2_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-        faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', 'kubernetes.io/hostname=gworker-01']
+        faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', 'kubernetes.io/hostname=gworker-02']
         subprocess.check_call(faceanalyzerfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-        mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', 'kubernetes.io/hostname=gworker-01']
+        mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', 'kubernetes.io/hostname=gworker-02']
         subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
         time.sleep(10)
-        self.state[28:35] = [1.0, 1.0, 1.0, 1.0, 1.0, 15, 1]
-        print('Init state ->', self.state[28:33])
-        return
     
     def getMetrics(self, period=5):
         liono_command = 'go run main.go ' + str(period) + ' average liono'
@@ -106,7 +99,7 @@ class CustomEnv(gym.Env):
     
     def findBestScore(self, scores):
         #return scores.index(max(scores))
-        random_list = [1, 2, 3, 4]
+        random_list = [2, 3, 4]
         return random.choice(random_list)
 
     def takeAction(self, action, bestScoreIndex, inputIndex):
@@ -192,8 +185,11 @@ class CustomEnv(gym.Env):
 
     # @must
     def reset(self):
-        state = [0] * 35
-        return state
+        print('Reset() called atm')
+        self.state = [0] * 35
+        self.state[28:35] = [1.0, 1.0, 1.0, 1.0, 1.0, 15, 1]
+        print('Init state ->', self.state[28:33])
+        return self.state
     
     def normData(self, state):
         state_space = []
@@ -243,27 +239,31 @@ class CustomEnv(gym.Env):
 
         return list(normalized)
     
+    def spreadCalculator(self):
+        if (self.state[28] == self.state[29]):
+            if (self.state[28] == self.state[30]):
+                return 1
+            else:
+                return 2
+        elif (self.state[28] == self.state[30]):
+            return 2
+        elif (self.state[29] == self.state[30]):
+            return 2
+        else:
+            return 3
+        
+    
     def getReward(self, ignoredAction, latency, qosTarget):
         qos = latency
         #positions: framer_pos, facedetector_pos, models_pos, #facedetector, #models
         if qos > qosTarget:
-            reward = -5
+            reward = -10
         else:
-            positions = self.state[28:33]
-            if positions[0] == positions[1]:
-                if positions[1] == positions[2]:
-                    reward = 8
-                else:
-                    reward = 4
-            elif positions[1] == positions[2]:
-                reward = 4
-            elif positions[0] == positions[2]:
-                reward = 4
-            else:
-                reward = 2
+            spread = self.spreadCalculator()
+            reward = (20 - (self.state[31] + (2 * self.state[32]))) / spread
         if ignoredAction != 0:
             reward = -10
-        return reward - (positions[3] / 2) - (positions[4] / 2)
+        return reward
 
     def qosGenerator(self, inputIndex=1):
         return self.qosValues[inputIndex][random.randint(0, len(self.qosValues[inputIndex])) - 1]
@@ -275,7 +275,7 @@ class CustomEnv(gym.Env):
         qosTarget = self.state[-2]
         inputIndex = int(self.state[-1])
         
-        ignoredAction, latency = self.takeAction(action, bestScoreIndex, inputIndex=1)
+        ignoredAction, latency = self.takeAction(action, bestScoreIndex, inputIndex)
         reward = self.getReward(ignoredAction, latency, qosTarget)
         print('qosTarget =', qosTarget, '\ninput-index =', inputIndex, 'bestScoreIndex =', bestScoreIndex)
         print('latency =', latency, '\nreward =', reward)
@@ -313,8 +313,6 @@ if __name__ == "__main__":
 
 #TODO count max values of pmc metrics. to be done last thing before training
 #TODO load, save model
+#TODO possible reset() bug
 #TODO hyperparameters check.
-#DONE calibrate reward if multiple replicas exist
 #TODO qos percentages again
-#DONE make takeActions more beautiful
-#DONE check holistically logic again
