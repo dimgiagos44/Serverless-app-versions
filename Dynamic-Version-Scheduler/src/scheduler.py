@@ -8,14 +8,12 @@ silence_tensorflow()
 import tensorflow as tf
 import torch
 import time
-import threading
 import numpy as np
 from stable_baselines3 import DQN
 import random
-import json
 
 EVENTS = ['IPC', 'MEM_READ', 'MEM_WRITE', 'L3M', 'C0RES', 'C1RES', 'NOT_C0RES_C1RES']
-EVENT_MAX = [5, 5, 5, 5, 5, 5, 5]
+EVENT_MAX = [5, 5, 5, 5, 1.0, 1.0, 1.0]
 EVENT_MAX = [e*2 for e in EVENT_MAX]
 
 
@@ -27,14 +25,15 @@ class CustomEnv(gym.Env):
 
         self.inputs = { 1: ['90', '7'], 2: ['40', '16'], 3: ['20', '32'], 4: ['10', '65']}
 
+        #10%-25%-50%-75%-100% of max latency per input-size
         self.qosValues = { 
-            1: [17, 45.25, 73.5, 84.75, 130], 
-            2: [18.5, 51.25, 65.5, 117, 150], 
-            3: [19.6, 60, 102, 144, 185], 
-            4: [23.5, 81.2, 138, 196.75, 231] 
+            1: [12.5, 31.25, 62.5, 93.75, 125.0],
+            2: [13.8, 34.5, 69.0, 103.5, 138.0], 
+            3: [16.5, 41.25, 82.5, 123.75, 185.0],
+            4: [21.8, 54.5, 109.0, 163.5, 218.0] 
         }
 
-        self.actionText = { 0: 'Moving framer', 1: 'Moving facedetector', 2: 'Moving models', 3: 'Scaling models UP', 4: 'Scaling models DOWN', 5: 'Scaling facedetectorfn UP',
+        self.actionText = { 0: 'Moving framer', 1: 'Moving facedetector', 2: 'Moving models', 3: 'Scaling models UP', 4: 'Scaling models DOWN', 5: 'Scaling facedetectorfn2 UP',
                             6: 'Scaling facedetectorfn2 DOWN', 7: 'Maintaining'}
 
         self.state = [0] * 35
@@ -186,7 +185,6 @@ class CustomEnv(gym.Env):
     # @must
     def reset(self):
         print('Reset() called atm')
-        self.state = [0] * 35
         self.state[28:35] = [1.0, 1.0, 1.0, 1.0, 1.0, 15, 1]
         print('Init state ->', self.state[28:33])
         return self.state
@@ -254,13 +252,13 @@ class CustomEnv(gym.Env):
         
     
     def getReward(self, ignoredAction, latency, qosTarget):
-        qos = latency
         #positions: framer_pos, facedetector_pos, models_pos, #facedetector, #models
-        if qos > qosTarget:
-            reward = -10
+        if latency > qosTarget:
+            reward = min(-4, latency / qosTarget)
         else:
             spread = self.spreadCalculator()
-            reward = (20 - (self.state[31] + (2 * self.state[32]))) / spread
+            replicas = int(self.state[31]) + (2 * int(self.state[32]))
+            reward = (qosTarget / latency) + (3 / spread) + (12 / replicas)
         if ignoredAction != 0:
             reward = -10
         return reward
