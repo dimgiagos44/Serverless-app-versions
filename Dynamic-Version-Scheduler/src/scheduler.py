@@ -7,6 +7,7 @@ from silence_tensorflow import silence_tensorflow
 silence_tensorflow()
 import tensorflow as tf
 import torch
+from datetime import datetime
 import time
 import numpy as np
 from stable_baselines3 import DQN
@@ -46,30 +47,30 @@ class CustomEnv(gym.Env):
         print('Executing the init method..')
         command = 'faas remove framerfn && faas remove facedetectorfn2 && faas remove faceanalyzerfn && faas remove mobilenetfn'
         subprocess.getoutput(command)
-        time.sleep(15)
+        time.sleep(18)
 
-        framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', 'kubernetes.io/hostname=gworker-02']
+        framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', 'kubernetes.io/hostname=gworker-01']
         subprocess.check_call(framer_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-        facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', 'kubernetes.io/hostname=gworker-02']
+        facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', 'kubernetes.io/hostname=gworker-01']
         subprocess.check_call(facedetectorfn2_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-        faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', 'kubernetes.io/hostname=gworker-02']
+        faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', 'kubernetes.io/hostname=gworker-01']
         subprocess.check_call(faceanalyzerfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-        mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', 'kubernetes.io/hostname=gworker-02']
+        mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', 'kubernetes.io/hostname=gworker-01']
         subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-        time.sleep(10)
+        time.sleep(13)
     
     def getMetrics(self, period=5):
         liono_command = 'go run main.go ' + str(period) + ' average liono'
-        davinci_command = 'go run main.go ' + str(period) + ' average liono'
+        davinci_command = 'go run main.go ' + str(period) + ' average davinci'
         coroni_command = 'go run main.go ' + str(period) + ' average coroni'
-        cheetara_command = 'go run main.go ' + str(period) + ' average coroni'
+        cheetara_command = 'go run main.go ' + str(period) + ' average cheetara'
 
         liono_metrics_str = subprocess.getoutput(liono_command)
         davinci_metrics_str = subprocess.getoutput(davinci_command)
         coroni_metrics_str = subprocess.getoutput(coroni_command)
         cheetara_metrics_str = subprocess.getoutput(cheetara_command)
 
-        all_metrics_str = [liono_metrics_str, liono_metrics_str, liono_metrics_str, liono_metrics_str]
+        all_metrics_str = [davinci_metrics_str] * 4
 
         metrics = []
         scores = []
@@ -98,7 +99,7 @@ class CustomEnv(gym.Env):
     
     def findBestScore(self, scores):
         #return scores.index(max(scores))
-        random_list = [2, 3, 4]
+        random_list = [1, 2, 3, 4]
         return random.choice(random_list)
 
     def takeAction(self, action, bestScoreIndex, inputIndex):
@@ -236,6 +237,7 @@ class CustomEnv(gym.Env):
         normalized = self.normData(state)
 
         return list(normalized)
+        r#eturn list(np.array(self.state))
     
     def spreadCalculator(self):
         if (self.state[28] == self.state[29]):
@@ -255,6 +257,8 @@ class CustomEnv(gym.Env):
         #positions: framer_pos, facedetector_pos, models_pos, #facedetector, #models
         if latency > qosTarget:
             reward = min(-4, latency / qosTarget)
+        elif latency == 0:
+            pass
         else:
             spread = self.spreadCalculator()
             replicas = int(self.state[31]) + (2 * int(self.state[32]))
@@ -269,22 +273,26 @@ class CustomEnv(gym.Env):
 
     # @must
     def step(self, action):
+        #print('---> called step now:', datetime.now().strftime("%H:%M:%S"))
         bestScoreIndex = self.findBestScore([])
         qosTarget = self.state[-2]
         inputIndex = int(self.state[-1])
         
         ignoredAction, latency = self.takeAction(action, bestScoreIndex, inputIndex)
-        reward = self.getReward(ignoredAction, latency, qosTarget)
-        print('qosTarget =', qosTarget, '\ninput-index =', inputIndex, 'bestScoreIndex =', bestScoreIndex)
-        print('latency =', latency, '\nreward =', reward)
-        time.sleep(7)
-
-        pmc, _ = self.getMetrics(period=5)
-        inputIndex = random.randint(1, 4)
-        qosTarget = self.qosGenerator(inputIndex)
-        observedState = self.getState(pmc, qosTarget, inputIndex)
-        print('observed state after action ->', observedState[28:33])
-        self.state = observedState
+        if ignoredAction == -1:
+            print('ignoredAction = -1')
+            observedState = self.state
+        else: 
+            reward = self.getReward(ignoredAction, latency, qosTarget)
+            print('qosTarget =', qosTarget, '\ninput-index =', inputIndex, 'bestScoreIndex =', bestScoreIndex)
+            print('latency =', latency, '\nreward =', reward)
+            time.sleep(8.5)
+            pmc, _ = self.getMetrics(period=5)
+            inputIndex = random.randint(1, 4)
+            qosTarget = self.qosGenerator(inputIndex)
+            observedState = self.getState(pmc, qosTarget, inputIndex)
+            print('observed state after action ->', observedState[28:33])
+            self.state = observedState
         return observedState, reward, 0, {}
 
 dt = datetime.now().strftime("%m_%d_%H")
@@ -305,7 +313,7 @@ model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1,
 
 
 if __name__ == "__main__":
-    model.learn(total_timesteps=50)
+    model.learn(total_timesteps=45)
     model.save("./models/%s/model.zip" % dt)
 
 

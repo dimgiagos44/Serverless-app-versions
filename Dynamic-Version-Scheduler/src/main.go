@@ -26,6 +26,20 @@ var NodesToCores = map[string][]int{
 	"liono": {0, 1, 2, 3, 4, 5, 6, 7},
 }
 
+var NodesToCoresFinal = map[string][]int{
+	"davinci": {20, 21, 22, 23, 24, 25, 26, 27},
+	"liono": {0, 1, 2, 3, 4, 5, 6, 7},
+	"coroni": {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 21, 22, 23, 24, 25},
+	"cheetara": {0, 1, 2, 3},
+}
+
+var NodesToSocketId = map[string]int{
+	"davinci": 1,
+	"liono": 0,
+	"coroni": 0,
+	"cheetara": 0,
+}
+
 
 type scorerInput struct {
 	metricName string
@@ -143,9 +157,10 @@ var results map[string]float64
 }*/
 var NameToUuid = map[string]string{
 	"davinci": "9b1b13e5-3eeb-4927-b2b8-9ee3784d89f5",
-	"davinci2": "9b1b13e5-3eeb-4927-b2b8-9ee3784d89f5",
-	"coroni": "644b8bc9-4ca9-486b-bbb6-3bda87b8b661",
 	"liono": "ea9ec204-1e47-4665-b3c7-ccd965a6aeff",
+	"coroni": "644b8bc9-4ca9-486b-bbb6-3bda87b8b661",
+	"cheetara": "----------------------------------",
+	//"davinci2": "9b1b13e5-3eeb-4927-b2b8-9ee3784d89f5",
 }
 
 
@@ -298,7 +313,7 @@ func main() {
 
 		// Return the metrics of those cores
 		metrics := []string{"c1res", "c0res", "ipc", "l3m", "l2m"} // check the c0res and ipc
-		r, err := queryInfluxDbCores(metrics, NameToUuid[node], 0, numberOfRows, c, NodesToCores[node])
+		r, err := queryInfluxDbCores(metrics, NameToUuid[node], NodesToSocketId[node], numberOfRows, c, NodesToCoresFinal[node])
 		if err != nil {
 			klog.V(1).Infof("Error in querying or calculating core availability in the first stage: %v", err.Error())
 		}
@@ -306,12 +321,12 @@ func main() {
 		// Calculate the average of those metrics
 		var average map[string]float64
 		if isMoving {
-			average, err = calculateWeightedAverageCores(r, numberOfRows, len(metrics), len(NodesToCores[node]))
+			average, err = calculateWeightedAverageCores(r, numberOfRows, len(metrics), len(NodesToCoresFinal[node]))
 			if err != nil {
 				klog.V(1).Infof("Error defining core availability")
 			}
 		} else {
-			average, err = calculateAverageCores(r, numberOfRows, len(metrics), len(NodesToCores[node]))
+			average, err = calculateAverageCores(r, numberOfRows, len(metrics), len(NodesToCoresFinal[node]))
 			if err != nil {
 				klog.V(1).Infof("Error defining core availability")
 			}

@@ -19,8 +19,18 @@ from scheduler import CustomEnv
     
 customEnv = CustomEnv()
 models_dir = "./models/"
-model_path = f"{models_dir}/name.zip"
+model_path = f"{models_dir}/05_04_20/model.zip"
 
 model = DQN.load(model_path, env=customEnv)
 
 episodes = 5
+
+
+for ep in range(episodes):
+    obs = customEnv.reset()
+
+    action, _ = model.predict(obs)
+    obs, reward, done, info = customEnv.step(action)
+    print(obs, reward, done, info)
+
+customEnv.close()
