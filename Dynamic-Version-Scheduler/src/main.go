@@ -159,8 +159,7 @@ var NameToUuid = map[string]string{
 	"davinci": "9b1b13e5-3eeb-4927-b2b8-9ee3784d89f5",
 	"liono": "ea9ec204-1e47-4665-b3c7-ccd965a6aeff",
 	"coroni": "644b8bc9-4ca9-486b-bbb6-3bda87b8b661",
-	"cheetara": "----------------------------------",
-	//"davinci2": "9b1b13e5-3eeb-4927-b2b8-9ee3784d89f5",
+	"cheetara": "561c7aa5-e610-4787-b9b1-960139529b23",
 }
 
 

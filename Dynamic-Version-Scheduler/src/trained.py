@@ -17,12 +17,13 @@ from scheduler import CustomEnv
 
 
     
-customEnv = CustomEnv()
+#customEnv = CustomEnv()
 models_dir = "./models/"
-model_path = f"{models_dir}/05_04_20/model.zip"
+model_path = f"{models_dir}/05_10_17/model_4.zip"
 
-model = DQN.load(model_path, env=customEnv)
-
+#model = DQN.load(model_path, env=customEnv)
+model = DQN.load(model_path)
+'''
 episodes = 5
 
 
@@ -34,3 +35,8 @@ for ep in range(episodes):
     print(obs, reward, done, info)
 
 customEnv.close()
+'''
+
+
+print(model.get_parameters())
+print('SOOOOOOOOOOOOOOOOOOOOOOS')
