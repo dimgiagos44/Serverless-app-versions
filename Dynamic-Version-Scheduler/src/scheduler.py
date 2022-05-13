@@ -93,6 +93,9 @@ class CustomEnv(gym.Env):
                 scores.append(float(score))
             else:
                 score = metrics_str.split('Score: ')[1].split(',')[0]
+                scoreTest = metrics_str.split('Score: ')[1]
+                if ('e+' in scoreTest):
+                    score = 0.00003
                 ipc = metrics_str.split('IPC: ')[1].split(',')[0]
                 memRead = metrics_str.split('Reads: ')[1].split(',')[0]
                 memWrite = metrics_str.split('Writes: ')[1].split(',')[0]
@@ -346,7 +349,7 @@ env = CustomEnv()
 
 policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[512, 256, 128])
 
-'''
+
 model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1,
             train_freq=1,
             learning_rate=0.0025, learning_starts=25,
@@ -354,13 +357,11 @@ model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1,
             gamma=0.99, exploration_fraction=0.1, exploration_initial_eps=1, exploration_final_eps=0.01,
             #tensorboard_log="./logs/%s/" % dt
             )
-'''
 
-model = DQN.load("./models/05_10_15/model_1.zip", env)
-
+#model = DQN.load("./models/05_11_15/model_12.zip", env)
 
 if __name__ == "__main__":
     totalTimesteps = 50
-    for i in range(2, 7):
+    for i in range(1, 6):
         model.learn(total_timesteps=totalTimesteps)
         model.save("./models/%s/model_%s.zip" % (dt, i))
