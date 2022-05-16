@@ -371,7 +371,10 @@ model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1,
 #model = DQN.load("./models/05_11_15/model_12.zip", env)
 
 if __name__ == "__main__":
-    totalTimesteps = 50
-    for i in range(1, 4):
-        model.learn(total_timesteps=totalTimesteps)
-        model.save("./models/%s/model_%s.zip" % (dt, i))
+    total_timesteps = 300
+    i = 'testing'
+    model.learn(total_timesteps=total_timesteps)
+    model.save("./models/%s/model_%s.zip" % (dt, i))
+    #for i in range(1, 2):
+        #model.learn(total_timesteps=totalTimesteps)
+        #model.save("./models/%s/model_%s.zip" % (dt, i))
