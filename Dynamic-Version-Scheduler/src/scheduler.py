@@ -9,11 +9,14 @@ import tensorflow as tf
 import torch
 from datetime import datetime
 import time
+import loggers
 import numpy as np
 from stable_baselines3 import DQN
 import random
 
 EVENTS = ['IPC', 'MEM_READ', 'MEM_WRITE', 'L3M', 'C0RES', 'C1RES', 'NOT_C0RES_C1RES']
+
+rewardLogger, actionLogger, timeLogger, stateLogger = loggers.setupDataLoggers()
 
 class CustomEnv(gym.Env):
     def __init__(self,):
@@ -24,15 +27,24 @@ class CustomEnv(gym.Env):
         self.inputs = { 1: ['90', '7'], 2: ['40', '16'], 3: ['20', '32'], 4: ['10', '65']}
 
         self.iterationNumber = 0
+        self.spread = 1
+        self.replicas = 3
 
-        #10%-25%-50%-75%-100% of max latency per input-size
-        self.qosValues = { 
+        #10%-25%-50%-75%-100% of max latency per input-size\
+        self.timesPool = { 
+            1: [15.5, 27.25, 55.5, 85.75, 110.0],
+            2: [17.8, 34.5, 69.0, 103.5, 125.0], 
+            3: [19.5, 41.25, 82.5, 114.75, 165.0],
+            4: [25.8, 54.5, 102.0, 140.5, 200.0] 
+        }
+        '''
+        self.timesPool = { 
             1: [12.5, 31.25, 62.5, 93.75, 125.0],
             2: [13.8, 34.5, 69.0, 103.5, 138.0], 
             3: [16.5, 41.25, 82.5, 123.75, 185.0],
             4: [21.8, 54.5, 109.0, 163.5, 218.0] 
         }
-
+        '''
         self.actionText = { 0: 'Moving framer', 1: 'Moving facedetector', 2: 'Moving models', 3: 'Scaling models UP', 4: 'Scaling models DOWN', 5: 'Scaling facedetectorfn2 UP',
                             6: 'Scaling facedetectorfn2 DOWN', 7: 'Maintaining'}
 
@@ -58,10 +70,18 @@ class CustomEnv(gym.Env):
             mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', 'kubernetes.io/hostname=gworker-01']
             subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
             time.sleep(15)
+
         except subprocess.CalledProcessError as e:
             print('Init error handled here! Exiting')
             exit()
     
+     # @must
+    def reset(self):
+        print('Reseting the state.')
+        self.state[28:35] = [1.0, 1.0, 1.0, 1.0, 1.0, 15.0, 1.0]
+        print('Init state \u27A9', self.state[28:33])
+        return self.state
+
     def getMetrics(self, period=5):
         liono_command = 'go run main.go ' + str(period) + ' average liono'
         davinci_command = 'go run main.go ' + str(period) + ' average davinci'
@@ -78,7 +98,7 @@ class CustomEnv(gym.Env):
         scores = []
         for metrics_str in all_metrics_str:
             if 'Node' not in metrics_str:
-                print('---Got in panic but escaped!-----')
+                print('----------Got in panic but escaped! getMetrics() error---------')
                 score = 0.002
                 metric = {
                     'IPC': float(0.1),
@@ -118,14 +138,13 @@ class CustomEnv(gym.Env):
         return metrics, scores
     
     def findBestScore(self, scores):
-        print('len of scores =', len(scores))
         return scores.index(max(scores)) + 1
-        #random_list = [1, 2, 3, 4]
-        #return random.choice(random_list)
 
     def takeAction(self, action, bestScoreIndex, inputIndex):
         self.iterationNumber += 1
         replicas_command = ['', '1', '2', '3', '4']
+        scale_models_commnand = 'kubectl scale deployment faceanalyzerfn mobilenetfn -n openfaas-fn --replicas='
+        scale_facedetector_command = 'kubectl scale deployment facedetectorfn2 -n openfaas-fn --replicas='
         constraint_worker_command = ['', 'kubernetes.io/hostname=gworker-01', 'kubernetes.io/hostname=gworker-02', 'kubernetes.io/hostname=gworker-03', 'kubernetes.io/hostname=gworker-04']
         number_of_models_command = 'faas list | grep mobilenetfn'
         number_of_models_str = subprocess.getoutput(number_of_models_command)
@@ -150,9 +169,6 @@ class CustomEnv(gym.Env):
             return -1, 0
         else:
             number_of_facedetector = int(number_of_facedetector_str[-5])
-
-        scale_models_commnand = 'kubectl scale deployment faceanalyzerfn mobilenetfn -n openfaas-fn --replicas='
-        scale_facedetector_command = 'kubectl scale deployment facedetectorfn2 -n openfaas-fn --replicas='
 
         if action == 0:
             framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', constraint_worker_command[bestScoreIndex]]
@@ -227,25 +243,12 @@ class CustomEnv(gym.Env):
         res = subprocess.getoutput(command)
         latency = float(res.split(':')[1])
         return 0, latency
-
-    # @must
-    def reset(self):
-        print('Reseting the state.')
-        self.state[28:35] = [1.0, 1.0, 1.0, 1.0, 1.0, 15, 1]
-        print('Init state \u27A9', self.state[28:33])
-        return self.state
     
     def normData(self, state):
         state_space = []
         for i in range(0, 4):
-            out = state[i]
-            out1 = state[i+1]
-            out2 = state[i+2]
-            out3 = state[i+3]
-            out4 = state[i+4]
-            out5 = state[i+5]
-            out6 = state[i+6]
-            state_space.extend([out, out1, out2, out3, out4, out5, out6])
+            state_space.extend([state[i], state[i+1], state[i+2], state[i+3], state[i+4], state[i+5], state[i+6]])
+            
         state_space.extend([int(state[-7]), int(state[-6]), int(state[-5]), int(state[-4]), int(state[-3]), int(state[-2]), int(state[-1])])
         return np.array(state_space)
     
@@ -279,9 +282,8 @@ class CustomEnv(gym.Env):
 
         state[28:35] = [framerfn_pos, facedetectorfn2_pos, models_pos, number_of_facedetector, number_of_models, qosTarget, inputIndex]
         normalized = self.normData(state)
-
+        #stateLogger.info("State is: %s time: %s" % (list(normalized), round(time.time()) - self.startingTime))
         return list(normalized)
-        r#eturn list(np.array(self.state))
     
     def spreadCalculator(self):
         if (self.state[28] == self.state[29]):
@@ -296,50 +298,59 @@ class CustomEnv(gym.Env):
         else:
             return 3
         
-    
-    def getReward(self, ignoredAction, latency, qosTarget):
+    def getReward(self, ignoredAction, latency, tMax):
         #positions: framer_pos, facedetector_pos, models_pos, #facedetector, #models
-        if latency > qosTarget:
-            reward = min(-5, latency - qosTarget)
-            reward = max(reward, -12)
+        spread = self.spreadCalculator()
+        replicas = int(self.state[31]) + (2 * int(self.state[32]))
+        self.spread = spread
+        self.replicas = replicas
+        if latency > tMax:
+            #reward = min(-5, latency - qosTarget)
+            #reward = max(reward, -12)
+            reward = max(-5,  -2 - (latency / tMax))
         elif latency == 0:
             pass
         else:
-            spread = self.spreadCalculator()
-            replicas = int(self.state[31]) + (2 * int(self.state[32]))
-            reward = ((latency / qosTarget) * 4) + (3 / spread) + (12 / replicas)
+            #reward = ((latency / qosTarget) * 4) + (3 / spread) + (12 / replicas)
+            reward = (3 / spread) + (12 / replicas)
         if ignoredAction != 0:
-            reward = -10
+            reward = 0
+        
         return reward
 
     def qosGenerator(self, inputIndex=1):
-        return self.qosValues[inputIndex][random.randint(0, len(self.qosValues[inputIndex])) - 1]
+        return self.timesPool[inputIndex][random.randint(0, len(self.timesPool[inputIndex])) - 1]
         
 
     # @must
     def step(self, action):
-        qosTarget = self.state[-2]
+        tMax = self.state[-2]
         inputIndex = int(self.state[-1])
         time.sleep(1)
         _, scores = self.getMetrics(period=5)
         bestScoreIndex = self.findBestScore(scores)
         ignoredAction, latency = self.takeAction(action, bestScoreIndex, inputIndex)
+        actionLogger.info("Action taken: " + str(action) + " with input: " + str(inputIndex) + " time:" + str(round(time.time()) - self.startingTime))
+
         if ignoredAction == -1:
-            print('ignoredAction = -1')
-            reward = 0
+            print('Just ignored an action.')
+            reward = -1
             observedState = self.state
         else: 
-            reward = self.getReward(ignoredAction, latency, qosTarget)
-            print('\u2219 qosTarget =', qosTarget, '\u2219 input-index =', inputIndex, '\u2219 bestScoreIndex =', bestScoreIndex, '\u2219 scores =', scores)
-            print('\u2219 latency =', latency, '\u2219 reward =', reward)
             time.sleep(8.5)
-
             pmc, _ = self.getMetrics(period=5)
-            inputIndex = random.randint(1, 4)
-            qosTarget = self.qosGenerator(inputIndex)
-            observedState = self.getState(pmc, qosTarget, inputIndex)
-            print('observed state after action \u27A9', observedState[28:33])
+            newInputIndex = random.randint(1, 4)
+            #tMax = self.qosGenerator(inputIndex)
+            observedState = self.getState(pmc, self.qosGenerator(newInputIndex), newInputIndex)
             self.state = observedState
+            reward = self.getReward(ignoredAction, latency, tMax)
+            timeLogger.info("Time quotient is: " + str(latency / tMax) + " time:" + str(round(time.time())- self.startingTime))
+            print('\u2219 tMax =', tMax, '\u2219 input-index =', inputIndex, '\u2219 bestScoreIndex =', bestScoreIndex, '\u2219 scores =', scores)
+            print('\u2219 latency =', latency, '\u2219 reward =', reward, '\u2219 spread =', self.spread, '\u2219 replicas =', self.replicas)
+            print('observed state after action \u27A9', observedState[28:33])
+            
+        stateLogger.info("State is: %s time: %s" % (observedState, round(time.time()) - self.startingTime))
+        rewardLogger.info("Reward is: " + str(reward) + " time:" + str(round(time.time())- self.startingTime))
         return observedState, reward, 0, {}
 
 dt = datetime.now().strftime("%m_%d_%H")
@@ -355,13 +366,12 @@ model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1,
             learning_rate=0.0025, learning_starts=25,
             batch_size=64, buffer_size=1000000, target_update_interval=10,
             gamma=0.99, exploration_fraction=0.1, exploration_initial_eps=1, exploration_final_eps=0.01,
-            #tensorboard_log="./logs/%s/" % dt
-            )
+            tensorboard_log="./logs/%s/" % dt)
 
 #model = DQN.load("./models/05_11_15/model_12.zip", env)
 
 if __name__ == "__main__":
     totalTimesteps = 50
-    for i in range(1, 6):
+    for i in range(1, 4):
         model.learn(total_timesteps=totalTimesteps)
         model.save("./models/%s/model_%s.zip" % (dt, i))

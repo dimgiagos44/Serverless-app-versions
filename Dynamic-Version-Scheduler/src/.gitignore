@@ -1,4 +1,3 @@
 virtualenv/
-logs/
 models/
 __pycache__/
