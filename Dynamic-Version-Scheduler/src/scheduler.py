@@ -3,6 +3,7 @@ from pathlib import Path
 import subprocess
 import gym
 import os
+os.environ['OPENAI_LOG_FORMAT']='stdout,log,csv,tensorboard'
 from silence_tensorflow import silence_tensorflow
 silence_tensorflow()
 import tensorflow as tf
@@ -12,6 +13,7 @@ import time
 import loggers
 import numpy as np
 from stable_baselines3 import DQN
+from stable_baselines3.common.callbacks import CheckpointCallback
 import random
 
 EVENTS = ['IPC', 'MEM_READ', 'MEM_WRITE', 'L3M', 'C0RES', 'C1RES', 'NOT_C0RES_C1RES']
@@ -329,7 +331,7 @@ class CustomEnv(gym.Env):
         time.sleep(1)
         _, scores = self.getMetrics(period=5)
         bestScoreIndex = self.findBestScore(scores)
-        ignoredAction, latency = self.takeAction(action, bestScoreIndex, inputIndex)
+        ignoredAction, latency = self.takeAction(action, bestScoreIndex, 1)
         actionLogger.info("Action taken: " + str(action) + " with input: " + str(inputIndex) + " time:" + str(round(time.time()) - self.startingTime))
 
         if ignoredAction == -1:
@@ -353,6 +355,7 @@ class CustomEnv(gym.Env):
         rewardLogger.info("Reward is: " + str(reward) + " time:" + str(round(time.time())- self.startingTime))
         return observedState, reward, 0, {}
 
+
 dt = datetime.now().strftime("%m_%d_%H")
 Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
 
@@ -360,21 +363,20 @@ env = CustomEnv()
 
 policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[512, 256, 128])
 
-
-model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1,
-            train_freq=1,
-            learning_rate=0.0025, learning_starts=25,
-            batch_size=64, buffer_size=1000000, target_update_interval=10,
-            gamma=0.99, exploration_fraction=0.1, exploration_initial_eps=1, exploration_final_eps=0.01,
-            tensorboard_log="./logs/%s/" % dt)
+model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=1, learning_rate=0.0025, learning_starts=25,
+            batch_size=64, buffer_size=1000000, target_update_interval=10, gamma=0.99, exploration_fraction=0.1, 
+            exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
 
 #model = DQN.load("./models/05_11_15/model_12.zip", env)
 
 if __name__ == "__main__":
-    total_timesteps = 300
-    i = 'testing'
-    model.learn(total_timesteps=total_timesteps)
-    model.save("./models/%s/model_%s.zip" % (dt, i))
+    total_timesteps = 50
+    checkpoint_callback = CheckpointCallback(save_freq=5, save_path="./models/%s/" % (dt))
+    model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
+
+    #model.save("./models/%s/model_%s.zip" % (dt, i))
     #for i in range(1, 2):
         #model.learn(total_timesteps=totalTimesteps)
         #model.save("./models/%s/model_%s.zip" % (dt, i))
+# na logarw sta log files kai vlepoume me grep
+# na tsekarw an logarei sto telos twn total_timesteps tipota....(ana episode diladi)

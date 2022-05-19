@@ -30,12 +30,12 @@ headers_facedetector_yes = {'Content-Type': 'application/x-www-form-urlencoded',
 headers_facedetector_no = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'http://gateway:8080/async-function/mobilenetfn'}
 jpg_add = '.' + str(step) + '.jpg'
 
-
+'''
 # FRAMERFN PART
 framerfn_data = {"output_bucket": "image-output", "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", 
                 "seconds": step, "lower_limit": 0, "upper_limit": "full"}
 framerfn_req = requests.post(framerfn_url, json.dumps(framerfn_data), headers=headers)
-
+'''
 
 # FACEDETECTOR-FACEANALYZER-MOBILENET PART
 face_exists_array_7 = ['f', 't', 'f', 'f', 't', 'f', 'f']
@@ -74,12 +74,12 @@ start_now = datetime.utcnow()
 start_now_str = start_now.isoformat("T") + "Z"
 
 
-check_start_command = 'kubectl logs gateway-7ff44f68cb-sfj2t gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n 1 | wc -l'
+check_start_command = 'kubectl logs gateway-5b99d95c8f-2l9rg gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n 1 | wc -l'
 while (command_received < 1):
     command_received = int(subprocess.getoutput(check_start_command))
 
 started = True
-count_frames_command = 'kubectl logs gateway-7ff44f68cb-sfj2t gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
+count_frames_command = 'kubectl logs gateway-5b99d95c8f-2l9rg gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
 while (frames_received < frames_number - 2):
     time.sleep(0.4)
     frames_received = int(subprocess.getoutput(count_frames_command))

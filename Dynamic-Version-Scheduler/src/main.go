@@ -305,7 +305,7 @@ func main() {
 			return
 		}
 		klog.V(1).Infof("Node: %v, Calculating score...", node)
-		res := calculateScore(scorerInput{metrics: results}, customScoreFn)
+		//res := calculateScore(scorerInput{metrics: results}, customScoreFn)
 		klog.V(1).Infof("Node: %v, Finished calculating", node)
 
 		// Check the core availability
@@ -330,7 +330,7 @@ func main() {
 				klog.V(1).Infof("Error defining core availability")
 			}
 		}
-
+		res := 1 - average["c0res"] //changed the score function of tzeneto
 		// fmt.Println("Node,Score,IPC,Reads,Writes")
 		// fmt.Printf("Node: %v, Score: %v, IPC: %v, Reads: %v, Writes: %v, CPU: %v", node, res, results["ipc"], results["mem_read"], results["mem_write"], 1-average["c0res"])
 		// fmt.Printf("%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v", node, res, results["ipc"], results["mem_read"], results["mem_write"], results["l3m"], results["l2m"], results["dramnrg"], results["procnrg"], results["l3occ"], results["qpi1"], results["qpi0"], average["l2m"], average["l3m"], average["c0res"], average["c1res"], 1-average["c0res"]-average["c1res"], average["ipc"], average["ipc"]/(results["mem_read"]+results["mem_write"]))
