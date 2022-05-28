@@ -30,12 +30,12 @@ headers_facedetector_yes = {'Content-Type': 'application/x-www-form-urlencoded',
 headers_facedetector_no = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Callback-Url': 'http://gateway:8080/async-function/mobilenetfn'}
 jpg_add = '.' + str(step) + '.jpg'
 
-'''
+
 # FRAMERFN PART
 framerfn_data = {"output_bucket": "image-output", "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", 
                 "seconds": step, "lower_limit": 0, "upper_limit": "full"}
 framerfn_req = requests.post(framerfn_url, json.dumps(framerfn_data), headers=headers)
-'''
+
 
 # FACEDETECTOR-FACEANALYZER-MOBILENET PART
 face_exists_array_7 = ['f', 't', 'f', 'f', 't', 'f', 'f']

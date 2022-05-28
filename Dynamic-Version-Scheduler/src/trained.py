@@ -19,10 +19,10 @@ from scheduler import CustomEnv
     
 #customEnv = CustomEnv()
 models_dir = "./models/"
-model_path = f"{models_dir}/05_10_17/model_4.zip"
+model_path = f"{models_dir}/05_20_13/model_final.zip"
 
 #model = DQN.load(model_path, env=customEnv)
-model = DQN.load(model_path)
+model = DQN.load(model_path, env=CustomEnv())
 '''
 episodes = 5
 

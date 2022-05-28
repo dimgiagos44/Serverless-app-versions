@@ -284,7 +284,6 @@ class CustomEnv(gym.Env):
 
         state[28:35] = [framerfn_pos, facedetectorfn2_pos, models_pos, number_of_facedetector, number_of_models, qosTarget, inputIndex]
         normalized = self.normData(state)
-        #stateLogger.info("State is: %s time: %s" % (list(normalized), round(time.time()) - self.startingTime))
         return list(normalized)
     
     def spreadCalculator(self):
@@ -309,7 +308,7 @@ class CustomEnv(gym.Env):
         if latency > tMax:
             #reward = min(-5, latency - qosTarget)
             #reward = max(reward, -12)
-            reward = max(-5,  -2 - (latency / tMax))
+            reward = max(-6,  -4 - (latency / tMax))
         elif latency == 0:
             pass
         else:
@@ -331,12 +330,13 @@ class CustomEnv(gym.Env):
         time.sleep(1)
         _, scores = self.getMetrics(period=5)
         bestScoreIndex = self.findBestScore(scores)
-        ignoredAction, latency = self.takeAction(action, bestScoreIndex, 1)
-        actionLogger.info("Action taken: " + str(action) + " with input: " + str(inputIndex) + " time:" + str(round(time.time()) - self.startingTime))
+        ignoredAction, latency = self.takeAction(action, bestScoreIndex, inputIndex)
+        stringTime = str(round(time.time()) - self.startingTime)
+        actionLogger.info("Action taken: " + str(action) + "| input type: " + str(inputIndex) + "| time:" + stringTime)
 
         if ignoredAction == -1:
             print('Just ignored an action.')
-            reward = -1
+            reward = -2
             observedState = self.state
         else: 
             time.sleep(8.5)
@@ -346,13 +346,13 @@ class CustomEnv(gym.Env):
             observedState = self.getState(pmc, self.qosGenerator(newInputIndex), newInputIndex)
             self.state = observedState
             reward = self.getReward(ignoredAction, latency, tMax)
-            timeLogger.info("Time quotient is: " + str(latency / tMax) + " time:" + str(round(time.time())- self.startingTime))
             print('\u2219 tMax =', tMax, '\u2219 input-index =', inputIndex, '\u2219 bestScoreIndex =', bestScoreIndex, '\u2219 scores =', scores)
             print('\u2219 latency =', latency, '\u2219 reward =', reward, '\u2219 spread =', self.spread, '\u2219 replicas =', self.replicas)
             print('observed state after action \u27A9', observedState[28:33])
+            timeLogger.info("Time quotient is: " + str(latency / tMax) + "| input type: " + str(inputIndex) + "| time:" + stringTime)
             
-        stateLogger.info("State is: %s time: %s" % (observedState, round(time.time()) - self.startingTime))
-        rewardLogger.info("Reward is: " + str(reward) + " time:" + str(round(time.time())- self.startingTime))
+        stateLogger.info("State is: %s | time: %s" % (observedState, stringTime))
+        rewardLogger.info("Reward is: " + str(reward) + "| input type: " + str(inputIndex) + "| time:" + stringTime)
         return observedState, reward, 0, {}
 
 
@@ -363,18 +363,19 @@ env = CustomEnv()
 
 policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[512, 256, 128])
 
-model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=1, learning_rate=0.0025, learning_starts=25,
-            batch_size=64, buffer_size=1000000, target_update_interval=10, gamma=0.99, exploration_fraction=0.1, 
+'''
+model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(2, "step"), learning_rate=0.0025, learning_starts=20,
+            batch_size=64, buffer_size=1000000, target_update_interval=8, gamma=0.99, exploration_fraction=0.1, 
             exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
-
-#model = DQN.load("./models/05_11_15/model_12.zip", env)
+'''
+model = DQN.load("./models/05_24_11/model_final.zip", env)
 
 if __name__ == "__main__":
-    total_timesteps = 50
-    checkpoint_callback = CheckpointCallback(save_freq=5, save_path="./models/%s/" % (dt))
+    total_timesteps = 100
+    checkpoint_callback = CheckpointCallback(save_freq=50, save_path="./models/%s/" % (dt))
     model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
-
-    #model.save("./models/%s/model_%s.zip" % (dt, i))
+    model.save("./models/%s/model_final.zip" % (dt))
+    
     #for i in range(1, 2):
         #model.learn(total_timesteps=totalTimesteps)
         #model.save("./models/%s/model_%s.zip" % (dt, i))
