@@ -103,7 +103,7 @@ action2 = parseActions(action)
 reward = mergeResults('r', versions)
 reward2 = parseRewards(reward)
 
-figure, axis = plt.subplots(3, 4)
+figure, axis = plt.subplots(3, 4, figsize=(20, 15))
 axis[0, 0].plot(time2[0])
 axis[0, 0].set_title('Time Input 0')
 
@@ -140,9 +140,8 @@ axis[2, 2].set_title('Reward Action 2')
 axis[2, 3].plot(reward2[3])
 axis[2, 3].set_title('Reward Action 3')
 
-figure.
 plt.show()
 plt.savefig('plot.png')
+print(len(action), len(time), len(reward))
 
-
-print(mean(time2[0]), mean(time2[1]))
+#print(mean(time2[0]), mean(time2[1]))
