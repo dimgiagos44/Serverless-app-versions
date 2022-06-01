@@ -313,9 +313,9 @@ class CustomEnv(gym.Env):
             pass
         else:
             #reward = ((latency / qosTarget) * 4) + (3 / spread) + (12 / replicas)
-            reward = (3 / spread) + (12 / replicas)
+            reward = (3 / spread) + (12 / replicas) + (1 / (tMax - latency))
         if ignoredAction != 0:
-            reward = 0
+            reward = -1
         
         return reward
 
@@ -368,10 +368,10 @@ model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq
             batch_size=64, buffer_size=1000000, target_update_interval=8, gamma=0.99, exploration_fraction=0.1, 
             exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
 '''
-model = DQN.load("./models/05_24_11/model_final.zip", env)
+model = DQN.load("./models/06_01_09/rl_model_150_steps.zip", env)
 
 if __name__ == "__main__":
-    total_timesteps = 100
+    total_timesteps = 200
     checkpoint_callback = CheckpointCallback(save_freq=50, save_path="./models/%s/" % (dt))
     model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
     model.save("./models/%s/model_final.zip" % (dt))

@@ -93,7 +93,10 @@ def parseActions(action_data):
         actions[action['input'] - 1].append(action['action'])
     return actions
 
-versions = ['05_23_15', '05_23_19', '05_23_21', '05_24_11', '05_24_12']
+#versions = ['05_23_15', '05_23_19', '05_23_21', '05_24_11', '05_24_12']
+#versions = ['05_20_15', '05_20_18', '05_23_12']
+versions = ['05_31_11', '06_01_09', '06_01_13']
+
 time = mergeResults('t', versions)
 time2 = parseTimes(time)
 
@@ -117,28 +120,28 @@ axis[0, 3].plot(time2[3])
 axis[0, 3].set_title('Time Input 3')
 
 axis[1, 0].plot(action2[0])
-axis[1, 0].set_title('Time Action 0')
+axis[1, 0].set_title('Action Input 0')
 
 axis[1, 1].plot(action2[1])
-axis[1, 1].set_title('Time Action 1')
+axis[1, 1].set_title('Action Input 1')
 
 axis[1, 2].plot(action2[2])
-axis[1, 2].set_title('Time Action 2')
+axis[1, 2].set_title('Action Input 2')
 
 axis[1, 3].plot(action2[3])
-axis[1, 3].set_title('Time Action 3')
+axis[1, 3].set_title('Action Input 3')
 
 axis[2, 0].plot(reward2[0])
-axis[2, 0].set_title('Reward Action 0')
+axis[2, 0].set_title('Reward Input 0')
 
 axis[2, 1].plot(reward2[1])
-axis[2, 1].set_title('Reward Action 1')
+axis[2, 1].set_title('Reward Input 1')
 
 axis[2, 2].plot(reward2[2])
-axis[2, 2].set_title('Reward Action 2')
+axis[2, 2].set_title('Reward Input 2')
 
 axis[2, 3].plot(reward2[3])
-axis[2, 3].set_title('Reward Action 3')
+axis[2, 3].set_title('Reward Input 3')
 
 plt.show()
 plt.savefig('plot.png')
