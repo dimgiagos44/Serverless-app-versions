@@ -2,6 +2,23 @@ import json
 from statistics import mean
 import matplotlib.pyplot as plt
 
+def most_frequent(List):
+    return max(set(List), key = List.count)
+
+def my_mean(data):
+    n = 0
+    mean = 0.0
+ 
+    for x in data:
+        n += 1
+        mean += (x - mean)/n
+
+    if n < 1:
+        return float('nan')
+    else:
+        return mean
+
+
 #version = '05_20_18'
 reward_str = '/home/dgiagos/openfaas/Serverless-app-versions/Dynamic-Version-Scheduler/src/logs/'
 reward_str2 = '/reward.log'
@@ -44,7 +61,7 @@ def mergeResults(c, versions):
     elif c == 'a':
         action_data = []
         for version in versions:
-            actions = open(reward_str + version + reward_str2, 'r')
+            actions = open(action_str + version + action_str2, 'r')
             for line in actions.readlines():
                 details = line.split("|")
                 details[0] = details[0].split(': ')[1]
@@ -93,10 +110,13 @@ def parseActions(action_data):
         actions[action['input'] - 1].append(action['action'])
     return actions
 
-#versions = ['05_23_15', '05_23_19', '05_23_21', '05_24_11', '05_24_12']
+#versions = ['05_23_15', '05_23_19', '05_23_21', '05_24_11']
 #versions = ['05_20_15', '05_20_18', '05_23_12']
-versions = ['05_31_11', '06_01_09', '06_01_13']
-
+#versions = ['05_31_11', '06_01_09', '06_01_13']
+#versions = ['06_05_14', '06_05_21']
+#versions = ['06_06_10', '06_06_14']
+#versions = ['06_06_20']
+versions = ['06_07_11']
 time = mergeResults('t', versions)
 time2 = parseTimes(time)
 
@@ -106,7 +126,7 @@ action2 = parseActions(action)
 reward = mergeResults('r', versions)
 reward2 = parseRewards(reward)
 
-figure, axis = plt.subplots(3, 4, figsize=(20, 15))
+figure, axis = plt.subplots(3, 4, figsize=(30, 19))
 axis[0, 0].plot(time2[0])
 axis[0, 0].set_title('Time Input 0')
 
@@ -144,7 +164,19 @@ axis[2, 3].plot(reward2[3])
 axis[2, 3].set_title('Reward Input 3')
 
 plt.show()
-plt.savefig('plot.png')
-print(len(action), len(time), len(reward))
+plt.savefig('../images/' + versions[0] + '.png')
+print('FOR VERSIONS:', str(versions))
+print('action-len =', len(action), ', time-len =', len(time), ', reward-len =', len(reward))
+print('TIMES AVG / 100 STEPS:', my_mean(time2[1][0:100]), my_mean(time2[1][100:200]), my_mean(time2[1][200:300]), my_mean(time2[1][300:400]))
+print('REWARDS AVG / 100 STEPS:', my_mean(reward2[1][0:100]), my_mean(reward2[1][100:200]), my_mean(reward2[1][200:300]), my_mean(reward2[1][300:400]))
+
+frequency = {}
+for item in action2[1]:
+   if item in frequency:
+      frequency[item] += 1
+   else:
+      frequency[item] = 1
+
+print('ACTIONS SELECTED FREQUENCY:', {k: v for k, v in sorted(frequency.items(), key=lambda item: item[1])})
 
 #print(mean(time2[0]), mean(time2[1]))

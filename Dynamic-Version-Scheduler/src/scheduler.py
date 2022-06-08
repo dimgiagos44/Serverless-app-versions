@@ -313,7 +313,7 @@ class CustomEnv(gym.Env):
             pass
         else:
             #reward = ((latency / qosTarget) * 4) + (3 / spread) + (12 / replicas)
-            reward = (3 / spread) + (12 / replicas) + (1 / (tMax - latency))
+            reward = (3 / spread) + (12 / replicas) + (latency / tMax)*3
         if ignoredAction != 0:
             reward = -1
         
@@ -326,7 +326,8 @@ class CustomEnv(gym.Env):
     # @must
     def step(self, action):
         tMax = self.state[-2]
-        inputIndex = int(self.state[-1])
+        #inputIndex = int(self.state[-1])
+        inputIndex = 2
         time.sleep(1)
         _, scores = self.getMetrics(period=5)
         bestScoreIndex = self.findBestScore(scores)
@@ -341,7 +342,8 @@ class CustomEnv(gym.Env):
         else: 
             time.sleep(8.5)
             pmc, _ = self.getMetrics(period=5)
-            newInputIndex = random.randint(1, 4)
+            #newInputIndex = random.randint(1, 4)
+            newInputIndex = 2
             #tMax = self.qosGenerator(inputIndex)
             observedState = self.getState(pmc, self.qosGenerator(newInputIndex), newInputIndex)
             self.state = observedState
@@ -361,17 +363,19 @@ Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
 
 env = CustomEnv()
 
-policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[512, 256, 128])
+policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 128, 64])
 
-'''
-model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(2, "step"), learning_rate=0.0025, learning_starts=20,
-            batch_size=64, buffer_size=1000000, target_update_interval=8, gamma=0.99, exploration_fraction=0.1, 
+
+model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(1, "step"), learning_rate=0.0025, learning_starts=10,
+            batch_size=6, buffer_size=1000000, target_update_interval=2, gamma=0.99, exploration_fraction=0.1, 
             exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
-'''
-model = DQN.load("./models/06_01_09/rl_model_150_steps.zip", env)
+
+
+#summary_writer = tf.summary.create_file_writer("./logs/%s/" % dt)
+#model = DQN.load("./models/06_06_10/model_final.zip", env)
 
 if __name__ == "__main__":
-    total_timesteps = 200
+    total_timesteps = 300
     checkpoint_callback = CheckpointCallback(save_freq=50, save_path="./models/%s/" % (dt))
     model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
     model.save("./models/%s/model_final.zip" % (dt))
