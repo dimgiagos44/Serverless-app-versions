@@ -40,12 +40,13 @@ class CustomEnv(gym.Env):
             4: [25.8, 54.5, 102.0, 140.5, 200.0] 
         }
         
-        self.actionText = { 0: 'Moving framer', 1: 'Moving facedetector', 2: 'Moving models', 3: 'Scaling models UP', 4: 'Scaling models DOWN', 5: 'Scaling facedetectorfn2 UP',
-                            6: 'Scaling facedetectorfn2 DOWN', 7: 'Maintaining'}
+        self.actionText = { 0: 'Moving framer to worker1', 1: 'Moving framer to worker2', 2: 'Moving framer to worker3',  3: 'Moving framer to worker4',
+        4: 'Moving facedetector to worker1', 5: 'Moving facedetector to worker2', 6: 'Moving facedetector to worker3', 7: 'Moving facedetector to worker4',
+        8: 'Moving models', 9: 'Scaling models UP', 10: 'Scaling models DOWN', 11: 'Maintaining'}
 
         self.state = [0] * 35
 
-        self.action_space = gym.spaces.Discrete(8) # totally 8 possible actions for the agent
+        self.action_space = gym.spaces.Discrete(12) # totally 8 possible actions for the agent
         self.observation_space = gym.spaces.Box(low=0, high=20, shape=(35,), dtype=np.float64) # se ti diastima timwn anikoun oi metavlites pou apartizoun to state
         self.placementInit()
 
@@ -166,24 +167,62 @@ class CustomEnv(gym.Env):
             number_of_facedetector = int(number_of_facedetector_str[-5])
 
         if action == 0:
-            framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', constraint_worker_command[bestScoreIndex]]
+            framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', constraint_worker_command[1]]
             try:
                 ret = subprocess.check_call(framer_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
             except subprocess.CalledProcessError as e:
                 print('error = ', e)
                 return -1, 0
         elif action == 1:
-            if (number_of_facedetector >= 2):
-                command = 'faas remove facedetectorfn2'
-                subprocess.getoutput(command)
-                time.sleep(15)
-            facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', constraint_worker_command[bestScoreIndex]]
+            framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', constraint_worker_command[2]]
+            try:
+                ret = subprocess.check_call(framer_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            except subprocess.CalledProcessError as e:
+                print('error = ', e)
+                return -1, 0
+        elif action == 2:
+            framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', constraint_worker_command[3]]
+            try:
+                ret = subprocess.check_call(framer_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            except subprocess.CalledProcessError as e:
+                print('error = ', e)
+                return -1, 0
+        elif action == 3:
+            framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', constraint_worker_command[4]]
+            try:
+                ret = subprocess.check_call(framer_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            except subprocess.CalledProcessError as e:
+                print('error = ', e)
+                return -1, 0
+        elif action == 4:
+            facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', constraint_worker_command[1]]
             try:
                 ret = subprocess.check_call(facedetectorfn2_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)        
             except subprocess.CalledProcessError as e:
                 print('error = ', e)
                 return -1, 0
-        elif action == 2:
+        elif action == 5:
+            facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', constraint_worker_command[2]]
+            try:
+                ret = subprocess.check_call(facedetectorfn2_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)        
+            except subprocess.CalledProcessError as e:
+                print('error = ', e)
+                return -1, 0
+        elif action == 6:
+            facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', constraint_worker_command[3]]
+            try:
+                ret = subprocess.check_call(facedetectorfn2_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)        
+            except subprocess.CalledProcessError as e:
+                print('error = ', e)
+                return -1, 0
+        elif action == 7:
+            facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', constraint_worker_command[4]]
+            try:
+                ret = subprocess.check_call(facedetectorfn2_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)        
+            except subprocess.CalledProcessError as e:
+                print('error = ', e)
+                return -1, 0
+        elif action == 8:
             if (number_of_models >= 2):
                 command = 'faas remove faceanalyzerfn && faas remove mobilenetfn'
                 subprocess.getoutput(command)
@@ -196,7 +235,7 @@ class CustomEnv(gym.Env):
             except subprocess.CalledProcessError as e:
                 print('error = ', e)
                 return -1, 0
-        elif action == 3:
+        elif action == 9:
             if (number_of_models == 4):
                 return -1, 0
             else:
@@ -204,30 +243,13 @@ class CustomEnv(gym.Env):
                 command = scale_models_commnand + replicas_command[number_of_models]
                 subprocess.getoutput(command)
 
-        elif action == 4:
+        elif action == 10:
             if (number_of_models == 1):
                 return -1, 0
             else:
                 number_of_models -= 1
                 command = scale_models_commnand + replicas_command[number_of_models]
                 subprocess.getoutput(command)
-        
-        elif action == 5:
-            if (number_of_facedetector == 4):
-                return -1, 0
-            else:
-                number_of_facedetector += 1
-                command = scale_facedetector_command + replicas_command[number_of_facedetector]
-                subprocess.getoutput(command)
-
-        elif action == 6:
-            if (number_of_facedetector == 1):
-                return -1, 0
-            else:
-                number_of_facedetector -= 1
-                command = scale_facedetector_command + replicas_command[number_of_facedetector]
-                subprocess.getoutput(command)
-
         else:
             pass
 
@@ -338,7 +360,7 @@ class CustomEnv(gym.Env):
             #newInputIndex = random.randint(1, 4)
             newInputIndex = 2
             #tMax = self.qosGenerator(inputIndex)
-            observedState = self.getState(pmc, self.qosGenerator(newInputIndex), newInputIndex)
+            observedState = self.getState(pmc, 34, newInputIndex)
             self.state = observedState
             reward = self.getReward(ignoredAction, latency, tMax)
             print('\u2219 tMax =', tMax, '\u2219 input-index =', inputIndex, '\u2219 bestScoreIndex =', bestScoreIndex, '\u2219 scores =', scores)
@@ -358,18 +380,19 @@ env = CustomEnv()
 
 policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 128, 64])
 
-
-model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(1, "step"), learning_rate=0.0025, learning_starts=10,
-            batch_size=6, buffer_size=1000000, target_update_interval=2, gamma=0.99, exploration_fraction=0.1, 
+#batch_size: # of tuples (s_t, r, a, s_t+1)to feed in an update rule
+#train_freq: every train_freq steps we perform a batch_training
+#target_update_interval: 
+model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(1, "step"), learning_rate=0.0025, learning_starts=15,
+            batch_size=32, buffer_size=1000000, target_update_interval=60, gamma=0.99, exploration_fraction=0.2, 
             exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
 
 
-#summary_writer = tf.summary.create_file_writer("./logs/%s/" % dt)
 #model = DQN.load("./models/06_06_10/model_final.zip", env)
 
 if __name__ == "__main__":
-    total_timesteps = 300
-    checkpoint_callback = CheckpointCallback(save_freq=50, save_path="./models/%s/" % (dt))
+    total_timesteps = 400
+    checkpoint_callback = CheckpointCallback(save_freq=75, save_path="./models/%s/" % (dt))
     model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
     model.save("./models/%s/model_final.zip" % (dt))
     
