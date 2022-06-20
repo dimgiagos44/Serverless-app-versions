@@ -21,12 +21,16 @@ EVENTS = ['IPC', 'MEM_READ', 'MEM_WRITE', 'L3M', 'C0RES', 'C1RES', 'NOT_C0RES_C1
 rewardLogger, actionLogger, timeLogger, stateLogger = loggers.setupDataLoggers()
 
 class CustomEnv(gym.Env):
-    def __init__(self,):
+    def __init__(self, training=True, inputIndex=2, qos=29):
         super(CustomEnv, self).__init__()
 
         self.startingTime = round(time.time())
 
-        self.inputs = { 1: ['90', '7'], 2: ['40', '16'], 3: ['20', '32'], 4: ['10', '65']}
+        self.training = training
+        self.inputIndex = inputIndex
+        self.qos = qos
+
+        self.inputs = {1: ['90', '7'], 2: ['40', '16'], 3: ['20', '32'], 4: ['10', '65']}
 
         self.iterationNumber = 0
         self.spread = 1
@@ -73,7 +77,7 @@ class CustomEnv(gym.Env):
     
      # @must
     def reset(self):
-        print('Reseting the state.')
+        print('Reseting the state back to initialization.')
         self.state[28:35] = [1.0, 1.0, 1.0, 1.0, 1.0, 15.0, 1.0]
         print('Init state \u27A9', self.state[28:33])
         return self.state
@@ -269,6 +273,7 @@ class CustomEnv(gym.Env):
         state_space.extend([int(state[-7]), int(state[-6]), int(state[-5]), int(state[-4]), int(state[-3]), int(state[-2]), int(state[-1])])
         return np.array(state_space)
     
+    #loading to the vectorState: pcm + containers_pos + containers_replicas + tMax + inputIndex
     def getState(self, pmc, qosTarget=0, inputIndex=0):
         state = [0] * 35
         for i in range(0, 4):
@@ -340,9 +345,13 @@ class CustomEnv(gym.Env):
 
     # @must
     def step(self, action):
-        tMax = self.state[-2]
-        #inputIndex = int(self.state[-1])
-        inputIndex = 2
+        '''
+        tMax = self.state[-2] inputIndex = int(self.state[-1])
+        self.qos = ...
+        self.inputIndex = ...
+        '''
+        tMax = self.qos
+        inputIndex = self.inputIndex
         time.sleep(1)
         _, scores = self.getMetrics(period=5)
         bestScoreIndex = self.findBestScore(scores)
@@ -357,47 +366,42 @@ class CustomEnv(gym.Env):
         else: 
             time.sleep(8.5)
             pmc, _ = self.getMetrics(period=5)
-            #newInputIndex = random.randint(1, 4)
-            newInputIndex = 2
-            #tMax = self.qosGenerator(inputIndex)
-            observedState = self.getState(pmc, 34, newInputIndex)
+            #newInputIndex = random.randint(1, 4) #tMax = self.qosGenerator(inputIndex)
+            newInputIndex = self.inputIndex
+            tMax = self.qos
+            observedState = self.getState(pmc, tMax, newInputIndex) #setting here the new state
             self.state = observedState
             reward = self.getReward(ignoredAction, latency, tMax)
             print('\u2219 tMax =', tMax, '\u2219 input-index =', inputIndex, '\u2219 bestScoreIndex =', bestScoreIndex, '\u2219 scores =', scores)
             print('\u2219 latency =', latency, '\u2219 reward =', reward, '\u2219 spread =', self.spread, '\u2219 replicas =', self.replicas)
             print('observed state after action \u27A9', observedState[28:33])
-            timeLogger.info("Time quotient is: " + str(latency / tMax) + "| input type: " + str(inputIndex) + "| time:" + stringTime)
+            timeLogger.info("Time quotient is: " + str(latency / tMax) + "| input type: " + str(inputIndex) + "| time:" + 
+                            stringTime + " | latency: " + str(latency) + " | tMax: ", str(tMax))
             
         stateLogger.info("State is: %s | time: %s" % (observedState, stringTime))
         rewardLogger.info("Reward is: " + str(reward) + "| input type: " + str(inputIndex) + "| time:" + stringTime)
         return observedState, reward, 0, {}
 
 
-dt = datetime.now().strftime("%m_%d_%H")
-Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
-
-env = CustomEnv()
-
-policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 128, 64])
-
 #batch_size: # of tuples (s_t, r, a, s_t+1)to feed in an update rule
 #train_freq: every train_freq steps we perform a batch_training
 #target_update_interval: 
+#model = DQN.load("./models/06_19_12/rl_model_350_steps.zip", env)
+
+dt = datetime.now().strftime("%m_%d_%H")
+Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
+env = CustomEnv(training=True, inputIndex=3, qos=44)
+policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 128, 64])
+
 model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(1, "step"), learning_rate=0.0025, learning_starts=15,
             batch_size=32, buffer_size=1000000, target_update_interval=60, gamma=0.99, exploration_fraction=0.2, 
             exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
 
-
-#model = DQN.load("./models/06_06_10/model_final.zip", env)
-
 if __name__ == "__main__":
-    total_timesteps = 400
-    checkpoint_callback = CheckpointCallback(save_freq=75, save_path="./models/%s/" % (dt))
+    total_timesteps = 480
+    checkpoint_callback = CheckpointCallback(save_freq=80, save_path="./models/%s/" % (dt))
     model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
     model.save("./models/%s/model_final.zip" % (dt))
-    
-    #for i in range(1, 2):
-        #model.learn(total_timesteps=totalTimesteps)
-        #model.save("./models/%s/model_%s.zip" % (dt, i))
+
 # na logarw sta log files kai vlepoume me grep
 # na tsekarw an logarei sto telos twn total_timesteps tipota....(ana episode diladi)

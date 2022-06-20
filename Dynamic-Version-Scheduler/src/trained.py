@@ -16,27 +16,17 @@ import json
 from scheduler import CustomEnv
 
 
-    
-#customEnv = CustomEnv()
+myenv = CustomEnv(training=False, inputIndex=2, qos=29)
 models_dir = "./models/"
-model_path = f"{models_dir}/05_20_13/model_final.zip"
+model_path = f"{models_dir}/06_18_14/rl_model_300_steps.zip"
 
-#model = DQN.load(model_path, env=customEnv)
-model = DQN.load(model_path, env=CustomEnv())
-'''
-episodes = 5
+model = DQN.load(model_path, myenv)
 
-
-for ep in range(episodes):
-    obs = customEnv.reset()
-
+#obs = myenv.reset()
+i = 0
+while i < 5:
     action, _ = model.predict(obs)
-    obs, reward, done, info = customEnv.step(action)
+    obs, reward, done, info = myenv.step(action)
     print(obs, reward, done, info)
+    i += 1
 
-customEnv.close()
-'''
-
-
-print(model.get_parameters())
-print('SOOOOOOOOOOOOOOOOOOOOOOS')

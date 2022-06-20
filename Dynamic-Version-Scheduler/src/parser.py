@@ -1,6 +1,7 @@
 import json
 from statistics import mean
 import matplotlib.pyplot as plt
+import numpy as np
 
 def most_frequent(List):
     return max(set(List), key = List.count)
@@ -93,9 +94,13 @@ def mergeResults(c, versions):
         return []
 
 def parseRewards(reward_data):
-    rewards = ([], [], [], [])
+    rewards = ([], [], [], [], [])
     for reward in reward_data:
         rewards[reward['input'] - 1].append(reward['reward'])
+        if (int(reward['reward']) > 0):
+            rewards[4].append(1)
+        else:
+            rewards[4].append(-1)
     return rewards
 
 def parseTimes(time_data):
@@ -104,30 +109,21 @@ def parseTimes(time_data):
         times[time['input'] - 1].append(time['time_quotient'])
     return times
 
-
 def parseActions(action_data):
     actions = ([], [], [], [])
     for action in action_data:
         actions[action['input'] - 1].append(action['action'])
     return actions
 
-#versions = ['05_23_15', '05_23_19', '05_23_21', '05_24_11']
-#versions = ['05_20_15', '05_20_18', '05_23_12']
-#versions = ['05_31_11', '06_01_09', '06_01_13']
-#versions = ['06_05_14', '06_05_21']
-#versions = ['06_06_10', '06_06_14']
-#versions = ['06_06_20']
-#versions = ['06_07_11']
 #versions = ['06_11_20']
 #versions = ['06_16_10'] #512... #explor_factor=0.1
 #versions = ['06_16_18']
 #versions = ['06_17_01']
-versions = ['06_18_14']
-'''
-model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(1, "step"), learning_rate=0.0025, learning_starts=15,
-            batch_size=32, buffer_size=1000000, target_update_interval=50, gamma=0.99, exploration_fraction=0.15, 
-            exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
-'''
+#versions = ['06_18_14'] #gia single-qos = 34.0 sec - input=2
+#versions = ['06_18_21'] #gia ginglq-qos = 29.0 sec - input=2
+#versions = ['06_19_06']
+#versions = ['06_19_12']
+versions = ['06_19_19']
 time = mergeResults('t', versions)
 time2 = parseTimes(time)
 
@@ -136,6 +132,13 @@ action2 = parseActions(action)
 
 reward = mergeResults('r', versions)
 reward2 = parseRewards(reward)
+
+frequency = {}
+for item in action2[2]:
+   if item in frequency:
+      frequency[item] += 1
+   else:
+      frequency[item] = 1
 
 figure, axis = plt.subplots(5, 4, figsize=(30, 19))
 axis[0, 0].plot(time2[0])
@@ -174,40 +177,47 @@ axis[2, 2].set_title('Reward Input 2')
 axis[2, 3].plot(reward2[3])
 axis[2, 3].set_title('Reward Input 3')
 
-
 print('FOR VERSIONS:', str(versions))
 print('action-len =', len(action), ', time-len =', len(time), ', reward-len =', len(reward))
 print('TIMES AVG / 100 STEPS:', my_mean(time2[1][0:100]), my_mean(time2[1][100:200]), my_mean(time2[1][200:300]), my_mean(time2[1][300:400]))
 print('REWARDS AVG / 100 STEPS:', my_mean(reward2[1][0:100]), my_mean(reward2[1][100:200]), my_mean(reward2[1][200:300]), my_mean(reward2[1][300:400]))
+print('ACTIONS SELECTED FREQUENCY:', {k: v for k, v in sorted(frequency.items(), key=lambda item: item[1])})
 vals = []
 for i in range(0, 300, 5):
-    a = my_mean(reward2[1][(i):(i+5)])
+    a = my_mean(reward2[2][(i):(i+5)])
     vals.append(a)
 
-axis[3,1].plot(vals)
-axis[3, 1].set_title('Reward escalation for input2 Step: 5')
 
-frequency = {}
-for item in action2[1]:
-   if item in frequency:
-      frequency[item] += 1
-   else:
-      frequency[item] = 1
+axis[3,2].plot(vals)
+axis[3, 2].set_title('Average reward taken for input2 (5 training steps period)')
 
-print('ACTIONS SELECTED FREQUENCY:', {k: v for k, v in sorted(frequency.items(), key=lambda item: item[1])})
+reward_sign = reward2[4]
+print('VIOLATIONS: ', len(reward_sign)-reward_sign.count(1), 'out of', len(reward_sign))
 
-print('Violations')
-t = []
-count = 0
-for i in range(0, len(reward2[1])):
-    if (int(reward2[1][i]) > 0):
-        t.append(1)
-        count += 1
+#axis[3,1].plot(vals)
+
+y1, y2 = [], []
+
+i = 0
+minus_ones, ones = 0, 0
+for i in range(len(reward_sign)):
+    if (reward_sign[i] == 1):
+        ones += 1
     else:
-        t.append(-1)
-print(t, count, len(t)-count)
-axis[4,1].plot(t)
-axis[4, 1].set_title('+- escalation for input2 Step: 5')
-#print(mean(time2[0]), mean(time2[1]))
+        minus_ones += 1
+    y1.append(ones)
+    y2.append(minus_ones)
+
+axis[4, 2].set_xlabel('training steps')
+axis[4, 2].set_ylabel('Count')
+axis[4, 2].plot(y1, label='positive rewards')
+axis[4, 2].plot(y2, label='negative rewards')
+axis[4, 2].set_title('Positive-Negative reward input2')
+axis[4, 2].legend()
+#axis[4, 1].hist([y1, y2],color=colors, bins=62, label=['positive_rewards', 'negative_rewards'])
+#axis[4, 1].set_xlim(-5,8)
+#axis[4, 1].set_ylabel("Count")
+#axis[4,1].plot(reward_sign)
+#axis[4, 1].set_title('Positive-Negative reward input2')
 plt.show()
 plt.savefig('../images/' + versions[0] + '.png')
