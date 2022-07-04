@@ -350,6 +350,12 @@ class CustomEnv(gym.Env):
         self.qos = ...
         self.inputIndex = ...
         '''
+        if (self.iterationNumber >= 150 and self.iterationNumber <= 300):
+            self.qos = 35
+        elif (self.iterationNumber > 300):
+            self.qos = 28
+        else: 
+            pass
         tMax = self.qos
         inputIndex = self.inputIndex
         time.sleep(1)
@@ -375,9 +381,11 @@ class CustomEnv(gym.Env):
             print('\u2219 tMax =', tMax, '\u2219 input-index =', inputIndex, '\u2219 bestScoreIndex =', bestScoreIndex, '\u2219 scores =', scores)
             print('\u2219 latency =', latency, '\u2219 reward =', reward, '\u2219 spread =', self.spread, '\u2219 replicas =', self.replicas)
             print('observed state after action \u27A9', observedState[28:33])
-            timeLogger.info("Time quotient is: " + str(latency / tMax) + "| input type: " + str(inputIndex) + "| time:" + 
-                            stringTime + " | latency: " + str(latency) + " | tMax: ", str(tMax))
-            
+            if (self.training == True):
+                timeLogger.info("Time quotient is: " + str(latency / tMax) + "| input type: " + str(inputIndex) + "| time:" + stringTime + " | latency: " + str(latency))
+            else:
+                timeLogger.info("INFERENCE Time quotient is: " + str(latency / tMax) + "| input type: " + str(inputIndex) + "| time:" + stringTime + " | latency: " + str(latency))
+
         stateLogger.info("State is: %s | time: %s" % (observedState, stringTime))
         rewardLogger.info("Reward is: " + str(reward) + "| input type: " + str(inputIndex) + "| time:" + stringTime)
         return observedState, reward, 0, {}
@@ -386,12 +394,14 @@ class CustomEnv(gym.Env):
 #batch_size: # of tuples (s_t, r, a, s_t+1)to feed in an update rule
 #train_freq: every train_freq steps we perform a batch_training
 #target_update_interval: 
-#model = DQN.load("./models/06_19_12/rl_model_350_steps.zip", env)
+
 
 dt = datetime.now().strftime("%m_%d_%H")
 Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
-env = CustomEnv(training=True, inputIndex=3, qos=44)
+env = CustomEnv(training=True, inputIndex=2, qos=44)
+#model = DQN.load("./models/06_24_13/rl_model_200_steps.zip", env)
 policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 128, 64])
+
 
 model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(1, "step"), learning_rate=0.0025, learning_starts=15,
             batch_size=32, buffer_size=1000000, target_update_interval=60, gamma=0.99, exploration_fraction=0.2, 
@@ -399,7 +409,7 @@ model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq
 
 if __name__ == "__main__":
     total_timesteps = 480
-    checkpoint_callback = CheckpointCallback(save_freq=80, save_path="./models/%s/" % (dt))
+    checkpoint_callback = CheckpointCallback(save_freq=100, save_path="./models/%s/" % (dt))
     model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
     model.save("./models/%s/model_final.zip" % (dt))
 

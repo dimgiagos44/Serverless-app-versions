@@ -123,7 +123,9 @@ def parseActions(action_data):
 #versions = ['06_18_21'] #gia ginglq-qos = 29.0 sec - input=2
 #versions = ['06_19_06']
 #versions = ['06_19_12']
-versions = ['06_19_19']
+#versions = ['06_19_19']
+#versions = ['06_24_13', '06_24_17', '06_24_18']
+versions = ['07_03_20']
 time = mergeResults('t', versions)
 time2 = parseTimes(time)
 

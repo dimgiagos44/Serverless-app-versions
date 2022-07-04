@@ -13,20 +13,25 @@ import numpy as np
 from stable_baselines3 import DQN
 import random
 import json
-from scheduler import CustomEnv
+from scheduler2 import CustomEnv
+import loggers
+
+rewardLogger, actionLogger, timeLogger, stateLogger = loggers.setupDataLoggers()
+input_index = 2
+qos = 29
 
 
-myenv = CustomEnv(training=False, inputIndex=2, qos=29)
+myenv = CustomEnv(training=False, inputIndex=input_index, qos=qos)
 models_dir = "./models/"
-model_path = f"{models_dir}/06_18_14/rl_model_300_steps.zip"
+model_path = f"{models_dir}/06_18_21/model_final.zip"
 
 model = DQN.load(model_path, myenv)
 
-#obs = myenv.reset()
+obs = myenv.reset()
 i = 0
-while i < 5:
+print('INFERENCE')
+while i < 50:
     action, _ = model.predict(obs)
     obs, reward, done, info = myenv.step(action)
-    print(obs, reward, done, info)
     i += 1
 
