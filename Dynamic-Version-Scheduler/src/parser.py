@@ -185,13 +185,13 @@ print('TIMES AVG / 100 STEPS:', my_mean(time2[1][0:100]), my_mean(time2[1][100:2
 print('REWARDS AVG / 100 STEPS:', my_mean(reward2[1][0:100]), my_mean(reward2[1][100:200]), my_mean(reward2[1][200:300]), my_mean(reward2[1][300:400]))
 print('ACTIONS SELECTED FREQUENCY:', {k: v for k, v in sorted(frequency.items(), key=lambda item: item[1])})
 vals = []
-for i in range(0, 300, 5):
-    a = my_mean(reward2[2][(i):(i+5)])
+for i in range(0, 450, 5):
+    a = my_mean(reward2[1][(i):(i+5)])
     vals.append(a)
 
 
 axis[3,2].plot(vals)
-axis[3, 2].set_title('Average reward taken for input2 (5 training steps period)')
+axis[3, 2].set_title('Average reward taken (Average per 5 training steps)')
 
 reward_sign = reward2[4]
 print('VIOLATIONS: ', len(reward_sign)-reward_sign.count(1), 'out of', len(reward_sign))
