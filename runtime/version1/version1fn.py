@@ -74,12 +74,12 @@ start_now = datetime.utcnow()
 start_now_str = start_now.isoformat("T") + "Z"
 
 
-check_start_command = 'kubectl logs gateway-5b99d95c8f-svtdm gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n 1 | wc -l'
+check_start_command = 'kubectl logs gateway-5b99d95c8f-5t268 gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n 1 | wc -l'
 while (command_received < 1):
     command_received = int(subprocess.getoutput(check_start_command))
 
 started = True
-count_frames_command = 'kubectl logs gateway-5b99d95c8f-svtdm gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
+count_frames_command = 'kubectl logs gateway-5b99d95c8f-5t268 gateway -n openfaas --since-time=' + start_now_str + '| grep -e "/function/mobilenetfn" -e "/function/faceanalyzerfn" | tail -n' + str(frames_number) + ' | wc -l'
 while (frames_received < frames_number - 2):
     time.sleep(0.4)
     frames_received = int(subprocess.getoutput(count_frames_command))

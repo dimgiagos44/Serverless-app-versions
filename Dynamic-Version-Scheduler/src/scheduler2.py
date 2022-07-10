@@ -350,10 +350,8 @@ class CustomEnv(gym.Env):
         self.qos = ...
         self.inputIndex = ...
         '''
-        if (self.iterationNumber >= 150 and self.iterationNumber <= 300):
-            self.qos = 35
-        elif (self.iterationNumber > 300):
-            self.qos = 28
+        if (self.iterationNumber >= 300 and self.iterationNumber <= 500):
+            self.qos = 26
         else: 
             pass
         tMax = self.qos
@@ -398,7 +396,7 @@ class CustomEnv(gym.Env):
 
 dt = datetime.now().strftime("%m_%d_%H")
 Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
-env = CustomEnv(training=True, inputIndex=2, qos=44)
+env = CustomEnv(training=True, inputIndex=2, qos=35)
 #model = DQN.load("./models/06_24_13/rl_model_200_steps.zip", env)
 policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 128, 64])
 
@@ -408,7 +406,7 @@ model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq
             exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
 
 if __name__ == "__main__":
-    total_timesteps = 480
+    total_timesteps = 500
     checkpoint_callback = CheckpointCallback(save_freq=100, save_path="./models/%s/" % (dt))
     model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
     model.save("./models/%s/model_final.zip" % (dt))
