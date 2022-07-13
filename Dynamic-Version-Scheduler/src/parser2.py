@@ -143,44 +143,36 @@ for item in action2[2]:
    else:
       frequency[item] = 1
 
-figure, axis = plt.subplots(5, 4, figsize=(30, 19))
-axis[0, 0].plot(time2[0])
-axis[0, 0].set_title('Time Input 0')
+acc_reward = 0
+acc_rewards = []
+for i in reward2[1]:
+    acc_reward += float(i)
+    acc_rewards.append(acc_reward)
+
+figure, axis = plt.subplots(2, 3, figsize=(20, 15))
 
 axis[0, 1].plot(time2[1])
 axis[0, 1].set_ylabel('latency / TMAX')
 axis[0, 1].set_title('Time Input 1')
+axis[0, 1].set_xlabel('Training steps')
 
-axis[0, 2].plot(time2[2])
-axis[0, 2].set_title('Time Input 2')
 
-axis[0, 3].plot(time2[3])
-axis[0, 3].set_title('Time Input 3')
+axis[0, 2].plot(acc_rewards)
+axis[0, 2].set_ylabel('Agent accumalative reward')
+axis[0, 2].set_title('Accumulative reward')
 
-axis[1, 0].plot(action2[0])
-axis[1, 0].set_title('Action Input 0')
 
 axis[1, 1].plot(action2[1])
 axis[1, 1].set_ylabel('Action chosen')
 axis[1, 1].set_title('Action Input 1')
+axis[1, 1].set_xlabel('Training steps')
 
-axis[1, 2].plot(action2[2])
-axis[1, 2].set_title('Action Input 2')
 
-axis[1, 3].plot(action2[3])
-axis[1, 3].set_title('Action Input 3')
+axis[1, 2].plot(reward2[1])
+axis[1, 2].set_title('Reward Input 1')
+axis[1, 2].set_xlabel('Training steps')
 
-axis[2, 0].plot(reward2[0])
-axis[2, 0].set_title('Reward Input 0')
 
-axis[2, 1].plot(reward2[1])
-axis[2, 1].set_title('Reward Input 1')
-
-axis[2, 2].plot(reward2[2])
-axis[2, 2].set_title('Reward Input 2')
-
-axis[2, 3].plot(reward2[3])
-axis[2, 3].set_title('Reward Input 3')
 
 print('FOR VERSIONS:', str(versions))
 print('action-len =', len(action), ', time-len =', len(time), ', reward-len =', len(reward))
@@ -193,8 +185,8 @@ for i in range(0, 500, 3):
     vals.append(a)
 
 
-axis[3,2].plot(vals)
-axis[3, 2].set_title('Average reward taken (Average per 5 training steps)')
+axis[0,0].plot(vals)
+axis[0, 0].set_title('Average reward taken (Average per 5 training steps)')
 
 reward_sign = reward2[4]
 print('VIOLATIONS: ', len(reward_sign)-reward_sign.count(1), 'out of', len(reward_sign))
@@ -213,12 +205,12 @@ for i in range(len(reward_sign)):
     y1.append(ones)
     y2.append(minus_ones)
 
-axis[4, 2].set_xlabel('training steps')
-axis[4, 2].set_ylabel('Count')
-axis[4, 2].plot(y1, label='positive rewards')
-axis[4, 2].plot(y2, label='negative rewards')
-axis[4, 2].set_title('Positive-Negative reward input2')
-axis[4, 2].legend()
+axis[1, 0].set_xlabel('training steps')
+axis[1, 0].set_ylabel('Count')
+axis[1, 0].plot(y1, label='positive rewards')
+axis[1, 0].plot(y2, label='negative rewards')
+axis[1, 0].set_title('Positive-Negative reward input2')
+axis[1, 0].legend()
 #axis[4, 1].hist([y1, y2],color=colors, bins=62, label=['positive_rewards', 'negative_rewards'])
 #axis[4, 1].set_xlim(-5,8)
 #axis[4, 1].set_ylabel("Count")
