@@ -160,7 +160,7 @@ axis[0, 1].set_xlabel('Training steps')
 axis[0, 2].plot(acc_rewards)
 axis[0, 2].set_ylabel('Agent accumalative reward')
 axis[0, 2].set_title('Accumulative reward')
-
+axis[0, 2].set_xlabel('Training steps')
 
 axis[1, 1].plot(action2[1])
 axis[1, 1].set_ylabel('Action chosen')
@@ -187,6 +187,7 @@ for i in range(0, 500, 3):
 
 axis[0,0].plot(vals)
 axis[0, 0].set_title('Average reward taken (Average per 5 training steps)')
+axis[0, 0].set_ylabel('Average reward')
 
 reward_sign = reward2[4]
 print('VIOLATIONS: ', len(reward_sign)-reward_sign.count(1), 'out of', len(reward_sign))
@@ -205,11 +206,11 @@ for i in range(len(reward_sign)):
     y1.append(ones)
     y2.append(minus_ones)
 
-axis[1, 0].set_xlabel('training steps')
+axis[1, 0].set_xlabel('Training steps')
 axis[1, 0].set_ylabel('Count')
 axis[1, 0].plot(y1, label='positive rewards')
 axis[1, 0].plot(y2, label='negative rewards')
-axis[1, 0].set_title('Positive-Negative reward input2')
+axis[1, 0].set_title('Positive-Negative reward')
 axis[1, 0].legend()
 #axis[4, 1].hist([y1, y2],color=colors, bins=62, label=['positive_rewards', 'negative_rewards'])
 #axis[4, 1].set_xlim(-5,8)
