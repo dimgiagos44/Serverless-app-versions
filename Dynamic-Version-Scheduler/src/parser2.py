@@ -206,7 +206,7 @@ for i in range(len(reward_sign)):
     y1.append(ones)
     y2.append(minus_ones)
 
-axis[1, 0].set_xlabel('Training steps')
+axis[1, 0].set_xlabel('Training Steps')
 axis[1, 0].set_ylabel('Count')
 axis[1, 0].plot(y1, label='positive rewards')
 axis[1, 0].plot(y2, label='negative rewards')
