@@ -124,9 +124,9 @@ def parseActions(action_data):
 #versions = ['06_19_06']
 #versions = ['06_19_12']
 #versions = ['06_19_19']
-#versions = ['06_24_13', '06_24_17', '06_24_18']
+versions = ['06_24_13', '06_24_17', '06_24_18']
 #versions = ['07_03_20']
-versions = ['07_10_10']
+#versions = ['07_10_10']
 time = mergeResults('t', versions)
 time2 = parseTimes(time)
 
