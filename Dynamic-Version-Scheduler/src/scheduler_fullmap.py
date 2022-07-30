@@ -46,11 +46,12 @@ class CustomEnv(gym.Env):
         
         self.actionText = { 0: 'Moving framer to worker1', 1: 'Moving framer to worker2', 2: 'Moving framer to worker3',  3: 'Moving framer to worker4',
         4: 'Moving facedetector to worker1', 5: 'Moving facedetector to worker2', 6: 'Moving facedetector to worker3', 7: 'Moving facedetector to worker4',
-        8: 'Moving models', 9: 'Scaling models UP', 10: 'Scaling models DOWN', 11: 'Maintaining'}
+        8: 'Moving models to worker1', 9: 'Moving models to worker2', 10: 'Moving models to worker3', 11: 'Moving models to worker4', 12: 'Scale models UP', 
+        14: 'Scale models DOWN', 15: 'Maintaining'}
 
         self.state = [0] * 35
 
-        self.action_space = gym.spaces.Discrete(12) # totally 8 possible actions for the agent
+        self.action_space = gym.spaces.Discrete(15) # totally 8 possible actions for the agent
         self.observation_space = gym.spaces.Box(low=0, high=20, shape=(35,), dtype=np.float64) # se ti diastima timwn anikoun oi metavlites pou apartizoun to state
         self.placementInit()
 
@@ -144,7 +145,6 @@ class CustomEnv(gym.Env):
         self.iterationNumber += 1
         replicas_command = ['', '1', '2', '3', '4']
         scale_models_commnand = 'kubectl scale deployment faceanalyzerfn mobilenetfn -n openfaas-fn --replicas='
-        scale_facedetector_command = 'kubectl scale deployment facedetectorfn2 -n openfaas-fn --replicas='
         constraint_worker_command = ['', 'kubernetes.io/hostname=gworker-01', 'kubernetes.io/hostname=gworker-02', 'kubernetes.io/hostname=gworker-03', 'kubernetes.io/hostname=gworker-04']
         number_of_models_command = 'faas list | grep mobilenetfn'
         number_of_models_str = subprocess.getoutput(number_of_models_command)
@@ -232,14 +232,53 @@ class CustomEnv(gym.Env):
                 subprocess.getoutput(command)
                 time.sleep(15)
             try:
-                faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', constraint_worker_command[bestScoreIndex]]
+                faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', constraint_worker_command[1]]
                 ret1 = subprocess.check_call(faceanalyzerfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-                mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', constraint_worker_command[bestScoreIndex]]
+                mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', constraint_worker_command[1]]
                 ret2 = subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL) 
             except subprocess.CalledProcessError as e:
                 print('error = ', e)
                 return -1, 0
         elif action == 9:
+            if (number_of_models >= 2):
+                command = 'faas remove faceanalyzerfn && faas remove mobilenetfn'
+                subprocess.getoutput(command)
+                time.sleep(15)
+            try:
+                faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', constraint_worker_command[2]]
+                ret1 = subprocess.check_call(faceanalyzerfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+                mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', constraint_worker_command[2]]
+                ret2 = subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL) 
+            except subprocess.CalledProcessError as e:
+                print('error = ', e)
+                return -1, 0
+        elif action == 10:
+            if (number_of_models >= 2):
+                command = 'faas remove faceanalyzerfn && faas remove mobilenetfn'
+                subprocess.getoutput(command)
+                time.sleep(15)
+            try:
+                faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', constraint_worker_command[3]]
+                ret1 = subprocess.check_call(faceanalyzerfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+                mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', constraint_worker_command[3]]
+                ret2 = subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL) 
+            except subprocess.CalledProcessError as e:
+                print('error = ', e)
+                return -1, 0
+        elif action == 11:
+            if (number_of_models >= 2):
+                command = 'faas remove faceanalyzerfn && faas remove mobilenetfn'
+                subprocess.getoutput(command)
+                time.sleep(15)
+            try:
+                faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', constraint_worker_command[4]]
+                ret1 = subprocess.check_call(faceanalyzerfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+                mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', constraint_worker_command[4]]
+                ret2 = subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL) 
+            except subprocess.CalledProcessError as e:
+                print('error = ', e)
+                return -1, 0
+        elif action == 12:
             if (number_of_models == 4):
                 return -1, 0
             else:
@@ -247,7 +286,7 @@ class CustomEnv(gym.Env):
                 command = scale_models_commnand + replicas_command[number_of_models]
                 subprocess.getoutput(command)
 
-        elif action == 10:
+        elif action == 13:
             if (number_of_models == 1):
                 return -1, 0
             else:
@@ -395,21 +434,21 @@ class CustomEnv(gym.Env):
 
 
 dt = datetime.now().strftime("%m_%d_%H")
-Path("./models/%s" % dt).mkdir(parents=True, exist_ok=True)
+Path("./models_fullmap/%s" % dt).mkdir(parents=True, exist_ok=True)
 env = CustomEnv(training=True, inputIndex=2, qos=35)
 #model = DQN.load("./models/06_24_13/rl_model_200_steps.zip", env)
 policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 128, 64])
 
 
 model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(1, "step"), learning_rate=0.0025, learning_starts=15,
-            batch_size=32, buffer_size=1000000, target_update_interval=60, gamma=0.99, exploration_fraction=0.2, 
-            exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
+            batch_size=32, buffer_size=1000000, target_update_interval=60, gamma=0.99, exploration_fraction=0.21, 
+            exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs_fullmap/%s/" % dt)
 
 if __name__ == "__main__":
     total_timesteps = 500
-    checkpoint_callback = CheckpointCallback(save_freq=100, save_path="./models/%s/" % (dt))
+    checkpoint_callback = CheckpointCallback(save_freq=100, save_path="./models_fullmap/%s/" % (dt))
     model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
-    model.save("./models/%s/model_final.zip" % (dt))
+    model.save("./models_fullmap/%s/model_final.zip" % (dt))
 
 # na logarw sta log files kai vlepoume me grep
 # na tsekarw an logarei sto telos twn total_timesteps tipota....(ana episode diladi)

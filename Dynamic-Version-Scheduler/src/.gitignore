@@ -1,4 +1,6 @@
 virtualenv/
 models/
 __pycache__/
-logs/
+#logs/
+models_fullmap/
+log_fullmap/

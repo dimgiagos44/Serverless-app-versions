@@ -29,6 +29,8 @@ class CustomEnv(gym.Env):
         self.training = training
         self.inputIndex = inputIndex
         self.qos = qos
+        self.latency = 0
+        self.bestIndex = 1
 
         self.inputs = {1: ['90', '7'], 2: ['40', '16'], 3: ['20', '32'], 4: ['10', '65']}
 
@@ -44,7 +46,9 @@ class CustomEnv(gym.Env):
             4: [25.8, 54.5, 102.0, 140.5, 200.0] 
         }
         
-        self.actionText = { 0: 'Moving framer', 1: 'Moving facedetectorfn',  2: 'Moving models', 3: 'Maintaining'}
+        self.actionText = { 0: 'Moving framer to worker1', 1: 'Moving framer to worker2', 2: 'Moving framer to worker3',  3: 'Moving framer to worker4',
+        4: 'Moving facedetector to worker1', 5: 'Moving facedetector to worker2', 6: 'Moving facedetector to worker3', 7: 'Moving facedetector to worker4',
+        8: 'Moving models', 9: 'Scaling models UP', 10: 'Scaling models DOWN', 11: 'Maintaining'}
 
         self.state = [0] * 35
 
@@ -58,7 +62,6 @@ class CustomEnv(gym.Env):
         subprocess.getoutput(command)
         time.sleep(18)
 
-        #randomized initialization
         try:
             framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', 'kubernetes.io/hostname=gworker-01']
             subprocess.check_call(framer_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
@@ -69,7 +72,6 @@ class CustomEnv(gym.Env):
             mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', 'kubernetes.io/hostname=gworker-01']
             subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
             time.sleep(15)
-            
 
         except subprocess.CalledProcessError as e:
             print('Init error handled here! Exiting')
@@ -78,8 +80,7 @@ class CustomEnv(gym.Env):
      # @must
     def reset(self):
         print('Reseting the state back to initialization.')
-        framerfn_pos, facedetectorfn2_pos, models_pos, number_of_facedetector, number_of_models = self.getPositions()
-        self.state[28:35] = [float(framerfn_pos), float(facedetectorfn2_pos), float(models_pos), float(number_of_facedetector), float(number_of_models), 15.0, 1.0]
+        self.state[28:35] = [1.0, 1.0, 1.0, 1.0, 1.0, 15.0, 1.0]
         print('Init state \u27A9', self.state[28:33])
         return self.state
 
@@ -139,7 +140,16 @@ class CustomEnv(gym.Env):
         return metrics, scores
     
     def findBestScore(self, scores):
-        return scores.index(max(scores)) + 1
+        if (self.latency > self.qos):
+            if (scores[0] > 0.85):
+                self.bestIndex = 1
+            elif (scores[1] > 0.85):
+                self.bestIndex = 2
+            elif (scores[2] > 0.85):
+                self.bestIndex = 3
+            else:
+                self.bestIndex = 4
+        return self.bestIndex
 
     def takeAction(self, action, bestScoreIndex, inputIndex):
         self.iterationNumber += 1
@@ -148,9 +158,9 @@ class CustomEnv(gym.Env):
         number_of_models_str = subprocess.getoutput(number_of_models_command)
         if len(number_of_models_str) < 5:
             print('NUMBER OF MODELS ERROR')
-            faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', ]
+            faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', constraint_worker_command[bestScoreIndex]]
             ret1 = subprocess.check_call(faceanalyzerfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-            mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', ]
+            mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', constraint_worker_command[bestScoreIndex]]
             ret2 = subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
             time.sleep(3)
             return -1, 0
@@ -161,7 +171,7 @@ class CustomEnv(gym.Env):
         number_of_facedetector_str = subprocess.getoutput(number_of_facedetector_command)
         if len(number_of_facedetector_str) < 5:
             print('NUMBER OF FACEDETECTOR ERROR')
-            facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', ]
+            facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', constraint_worker_command[bestScoreIndex]]
             ret = subprocess.check_call(facedetectorfn2_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
             time.sleep(3)
             return -1, 0
@@ -169,14 +179,14 @@ class CustomEnv(gym.Env):
             number_of_facedetector = int(number_of_facedetector_str[-5])
 
         if action == 0:
-            framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn']
+            framer_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=framerfn', '--constraint', constraint_worker_command[bestScoreIndex]]
             try:
                 ret = subprocess.check_call(framer_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
             except subprocess.CalledProcessError as e:
                 print('error = ', e)
                 return -1, 0
         elif action == 1:
-            facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2']
+            facedetectorfn2_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=facedetectorfn2', '--constraint', constraint_worker_command[bestScoreIndex]]
             try:
                 ret = subprocess.check_call(facedetectorfn2_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)        
             except subprocess.CalledProcessError as e:
@@ -188,9 +198,9 @@ class CustomEnv(gym.Env):
                 subprocess.getoutput(command)
                 time.sleep(15)
             try:
-                faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn']
+                faceanalyzerfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=faceanalyzerfn', '--constraint', constraint_worker_command[bestScoreIndex]]
                 ret1 = subprocess.check_call(faceanalyzerfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-                mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn']
+                mobilenetfn_command = ['faas', 'deploy', '-f', 'functions.yml', '--filter=mobilenetfn', '--constraint', constraint_worker_command[bestScoreIndex]]
                 ret2 = subprocess.check_call(mobilenetfn_command, cwd='../../functions/version1', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL) 
             except subprocess.CalledProcessError as e:
                 print('error = ', e)
@@ -214,8 +224,18 @@ class CustomEnv(gym.Env):
         state_space.extend([int(state[-7]), int(state[-6]), int(state[-5]), int(state[-4]), int(state[-3]), int(state[-2]), int(state[-1])])
         return np.array(state_space)
     
-    
-    def getPositions(self):
+    #loading to the vectorState: pcm + containers_pos + containers_replicas + tMax + inputIndex
+    def getState(self, pmc, qosTarget=0, inputIndex=0):
+        state = [0] * 35
+        for i in range(0, 4):
+            state[i] += pmc[i]['IPC']
+            state[i+1] += pmc[i]['MEM_READ']
+            state[i+2] += pmc[i]['MEM_WRITE']
+            state[i+3] += pmc[i]['L3M']
+            state[i+4] += pmc[i]['C0RES']
+            state[i+5] += pmc[i]['C1RES']
+            state[i+6] += pmc[i]['NOT_C0RES_C1RES']
+        
         check_framerfn_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep framerfn'
         check_facedetectorfn2_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep facedetectorfn2'
         check_models_pos_command = 'kubectl get pods -n openfaas-fn -o wide | grep mobilenetfn'
@@ -232,21 +252,6 @@ class CustomEnv(gym.Env):
         number_of_models = int(number_of_models_str[-5])
         number_of_facedetector_str   = subprocess.getoutput(number_of_facedetector_command)
         number_of_facedetector = int(number_of_facedetector_str[-5])
-        return framerfn_pos, facedetectorfn2_pos, models_pos, number_of_facedetector, number_of_models
-    
-    #loading to the vectorState: pcm + containers_pos + containers_replicas + tMax + inputIndex
-    def getState(self, pmc, qosTarget=0, inputIndex=0):
-        state = [0] * 35
-        for i in range(0, 4):
-            state[i] += pmc[i]['IPC']
-            state[i+1] += pmc[i]['MEM_READ']
-            state[i+2] += pmc[i]['MEM_WRITE']
-            state[i+3] += pmc[i]['L3M']
-            state[i+4] += pmc[i]['C0RES']
-            state[i+5] += pmc[i]['C1RES']
-            state[i+6] += pmc[i]['NOT_C0RES_C1RES']
-        
-        framerfn_pos, facedetectorfn2_pos, models_pos, number_of_facedetector, number_of_models = self.getPositions()
 
         state[28:35] = [framerfn_pos, facedetectorfn2_pos, models_pos, number_of_facedetector, number_of_models, qosTarget, inputIndex]
         normalized = self.normData(state)
@@ -272,10 +277,13 @@ class CustomEnv(gym.Env):
         self.spread = spread
         self.replicas = replicas
         if latency > tMax:
+            #reward = min(-5, latency - qosTarget)
+            #reward = max(reward, -12)
             reward = max(-6,  -4 - (latency / tMax))
         elif latency == 0:
             pass
         else:
+            #reward = ((latency / qosTarget) * 4) + (3 / spread) + (12 / replicas)
             reward = (3 / spread) + (12 / replicas) + (latency / tMax)*3
         if ignoredAction != 0:
             reward = -1
@@ -302,7 +310,8 @@ class CustomEnv(gym.Env):
         time.sleep(1)
         _, scores = self.getMetrics(period=5)
         bestScoreIndex = self.findBestScore(scores)
-        ignoredAction, latency = self.takeAction(0, bestScoreIndex, inputIndex)
+        ignoredAction, latency = self.takeAction(action, bestScoreIndex, inputIndex)
+        self.latency = latency
         stringTime = str(round(time.time()) - self.startingTime)
         actionLogger.info("Action taken: " + str(action) + "| input type: " + str(inputIndex) + "| time:" + stringTime)
 
@@ -338,7 +347,7 @@ class CustomEnv(gym.Env):
 
 
 dt = datetime.now().strftime("%m_%d_%H")
-Path("./models/kube/%s" % dt).mkdir(parents=True, exist_ok=True)
+Path("./models_oracle/%s" % dt).mkdir(parents=True, exist_ok=True)
 env = CustomEnv(training=True, inputIndex=2, qos=35)
 #model = DQN.load("./models/06_24_13/rl_model_200_steps.zip", env)
 policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 128, 64])
@@ -346,10 +355,13 @@ policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 128, 64])
 
 model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(1, "step"), learning_rate=0.0025, learning_starts=15,
             batch_size=32, buffer_size=1000000, target_update_interval=60, gamma=0.99, exploration_fraction=0.2, 
-            exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
+            exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs_oracle/%s/" % dt)
 
 if __name__ == "__main__":
     total_timesteps = 500
-    checkpoint_callback = CheckpointCallback(save_freq=100, save_path="./models/kube/%s/" % (dt))
+    checkpoint_callback = CheckpointCallback(save_freq=100, save_path="./models_oracle/%s/" % (dt))
     model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
-    model.save("./models/kube/%s/model_final.zip" % (dt))
+    model.save("./models_oracle/%s/model_final.zip" % (dt))
+
+# na logarw sta log files kai vlepoume me grep
+# na tsekarw an logarei sto telos twn total_timesteps tipota....(ana episode diladi)

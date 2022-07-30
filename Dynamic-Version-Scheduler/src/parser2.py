@@ -115,18 +115,9 @@ def parseActions(action_data):
         actions[action['input'] - 1].append(action['action'])
     return actions
 
-#versions = ['06_11_20']
-#versions = ['06_16_10'] #512... #explor_factor=0.1
-#versions = ['06_16_18']
-#versions = ['06_17_01']
-#versions = ['06_18_14'] #gia single-qos = 34.0 sec - input=2
-#versions = ['06_18_21'] #gia ginglq-qos = 29.0 sec - input=2
-#versions = ['06_19_06']
-#versions = ['06_19_12']
-#versions = ['06_19_19']
-#versions = ['06_24_13', '06_24_17', '06_24_18']
-#versions = ['07_03_20']
-versions = ['07_10_10']
+
+#versions = ['07_10_10']
+versions = ['07_30_12']
 time = mergeResults('t', versions)
 time2 = parseTimes(time)
 
@@ -143,13 +134,36 @@ for item in action2[2]:
    else:
       frequency[item] = 1
 
+vals = []
+for i in range(0, 500, 3):
+    a = my_mean(reward2[1][(i):(i+3)])
+    vals.append(a)
+
 acc_reward = 0
 acc_rewards = []
 for i in reward2[1]:
     acc_reward += float(i)
     acc_rewards.append(acc_reward)
 
+
+reward_sign = reward2[4]
+y1, y2 = [], []
+i = 0
+minus_ones, ones = 0, 0
+for i in range(len(reward_sign)):
+    if (reward_sign[i] == 1):
+        ones += 1
+    else:
+        minus_ones += 1
+    y1.append(ones)
+    y2.append(minus_ones)
+
 figure, axis = plt.subplots(2, 3, figsize=(20, 15))
+
+
+axis[0,0].plot(vals)
+axis[0, 0].set_title('Average reward taken (Average per 5 training steps)')
+axis[0, 0].set_ylabel('Average reward')
 
 axis[0, 1].plot(time2[1])
 axis[0, 1].set_ylabel('latency / TMAX')
@@ -161,6 +175,15 @@ axis[0, 2].plot(acc_rewards)
 axis[0, 2].set_ylabel('Agent accumalative reward')
 axis[0, 2].set_title('Accumulative reward')
 axis[0, 2].set_xlabel('Training steps')
+
+axis[1, 0].set_xlabel('Training Steps')
+axis[1, 0].set_ylabel('Count')
+axis[1, 0].plot(y1, label='positive rewards')
+axis[1, 0].plot(y2, label='negative rewards')
+axis[1, 0].text(5, 280, r'0-300: qos=35', fontsize=10)
+axis[1, 0].text(5, 270, r'300-500: qos=26', fontsize=10)
+axis[1, 0].set_title('Positive-Negative reward')
+axis[1, 0].legend()
 
 axis[1, 1].plot(action2[1])
 axis[1, 1].set_ylabel('Action chosen')
@@ -179,45 +202,13 @@ print('action-len =', len(action), ', time-len =', len(time), ', reward-len =', 
 print('TIMES AVG / 100 STEPS:', my_mean(time2[1][0:100]), my_mean(time2[1][100:200]), my_mean(time2[1][200:300]), my_mean(time2[1][300:400]))
 print('REWARDS AVG / 100 STEPS:', my_mean(reward2[1][0:100]), my_mean(reward2[1][100:200]), my_mean(reward2[1][200:300]), my_mean(reward2[1][300:400]))
 print('ACTIONS SELECTED FREQUENCY:', {k: v for k, v in sorted(frequency.items(), key=lambda item: item[1])})
-vals = []
-for i in range(0, 500, 3):
-    a = my_mean(reward2[1][(i):(i+3)])
-    vals.append(a)
-
-
-axis[0,0].plot(vals)
-axis[0, 0].set_title('Average reward taken (Average per 5 training steps)')
-axis[0, 0].set_ylabel('Average reward')
-
-reward_sign = reward2[4]
 print('VIOLATIONS: ', len(reward_sign)-reward_sign.count(1), 'out of', len(reward_sign))
 
-#axis[3,1].plot(vals)
 
-y1, y2 = [], []
-
-i = 0
-minus_ones, ones = 0, 0
-for i in range(len(reward_sign)):
-    if (reward_sign[i] == 1):
-        ones += 1
-    else:
-        minus_ones += 1
-    y1.append(ones)
-    y2.append(minus_ones)
-
-axis[1, 0].set_xlabel('Training Steps')
-axis[1, 0].set_ylabel('Count')
-axis[1, 0].plot(y1, label='positive rewards')
-axis[1, 0].plot(y2, label='negative rewards')
-axis[1, 0].text(5, 280, r'0-300: qos=35', fontsize=10)
-axis[1, 0].text(5, 270, r'300-500: qos=26', fontsize=10)
-axis[1, 0].set_title('Positive-Negative reward')
-axis[1, 0].legend()
 #axis[4, 1].hist([y1, y2],color=colors, bins=62, label=['positive_rewards', 'negative_rewards'])
 #axis[4, 1].set_xlim(-5,8)
 #axis[4, 1].set_ylabel("Count")
 #axis[4,1].plot(reward_sign)
 #axis[4, 1].set_title('Positive-Negative reward input2')
 plt.show()
-plt.savefig('../images/' + versions[0] + '.png')
+plt.savefig('../images/' + versions[0] + '_fullmap.png')
