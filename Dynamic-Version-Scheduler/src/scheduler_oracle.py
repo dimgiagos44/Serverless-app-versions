@@ -46,9 +46,8 @@ class CustomEnv(gym.Env):
             4: [25.8, 54.5, 102.0, 140.5, 200.0] 
         }
         
-        self.actionText = { 0: 'Moving framer to worker1', 1: 'Moving framer to worker2', 2: 'Moving framer to worker3',  3: 'Moving framer to worker4',
-        4: 'Moving facedetector to worker1', 5: 'Moving facedetector to worker2', 6: 'Moving facedetector to worker3', 7: 'Moving facedetector to worker4',
-        8: 'Moving models', 9: 'Scaling models UP', 10: 'Scaling models DOWN', 11: 'Maintaining'}
+        self.actionText = { 0: 'Moving framer', 1: 'Moving facedetectorfn',  2: 'Moving models', 3: 'Maintaining'}
+
 
         self.state = [0] * 35
 
@@ -149,6 +148,8 @@ class CustomEnv(gym.Env):
                 self.bestIndex = 3
             else:
                 self.bestIndex = 4
+        else:
+            self.bestIndex = 1
         return self.bestIndex
 
     def takeAction(self, action, bestScoreIndex, inputIndex):
@@ -355,7 +356,7 @@ policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 128, 64])
 
 model = DQN("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, train_freq=(1, "step"), learning_rate=0.0025, learning_starts=15,
             batch_size=32, buffer_size=1000000, target_update_interval=60, gamma=0.99, exploration_fraction=0.2, 
-            exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs_oracle/%s/" % dt)
+            exploration_initial_eps=1, exploration_final_eps=0.01, tensorboard_log="./logs/%s/" % dt)
 
 if __name__ == "__main__":
     total_timesteps = 500

@@ -117,7 +117,8 @@ def parseActions(action_data):
 
 
 #versions = ['07_10_10']
-versions = ['07_30_12']
+#versions = ['07_30_12']
+versions = ['07_31_10']
 time = mergeResults('t', versions)
 time2 = parseTimes(time)
 
@@ -211,4 +212,4 @@ print('VIOLATIONS: ', len(reward_sign)-reward_sign.count(1), 'out of', len(rewar
 #axis[4,1].plot(reward_sign)
 #axis[4, 1].set_title('Positive-Negative reward input2')
 plt.show()
-plt.savefig('../images/' + versions[0] + '_fullmap.png')
+plt.savefig('../images/' + versions[0] + '_kubernetes.png')

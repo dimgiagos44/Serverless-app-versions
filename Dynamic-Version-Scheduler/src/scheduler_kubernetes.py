@@ -302,7 +302,7 @@ class CustomEnv(gym.Env):
         time.sleep(1)
         _, scores = self.getMetrics(period=5)
         bestScoreIndex = self.findBestScore(scores)
-        ignoredAction, latency = self.takeAction(0, bestScoreIndex, inputIndex)
+        ignoredAction, latency = self.takeAction(action, bestScoreIndex, inputIndex)
         stringTime = str(round(time.time()) - self.startingTime)
         actionLogger.info("Action taken: " + str(action) + "| input type: " + str(inputIndex) + "| time:" + stringTime)
 
