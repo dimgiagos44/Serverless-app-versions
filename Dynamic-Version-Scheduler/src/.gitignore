@@ -4,5 +4,5 @@ __pycache__/
 logs/
 models_fullmap/
 log_fullmap/
-models_oracle/
+models_oracle
 logs_inference/
