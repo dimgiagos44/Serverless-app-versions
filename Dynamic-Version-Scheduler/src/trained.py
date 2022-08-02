@@ -17,17 +17,17 @@ from scheduler2 import CustomEnv
 import loggers
 
 rewardLogger, actionLogger, timeLogger, stateLogger = loggers.setupDataLoggers()
+
 input_index = 2
-qos = 29
-
-
+qos = 26
 myenv = CustomEnv(training=False, inputIndex=input_index, qos=qos)
-models_dir = "./models/"
-model_path = f"{models_dir}/06_18_21/model_final.zip"
+obs = myenv.reset()
 
+models_dir = "./models_"
+model_path = f"{models_dir}/07_30_10/model_final.zip"
 model = DQN.load(model_path, myenv)
 
-obs = myenv.reset()
+
 i = 0
 print('INFERENCE')
 while i < 50:
