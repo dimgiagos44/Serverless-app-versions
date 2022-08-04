@@ -1,8 +1,8 @@
 virtualenv/
 models/
 __pycache__/
-logs/
-models_fullmap/
-log_fullmap/
-models_oracle
-logs_inference/
+#logs/
+#models_fullmap/
+#log_fullmap/
+#models_oracle
+#logs_inference/
