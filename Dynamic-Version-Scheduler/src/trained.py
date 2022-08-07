@@ -13,7 +13,7 @@ import numpy as np
 from stable_baselines3 import DQN
 import random
 import json
-from scheduler_fullmap import CustomEnv
+from scheduler_oracle import CustomEnv
 import loggers
 
 rewardLogger, actionLogger, timeLogger, stateLogger = loggers.setupDataLoggers()
@@ -23,8 +23,8 @@ qos = 35
 myenv = CustomEnv(training=False, inputIndex=input_index, qos=qos)
 obs = myenv.reset()
 
-models_dir = "./models_fullmap"
-model_path = f"{models_dir}/07_30_12/model_final.zip"
+models_dir = "./models_oracle"
+model_path = f"{models_dir}/07_31_21/model_final.zip"
 model = DQN.load(model_path, myenv)
 
 

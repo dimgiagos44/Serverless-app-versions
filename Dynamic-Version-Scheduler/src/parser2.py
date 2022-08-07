@@ -116,10 +116,10 @@ def parseActions(action_data):
     return actions
 
 
-versions = ['07_10_10']
+#versions = ['07_10_10']
 #versions = ['07_30_12']
 #versions = ['07_31_10']
-#versions = ['07_31_21']
+versions = ['07_31_21']
 time = mergeResults('t', versions)
 time2 = parseTimes(time)
 
@@ -182,8 +182,6 @@ axis[1, 0].set_xlabel('Training Steps')
 axis[1, 0].set_ylabel('Count')
 axis[1, 0].plot(y1, label='positive rewards')
 axis[1, 0].plot(y2, label='negative rewards')
-axis[1, 0].text(5, 280, r'0-300: qos=35', fontsize=10)
-axis[1, 0].text(5, 270, r'300-500: qos=26', fontsize=10)
 axis[1, 0].set_title('Positive-Negative reward')
 axis[1, 0].legend()
 
@@ -215,4 +213,4 @@ print('VIOLATIONS: ', len(reward_sign)-reward_sign.count(1), 'out of', len(rewar
 #axis[4,1].plot(reward_sign)
 #axis[4, 1].set_title('Positive-Negative reward input2')
 plt.show()
-plt.savefig('../images/' + versions[0] + '_scheduler.png')
+plt.savefig('../images/' + versions[0] + '_oracle.png')
